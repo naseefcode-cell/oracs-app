@@ -16,13 +16,31 @@ const wss = new WebSocketServer(server);
 // Make WebSocket server available to routes
 app.set('websocket', wss);
 
-// Middleware
+// Middleware - Production CORS settings
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  origin: [
+    'https://www.oracs.in',
+    'https://oracs.in',
+    process.env.CLIENT_URL || 'https://www.oracs.in'
+  ],
   credentials: true
 }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Security middleware for production
+app.use((req, res, next) => {
+  // Enforce HTTPS in production
+  if (process.env.NODE_ENV === 'production' && !req.secure) {
+    return res.redirect('https://' + req.headers.host + req.url);
+  }
+  
+  // Security headers
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  next();
+});
 
 // MongoDB Connection with better error handling
 const connectDB = async () => {
@@ -61,7 +79,8 @@ app.get('/api/health', (req, res) => {
       status: 'Running'
     },
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV
+    environment: process.env.NODE_ENV || 'production',
+    domain: 'https://www.oracs.in'
   });
 });
 
@@ -72,6 +91,7 @@ app.get('/api', (req, res) => {
     message: 'Oracs API is running!',
     version: '1.0.0',
     realtime: true,
+    domain: 'https://www.oracs.in',
     endpoints: {
       auth: '/api/auth',
       posts: '/api/posts',
@@ -110,15 +130,17 @@ const PORT = process.env.PORT || 5000;
 // Connect to database and start server
 connectDB().then(() => {
   server.listen(PORT, () => {
-    console.log('\n🌈 ResearchHub Server Started Successfully!');
-    console.log(`📍 Frontend: http://localhost:${PORT}`);
-    console.log(`🔗 API: http://localhost:${PORT}/api`);
-    console.log(`❤️  Health: http://localhost:${PORT}/api/health`);
-    console.log(`⚡ Environment: ${process.env.NODE_ENV}`);
+    console.log('\n🚀 Oracs Production Server Started Successfully!');
+    console.log(`📍 Production URL: https://www.oracs.in`);
+    console.log(`🔗 API: https://www.oracs.in/api`);
+    console.log(`❤️  Health: https://www.oracs.in/api/health`);
+    console.log(`⚡ Environment: ${process.env.NODE_ENV || 'production'}`);
     console.log(`📡 MongoDB: Connected to Atlas Cluster`);
     console.log(`🔌 WebSocket: Real-time server running`);
     console.log(`👥 Connected clients: 0`);
     console.log(`⏰ Started at: ${new Date().toLocaleString()}`);
+    console.log(`🔒 HTTPS: Enabled`);
+    console.log(`🌐 CORS: Configured for production domain`);
   });
 }).catch(error => {
   console.error('❌ Failed to start server:', error);
