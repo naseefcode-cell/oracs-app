@@ -209,79 +209,28 @@ class RealTimeClient {
     }
 
     // Handle comment deletion in real-time
-   // Enhanced comment deletion handler for post detail page
-handleCommentDeleted(postId, commentId) {
-    console.log('WebSocket: Comment deleted', { postId, commentId, currentPostId });
-    
-    // Update feed comments
-    const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
-    if (commentElement) {
-        commentElement.style.opacity = '0.5';
-        setTimeout(() => {
-            commentElement.remove();
-            this.updateCommentCount(postId, -1);
-        }, 300);
-    }
-    
-    // ALSO update post detail page if open
-    if (currentPostId === postId) {
-        const postDetailCommentsList = document.getElementById('postDetailCommentsList');
-        if (postDetailCommentsList) {
-            const postDetailComment = postDetailCommentsList.querySelector(`[data-comment-id="${commentId}"]`);
+    handleCommentDeleted(postId, commentId) {
+        const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
+        if (commentElement) {
+            commentElement.style.opacity = '0.5';
+            setTimeout(() => {
+                commentElement.remove();
+                this.updateCommentCount(postId, -1);
+            }, 300);
+        }
+        
+        // ALSO update post detail page if open
+        if (currentPostId === postId) {
+            const postDetailComment = document.querySelector(`[data-comment-id="${commentId}"]`);
             if (postDetailComment) {
                 postDetailComment.style.opacity = '0.5';
                 setTimeout(() => {
                     postDetailComment.remove();
                     this.updatePostDetailCommentCount(-1);
-                    
-                    // If no comments left, show empty state
-                    const remainingComments = postDetailCommentsList.querySelectorAll('.comment');
-                    if (remainingComments.length === 0) {
-                        postDetailCommentsList.innerHTML = `
-                            <div class="text-center text-secondary py-8">
-                                <i class="fas fa-comments text-4xl mb-4"></i>
-                                <p>No comments yet. Be the first to comment!</p>
-                            </div>
-                        `;
-                    }
                 }, 300);
             }
         }
     }
-}
-
-// Enhanced reply deletion handler for post detail page
-handleReplyDelete(postId, commentId, replyId) {
-    console.log('WebSocket: Reply deleted', { postId, commentId, replyId, currentPostId });
-    
-    // Update ALL reply elements with this ID (both in feed and post detail)
-    const replyElements = document.querySelectorAll(`[data-reply-id="${replyId}"]`);
-    
-    replyElements.forEach(replyElement => {
-        replyElement.style.opacity = '0.5';
-        setTimeout(() => {
-            replyElement.remove();
-            
-            // Remove empty replies container if this was the last reply
-            const repliesContainer = document.querySelector(`[data-comment-id="${commentId}"] .replies`);
-            if (repliesContainer && repliesContainer.children.length === 0) {
-                repliesContainer.remove();
-            }
-        }, 300);
-    });
-    
-    // Update comment count for post detail page
-    if (currentPostId === postId) {
-        const postDetailCommentsList = document.getElementById('postDetailCommentsList');
-        if (postDetailCommentsList) {
-            const postDetailReply = postDetailCommentsList.querySelector(`[data-reply-id="${replyId}"]`);
-            if (postDetailReply) {
-                // The removal is already handled above, just update counts
-                this.updatePostDetailCommentCount(-1);
-            }
-        }
-    }
-}
 
 handleReplyLikeUpdated(data) {
     console.log('WebSocket: Reply like update', { 
@@ -2452,9 +2401,9 @@ async function addComment(postId) {
 }
 
 // Delete comment - UPDATED FOR REAL-TIME
-// Delete comment from post detail page
-async function deletePostDetailComment(commentId) {
-    if (!currentUser || !currentPostId) {
+async function deleteComment(postId, commentId) {
+    if (!currentUser) {
+        showLoginModal();
         return;
     }
 
@@ -2463,10 +2412,11 @@ async function deletePostDetailComment(commentId) {
     }
 
     try {
-        const data = await api.delete(`/posts/${currentPostId}/comments/${commentId}`);
+        const data = await api.delete(`/posts/${postId}/comments/${commentId}`);
         
         if (data.success) {
-            // WebSocket will handle the UI update
+            // The actual removal will be handled by the WebSocket event
+            // We don't need to manually remove it here
             realTimeClient.showToast('Comment deleted successfully', 'success');
         }
     } catch (error) {
@@ -2474,30 +2424,6 @@ async function deletePostDetailComment(commentId) {
         realTimeClient.showToast(error.message || 'Failed to delete comment', 'error');
     }
 }
-
-// Delete reply from post detail page
-async function deletePostDetailReply(commentId, replyId) {
-    if (!currentUser || !currentPostId) {
-        return;
-    }
-
-    if (!confirm('Are you sure you want to delete this reply?')) {
-        return;
-    }
-
-    try {
-        const data = await api.delete(`/posts/${currentPostId}/comments/${commentId}/replies/${replyId}`);
-        
-        if (data.success) {
-            // WebSocket will handle the UI update
-            realTimeClient.showToast('Reply deleted successfully', 'success');
-        }
-    } catch (error) {
-        console.error('Delete reply error:', error);
-        realTimeClient.showToast(error.message || 'Failed to delete reply', 'error');
-    }
-}
-
 
 // Delete reply - UPDATED FOR REAL-TIME
 async function deleteReply(postId, commentId, replyId) {
