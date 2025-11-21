@@ -1,4 +1,6 @@
-const API_BASE = 'http://localhost:5000/api';
+
+const API_BASE = 'https://www.oracs.in/api';
+
 
 // Enhanced State Management
 let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
