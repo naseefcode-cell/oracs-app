@@ -41,7 +41,8 @@ const api = {
         try {
             const response = await fetch(`${API_BASE}${endpoint}`, {
                 ...options,
-                headers
+                headers,
+                credentials: 'include' // Include cookies for production
             });
 
             // Handle non-JSON responses
@@ -97,7 +98,6 @@ const api = {
         });
     }
 };
-
 // RealTimeClient for instant updates
 class RealTimeClient {
     constructor() {
@@ -1172,6 +1172,7 @@ async function showPostPage(postId) {
     
     window.history.pushState({}, '', `#/post/${postId}`);
 }
+
 
 async function loadPostDetail(postId) {
     try {
