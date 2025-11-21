@@ -1043,13 +1043,14 @@ createReplyHTML(reply, postId, commentId) {
     }
 }
 
-// Initialize real-time client
 let realTimeClient = new RealTimeClient();
 
 // Initialize the application
-// Initialize the application
 async function initApp() {
     try {
+        console.log('🌐 Initializing Oracs Application...');
+        console.log('📍 Production Environment: https://www.oracs.in');
+        
         // Load user likes from localStorage
         const storedLikes = localStorage.getItem('userLikes');
         if (storedLikes) {
@@ -1077,8 +1078,11 @@ async function initApp() {
             const postId = hash.split('/')[2];
             showPostPage(postId);
         }
+
+        console.log('✅ Oracs Application Initialized Successfully');
     } catch (error) {
-        console.error('App initialization failed:', error);
+        console.error('❌ App initialization failed:', error);
+        realTimeClient.showToast('Application initialization failed. Please refresh the page.', 'error');
     }
 }
 // Authentication functions
@@ -1171,7 +1175,6 @@ async function showPostPage(postId) {
     window.history.pushState({}, '', `#/post/${postId}`);
 }
 
-
 async function loadPostDetail(postId) {
     try {
         const data = await api.get(`/posts/${postId}`);
@@ -1191,7 +1194,6 @@ async function loadPostDetail(postId) {
         `;
     }
 }
-
 // Update the renderPostDetail function to ensure proper data attributes and classes
 function renderPostDetail(post) {
     const postDetailContent = document.getElementById('postDetailContent');
@@ -4451,9 +4453,6 @@ function setupGlobalEventListeners() {
 }
 
 // Initialize app when DOM is loaded
-document.addEventListener('DOMContentLoaded', initApp);
-
-// Make functions globally available for onclick handlers
 window.showHomePage = showHomePage;
 window.showProfilePage = showProfilePage;
 window.showAllNotifications = showAllNotifications;
@@ -4504,3 +4503,6 @@ window.shareOnFacebook = shareOnFacebook;
 window.shareViaEmail = shareViaEmail;
 window.togglePostDetailReplyForm = togglePostDetailReplyForm;
 window.addPostDetailReply = addPostDetailReply;
+
+// Initialize app when DOM is loaded
+document.addEventListener('DOMContentLoaded', initApp);
