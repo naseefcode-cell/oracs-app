@@ -114,14 +114,15 @@ class RealTimeClient {
         if (!token) return;
 
         try {
-            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const host = window.location.host || 'localhost:5000';
+            // Use secure WebSocket for production
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'wss:';
+            const host = 'www.oracs.in';
             const wsUrl = `${protocol}//${host}?token=${token}`;
             
             this.ws = new WebSocket(wsUrl);
 
             this.ws.onopen = () => {
-                console.log('✅ WebSocket connected');
+                console.log('✅ WebSocket connected to production server');
                 this.isConnected = true;
                 this.reconnectAttempts = 0;
                 this.showToast('Real-time connection established', 'success', 2000);
@@ -153,7 +154,7 @@ class RealTimeClient {
         }
     }
 
-    handleMessage(data) {
+     handleMessage(data) {
         switch (data.type) {
             case 'new_post':
                 this.handleNewPost(data.post);
@@ -206,9 +207,6 @@ class RealTimeClient {
             case 'reply_like_updated':
                 this.handleReplyLikeUpdated(data);
                 break;
-            
-                
-            
         }
     }
 
