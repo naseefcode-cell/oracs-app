@@ -1,5 +1,5 @@
 
-const API_BASE = 'https://www.oracs.in/api';
+const API_BASE = 'api';
 
 
 // Enhanced State Management
