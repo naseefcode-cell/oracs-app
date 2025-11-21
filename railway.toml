@@ -7,3 +7,6 @@ startCommand = "npm start"
 [env]
 NODE_ENV = "production"
 PORT = "3000"
+
+# Add build command to use npm install instead of npm ci
+buildCommand = "npm install"
