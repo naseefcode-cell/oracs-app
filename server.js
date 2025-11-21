@@ -18,7 +18,7 @@ app.set('websocket', wss);
 
 // Middleware
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'https://www.oracs.in/',
+  origin: process.env.CLIENT_URL || 'http://localhost:3000',
   credentials: true
 }));
 app.use(express.json());
@@ -109,8 +109,18 @@ const PORT = process.env.PORT || 5000;
 
 // Connect to database and start server
 connectDB().then(() => {
-
+  server.listen(PORT, () => {
+    console.log('\n🌈 ResearchHub Server Started Successfully!');
+    console.log(`📍 Frontend: http://localhost:${PORT}`);
+    console.log(`🔗 API: http://localhost:${PORT}/api`);
+    console.log(`❤️  Health: http://localhost:${PORT}/api/health`);
+    console.log(`⚡ Environment: ${process.env.NODE_ENV}`);
+    console.log(`📡 MongoDB: Connected to Atlas Cluster`);
+    console.log(`🔌 WebSocket: Real-time server running`);
+    console.log(`👥 Connected clients: 0`);
+    console.log(`⏰ Started at: ${new Date().toLocaleString()}`);
   });
 }).catch(error => {
-
+  console.error('❌ Failed to start server:', error);
+  process.exit(1);
 });
