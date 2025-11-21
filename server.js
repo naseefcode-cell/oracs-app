@@ -29,9 +29,10 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Security middleware for production
+// Security middleware for production
 app.use((req, res, next) => {
-  // Enforce HTTPS in production
-  if (process.env.NODE_ENV === 'production' && !req.secure) {
+  // Skip HTTPS redirect for API routes - they should always use HTTPS from frontend
+  if (process.env.NODE_ENV === 'production' && !req.secure && !req.path.startsWith('/api/')) {
     return res.redirect('https://' + req.headers.host + req.url);
   }
   
