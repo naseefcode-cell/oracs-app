@@ -883,16 +883,22 @@ createCommentHTML(comment, postId) {
 }
     // In the createReplyHTML method, ensure it has:
 createReplyHTML(reply, postId, commentId) {
-    // Consistent like state detection for replies
-    const isReplyLiked = reply.likes && (
-        Array.isArray(reply.likes) 
-            ? reply.likes.some(like => 
-                (like._id && like._id === currentUser?._id) || 
-                (like === currentUser?._id) ||
-                (typeof like === 'string' && like === currentUser?._id)
-            )
-            : false
-    );
+    // Check localStorage for like state first, then fall back to server data
+    let isReplyLiked = false;
+    if (userLikes.replies && userLikes.replies[reply._id] !== undefined) {
+        isReplyLiked = userLikes.replies[reply._id];
+    } else {
+        // Fallback to server data
+        isReplyLiked = reply.likes && (
+            Array.isArray(reply.likes) 
+                ? reply.likes.some(like => 
+                    (like._id && like._id === currentUser?._id) || 
+                    (like === currentUser?._id) ||
+                    (typeof like === 'string' && like === currentUser?._id)
+                )
+                : false
+        );
+    }
     
     const canDeleteReply = currentUser && (currentUser._id === reply.author._id || currentUser._id === reply.author);
     
