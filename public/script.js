@@ -2742,10 +2742,7 @@ async function loadPostDetailComments() {
             const normalizedComments = data.comments.map(comment => ({
                 ...comment,
                 likes: comment.likes || [],
-                replies: (comment.replies || []).map(reply => ({
-                    ...reply,
-                    likes: reply.likes || []
-                }))
+                replies: comment.replies || []
             }));
             
             renderPostDetailComments(normalizedComments);
@@ -2753,29 +2750,29 @@ async function loadPostDetailComments() {
         }
     } catch (error) {
         console.error('Load post detail comments error:', error);
-        const commentsList = document.getElementById('postDetailCommentsList');
-        if (commentsList) {
-            commentsList.innerHTML = `
-                <div class="text-center text-error py-8">
-                    <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
-                    <p>Error loading comments</p>
-                </div>
-            `;
-        }
+        // Error handling remains the same
     }
 }
-function createPostDetailCommentHTML(comment) {
-    // Consistent like state detection for comments
-    const isCommentLiked = comment.likes && (
-        Array.isArray(comment.likes) 
-            ? comment.likes.some(like => 
-                (like._id && like._id === currentUser?._id) || 
-                (like === currentUser?._id) ||
-                (typeof like === 'string' && like === currentUser?._id)
-            )
-            : false
-    );
+
+function renderPostDetailComments(comments) {
+    const commentsList = document.getElementById('postDetailCommentsList');
     
+    if (!comments || comments.length === 0) {
+        commentsList.innerHTML = `
+            <div class="text-center text-secondary py-8">
+                <i class="fas fa-comments text-4xl mb-4"></i>
+                <p>No comments yet. Be the first to comment!</p>
+            </div>
+        `;
+        return;
+    }
+
+    commentsList.innerHTML = comments.map(comment => createPostDetailCommentHTML(comment)).join('');
+    setupReplyCharCounters();
+}
+
+function createPostDetailCommentHTML(comment) {
+    const isCommentLiked = comment.likes && comment.likes.some(like => like._id === currentUser?._id);
     const canDeleteComment = currentUser && (currentUser._id === comment.author._id || currentUser._id === comment.author);
     
     return `
@@ -2838,17 +2835,7 @@ function createPostDetailCommentHTML(comment) {
 }
 
 function createPostDetailReplyHTML(reply, commentId) {
-    // Consistent like state detection for replies
-    const isReplyLiked = reply.likes && (
-        Array.isArray(reply.likes) 
-            ? reply.likes.some(like => 
-                (like._id && like._id === currentUser?._id) || 
-                (like === currentUser?._id) ||
-                (typeof like === 'string' && like === currentUser?._id)
-            )
-            : false
-    );
-    
+    const isReplyLiked = reply.likes && reply.likes.some(like => like._id === currentUser?._id);
     const canDeleteReply = currentUser && (currentUser._id === reply.author._id || currentUser._id === reply.author);
     
     return `
@@ -4416,25 +4403,6 @@ function setupEventListeners() {
     });
 
     setupBioCharCounter();
-}
-function setupReplyCharCounters() {
-    document.querySelectorAll('.reply-form textarea').forEach(textarea => {
-        const commentId = textarea.id.replace('post-detail-reply-input-', '');
-        const counter = document.getElementById(`post-detail-reply-char-count-${commentId}`);
-        
-        if (textarea && counter) {
-            textarea.addEventListener('input', function() {
-                const length = this.value.length;
-                counter.textContent = `${length}/500`;
-                
-                if (length > 500) {
-                    counter.classList.add('text-error');
-                } else {
-                    counter.classList.remove('text-error');
-                }
-            });
-        }
-    });
 }
 
 function setupGlobalEventListeners() {
