@@ -1352,7 +1352,19 @@ function renderPostDetail(post) {
     setupPostDetailCommentFunctionality();
 }
 function renderPostDetailCommentsList(comments) {
-    return comments.map(comment => `
+    return comments.map(comment => {
+        // FIXED: Use consistent like state detection
+        const isCommentLiked = comment.likes && (
+            Array.isArray(comment.likes) 
+                ? comment.likes.some(like => 
+                    (like._id && like._id === currentUser?._id) || 
+                    (like === currentUser?._id) ||
+                    (typeof like === 'string' && like === currentUser?._id)
+                )
+                : false
+        );
+        
+        return `
         <div class="comment mb-6 pb-6 border-b border-gray-200" data-comment-id="${comment._id}">
             <div class="flex items-start gap-3">
                 <div class="avatar small" style="background: ${JSON.parse(comment.author.avatar).color}; cursor: pointer;" onclick="showProfilePage('${comment.author.username}')">
@@ -1366,7 +1378,7 @@ function renderPostDetailCommentsList(comments) {
                     <div class="text-sm mt-1">${comment.content}</div>
                     
                     <div class="comment-actions mt-2 flex items-center gap-4">
-                        <button class="comment-action-btn ${comment.likes && comment.likes.some(like => like._id === currentUser?._id) ? 'liked' : ''}" onclick="likeComment('${currentPostId}', '${comment._id}')">
+                        <button class="comment-action-btn ${isCommentLiked ? 'liked' : ''}" onclick="likeComment('${currentPostId}', '${comment._id}')">
                             <i class="fas fa-heart"></i>
                             <span>${comment.likes ? comment.likes.length : 0}</span>
                         </button>
@@ -1408,7 +1420,8 @@ function renderPostDetailCommentsList(comments) {
                 </div>
             </div>
         </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 function createPostDetailReplyHTML(reply, commentId) {
@@ -2772,7 +2785,17 @@ function renderPostDetailComments(comments) {
 }
 
 function createPostDetailCommentHTML(comment) {
-    const isCommentLiked = comment.likes && comment.likes.some(like => like._id === currentUser?._id);
+    // FIXED: Use consistent like state detection for comments
+    const isCommentLiked = comment.likes && (
+        Array.isArray(comment.likes) 
+            ? comment.likes.some(like => 
+                (like._id && like._id === currentUser?._id) || 
+                (like === currentUser?._id) ||
+                (typeof like === 'string' && like === currentUser?._id)
+            )
+            : false
+    );
+    
     const canDeleteComment = currentUser && (currentUser._id === comment.author._id || currentUser._id === comment.author);
     
     return `
@@ -2835,7 +2858,17 @@ function createPostDetailCommentHTML(comment) {
 }
 
 function createPostDetailReplyHTML(reply, commentId) {
-    const isReplyLiked = reply.likes && reply.likes.some(like => like._id === currentUser?._id);
+    // FIXED: Use consistent like state detection for replies
+    const isReplyLiked = reply.likes && (
+        Array.isArray(reply.likes) 
+            ? reply.likes.some(like => 
+                (like._id && like._id === currentUser?._id) || 
+                (like === currentUser?._id) ||
+                (typeof like === 'string' && like === currentUser?._id)
+            )
+            : false
+    );
+    
     const canDeleteReply = currentUser && (currentUser._id === reply.author._id || currentUser._id === reply.author);
     
     return `
@@ -2867,7 +2900,6 @@ function createPostDetailReplyHTML(reply, commentId) {
     </div>
     `;
 }
-
 function togglePostDetailReplyForm(commentId) {
     const replyForm = document.getElementById(`post-detail-reply-form-${commentId}`);
     if (replyForm) {
