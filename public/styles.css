@@ -1453,33 +1453,6 @@ input:checked + .slider:before {
         max-width: none;
     }
 }
-/* Mobile optimizations for post page */
-@media (max-width: 768px) {
-    /* Hide trending posts and about oracs in post detail sidebar */
-    .post-page .post-detail-sidebar .card:nth-child(2),
-    .post-page .post-detail-sidebar .card:nth-child(3) {
-        display: none;
-    }
-    
-    /* Ensure the share card takes full width on mobile */
-    .post-page .post-detail-sidebar .card:first-child {
-        width: 100%;
-        margin-bottom: 1rem;
-    }
-    
-    /* Adjust the main content to take full width */
-    .post-page .post-detail-container {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    
-    /* Make sure the sidebar doesn't take unnecessary space */
-    .post-page .post-detail-sidebar {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-}
 
 /* Advertising Styles */
 .sponsored-post {
@@ -2066,4 +2039,11 @@ input:checked + .slider:before {
   display: block;
   opacity: 1;
 }
+
+}
+/* Hide trending posts in post detail sidebar on mobile */
+@media (max-width: 768px) {
+    .post-detail-sidebar .card:last-child {
+        display: none;
+    }
 }
