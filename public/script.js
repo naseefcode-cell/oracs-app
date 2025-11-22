@@ -1412,7 +1412,16 @@ function renderPostDetailCommentsList(comments) {
 }
 
 function createPostDetailReplyHTML(reply, commentId) {
-    const isReplyLiked = reply.likes && reply.likes.some(like => like._id === currentUser?._id);
+    const isReplyLiked = reply.likes && (
+        Array.isArray(reply.likes) 
+            ? reply.likes.some(like => 
+                (like._id && like._id === currentUser?._id) || 
+                (like === currentUser?._id) ||
+                (typeof like === 'string' && like === currentUser?._id)
+            )
+            : false
+    );
+    
     const canDeleteReply = currentUser && (currentUser._id === reply.author._id || currentUser._id === reply.author);
     
     return `
