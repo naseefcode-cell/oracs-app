@@ -1,4 +1,4 @@
-const API_BASE = 'https://www.oracs.in/api';
+const API_BASE = 'https://www.therein.in/api';
 
 // Enhanced State Management
 let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
@@ -114,7 +114,7 @@ class RealTimeClient {
         try {
             // Use secure WebSocket for production
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'wss:';
-            const host = 'www.oracs.in';
+            const host = 'www.therein.in';
             const wsUrl = `${protocol}//${host}?token=${token}`;
             
             this.ws = new WebSocket(wsUrl);
@@ -1617,7 +1617,7 @@ function shareOnTwitter() {
     if (!currentPostId) return;
     
     const postUrl = getPostUrl(currentPostId);
-    const text = encodeURIComponent('Check out this research post on Oracs!');
+    const text = encodeURIComponent('Check out this research post on ThereIn!');
     const url = encodeURIComponent(postUrl);
     
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank', 'width=600,height=400');
@@ -1648,7 +1648,7 @@ function shareViaEmail() {
     if (!currentPostId) return;
     
     const postUrl = getPostUrl(currentPostId);
-    const subject = encodeURIComponent('Interesting research post from Oracs');
+    const subject = encodeURIComponent('Interesting research post from ThereIn');
     const body = encodeURIComponent(`I found this research post interesting and wanted to share it with you:\n\n${postUrl}`);
     
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
