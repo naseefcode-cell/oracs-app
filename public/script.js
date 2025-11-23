@@ -231,7 +231,9 @@ class RealTimeClient {
             }
         }
     }
-
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/service-worker.js");
+  }
 handleReplyLikeUpdated(data) {
     console.log('WebSocket: Reply like update', { 
         postId: data.postId, 
