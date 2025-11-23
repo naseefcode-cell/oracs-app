@@ -19,9 +19,9 @@ app.set('websocket', wss);
 // Middleware - Production CORS settings
 app.use(cors({
   origin: [
-    'https://www.oracs.in',
-    'https://oracs.in',
-    process.env.CLIENT_URL || 'https://www.oracs.in'
+    'https://www.therein.in',
+    'https://therein.in',
+    process.env.CLIENT_URL || 'https://www.therein.in'
   ],
   credentials: true
 }));
@@ -81,7 +81,7 @@ app.get('/api/health', (req, res) => {
     },
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'production',
-    domain: 'https://www.oracs.in'
+    domain: 'https://www.therein.in'
   });
 });
 
@@ -92,7 +92,7 @@ app.get('/api', (req, res) => {
     message: 'Oracs API is running!',
     version: '1.0.0',
     realtime: true,
-    domain: 'https://www.oracs.in',
+    domain: 'https://www.therein.in',
     endpoints: {
       auth: '/api/auth',
       posts: '/api/posts',
