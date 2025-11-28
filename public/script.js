@@ -745,11 +745,13 @@ handleCommentLikeUpdate(postId, commentId, userId, liked, likeCount) {
         return indicator;
     }
 
-    createPostHTML(post) {
+// In the createPostHTML function, update the author display
+createPostHTML(post) {
     const needsReadMore = post.content.length > 300;
     const truncatedContent = needsReadMore ? post.content.substring(0, 300) + '...' : post.content;
+    const displayName = post.author.name || 'Anonymous';
     
-    // Check if current user has liked this post - FIXED VERSION
+    // Check if current user has liked this post
     const isLikedByCurrentUser = post.likes && (
         Array.isArray(post.likes) 
             ? post.likes.some(like => 
@@ -769,9 +771,9 @@ handleCommentLikeUpdate(postId, commentId, userId, liked, likeCount) {
                 </div>
                 <div class="post-meta">
                     <div class="post-author" onclick="showProfilePage('${post.author.username}')" style="cursor: pointer;">
-                        ${post.author.name}
+                        ${displayName}
                     </div>
-                    <div class="post-username">@${post.author.username}</div>
+                    <div class="post-username">${post.author.username}</div>
                     <div class="post-time">${getTimeAgo(post.createdAt)}</div>
                 </div>
             </div>
@@ -1853,17 +1855,15 @@ function updateFeedInfo(data) {
     feedFilters.insertAdjacentHTML('beforeend', feedInfoHTML);
 }
 
-// Enhanced search function that resets to 'all' feed
-// Enhanced search function that supports u: prefix for user search
 async function handleSearch(e) {
     const query = e.target.value.trim();
     
     if (query.length > 2) {
         // Check if it's a user search (starts with u:)
         if (query.startsWith('u:')) {
-            const username = query.slice(2).trim();
-            if (username.length > 0) {
-                await searchUsers(username);
+            const name = query.slice(2).trim();
+            if (name.length > 0) {
+                await searchUsers(name);
                 return;
             }
         }
@@ -1881,20 +1881,46 @@ async function handleSearch(e) {
     }
 }
 
-// Function to search users
-async function searchUsers(username) {
+// Function to search users by name
+async function searchUsers(name) {
     try {
-        const data = await api.get(`/users/search?username=${encodeURIComponent(username)}`);
+        const data = await api.get(`/users/search?name=${encodeURIComponent(name)}`);
         
         if (data.success && data.users && data.users.length > 0) {
-            showUserSearchResults(data.users, username);
+            showUserSearchResults(data.users, name);
         } else {
-            showUserSearchResults([], username);
+            showUserSearchResults([], name);
         }
     } catch (error) {
         console.error('User search error:', error);
-        showUserSearchResults([], username);
+        showUserSearchResults([], name);
     }
+}
+
+// Update the user search result display to show anonymous usernames properly
+function createUserSearchResultHTML(user) {
+    const avatar = JSON.parse(user.avatar);
+    const displayName = user.name || 'Anonymous';
+    
+    return `
+        <div class="user-search-result flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+             onclick="showProfilePage('${user.username}')">
+            <div class="avatar medium" style="background: ${avatar.color}">
+                ${avatar.initials}
+            </div>
+            <div class="flex-1">
+                <div class="font-semibold">${displayName}</div>
+                <div class="text-secondary">${user.username}</div>
+                ${user.field ? `<div class="text-sm text-secondary mt-1">${user.field}</div>` : ''}
+                ${user.bio ? `<div class="text-sm mt-2 line-clamp-2">${user.bio}</div>` : ''}
+            </div>
+            <div class="user-stats text-sm text-secondary text-right">
+                <div class="font-semibold">${user.stats?.postsCount || 0}</div>
+                <div>posts</div>
+            </div>
+            <i class="fas fa-chevron-right text-secondary"></i>
+        </div>
+    `;
 }
 
 // Function to display user search results
@@ -3536,6 +3562,7 @@ async function checkFollowStatus(username) {
 
 function renderProfilePage(profile) {
     const avatar = JSON.parse(profile.avatar);
+    const displayName = profile.name || 'Anonymous';
     
     document.getElementById('profileHeaderContent').innerHTML = `
         <div class="profile-info">
@@ -3543,8 +3570,8 @@ function renderProfilePage(profile) {
                 ${avatar.initials}
             </div>
             <div class="profile-details">
-                <h1 class="profile-name">${profile.name}</h1>
-                <div class="profile-username">@${profile.username}</div>
+                <h1 class="profile-name">${displayName}</h1>
+                <div class="profile-username">${profile.username}</div>
                 <div class="profile-field">${profile.field || 'No field specified'}</div>
                 <div class="profile-stats">
                     <div class="stat-item" onclick="showFollowersModal('${profile.username}')">
@@ -3607,7 +3634,6 @@ function renderProfilePage(profile) {
 
     setupProfileTabs();
 }
-
 function setupProfileTabs() {
     document.getElementById('profileTabs').innerHTML = `
         <div class="profile-tab active" onclick="switchProfileTab('posts')">Posts</div>
@@ -4263,12 +4289,13 @@ async function handleLogin(e) {
     }
 }
 
+// In the handleSignup function, remove username requirement
 async function handleSignup(e) {
     e.preventDefault();
     
     const formData = {
-        username: document.getElementById('signupUsername').value,
-        name: document.getElementById('signupName').value,
+        // Remove username field entirely
+        name: document.getElementById('signupName').value || 'Anonymous',
         email: document.getElementById('signupEmail').value,
         password: document.getElementById('signupPassword').value,
         field: document.getElementById('signupField').value
@@ -4280,7 +4307,7 @@ async function handleSignup(e) {
         if (data.success) {
             closeModal(document.getElementById('signupModal'));
             showOTPVerificationModal(data.userId, data.email);
-            realTimeClient.showToast('Verification code sent to your email!', 'success');
+            realTimeClient.showToast('Account created successfully! Verification code sent to your email!', 'success');
             
             if (data.developmentOTP) {
                 console.log('Development OTP:', data.developmentOTP);
