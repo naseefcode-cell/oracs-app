@@ -11,7 +11,7 @@ let currentFeed = 'all'; // 'all', 'following', 'trending', 'my-posts'
 let currentSort = 'hot'; // 'hot', 'new', 'old', 'top', 'trending'
 let currentPostId = null;
 let userLikes = JSON.parse(localStorage.getItem('userLikes')) || {}; // Track user likes
-
+let searchSuggestionsTimeout;
 // DOM Elements
 const userActions = document.getElementById('userActions');
 const createPostContainer = document.getElementById('createPostContainer');
@@ -3764,6 +3764,183 @@ async function toggleFollow(username) {
         }
     }
 }
+function setupEnhancedSearch() {
+    const searchInput = document.getElementById('searchInput');
+    
+    searchInput.addEventListener('input', function(e) {
+        const query = e.target.value.trim();
+        
+        // Clear previous timeout
+        if (searchSuggestionsTimeout) {
+            clearTimeout(searchSuggestionsTimeout);
+        }
+        
+        // Show/hide suggestions based on input
+        if (query.length > 1) {
+            searchSuggestionsTimeout = setTimeout(() => {
+                showSearchSuggestions(query);
+            }, 300);
+        } else {
+            hideSearchSuggestions();
+        }
+    });
+    
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.search-bar')) {
+            hideSearchSuggestions();
+        }
+    });
+}
+
+// Show search suggestions
+async function showSearchSuggestions(query) {
+    const searchBar = document.querySelector('.search-bar');
+    let suggestionsContainer = document.getElementById('searchSuggestions');
+    
+    if (!suggestionsContainer) {
+        suggestionsContainer = document.createElement('div');
+        suggestionsContainer.id = 'searchSuggestions';
+        suggestionsContainer.className = 'search-suggestions';
+        searchBar.appendChild(suggestionsContainer);
+    }
+    
+    // Show loading
+    suggestionsContainer.innerHTML = '<div class="search-suggestion-item">Loading...</div>';
+    suggestionsContainer.style.display = 'block';
+    
+    try {
+        // Get both user and post suggestions
+        const [usersData, postsData] = await Promise.all([
+            api.get(`/users/search?username=${encodeURIComponent(query)}&limit=3`),
+            api.get(`/posts?search=${encodeURIComponent(query)}&limit=3`)
+        ]);
+        
+        let suggestionsHTML = '';
+        
+        // User suggestions
+        if (usersData.success && usersData.users.length > 0) {
+            suggestionsHTML += `
+                <div class="search-suggestion-category">Users</div>
+                ${usersData.users.map(user => `
+                    <div class="search-suggestion-item" onclick="selectUserSuggestion('${user.username}')">
+                        <i class="fas fa-user"></i>
+                        <span>${user.name} (@${user.username})</span>
+                        <small>User</small>
+                    </div>
+                `).join('')}
+            `;
+        }
+        
+        // Post suggestions
+        if (postsData.success && postsData.posts.length > 0) {
+            suggestionsHTML += `
+                <div class="search-suggestion-category">Posts</div>
+                ${postsData.posts.map(post => `
+                    <div class="search-suggestion-item" onclick="selectPostSuggestion('${post._id}')">
+                        <i class="fas fa-file-alt"></i>
+                        <span>${post.title}</span>
+                        <small>by ${post.author.name}</small>
+                    </div>
+                `).join('')}
+            `;
+        }
+        
+        if (!suggestionsHTML) {
+            suggestionsHTML = '<div class="search-suggestion-item">No results found</div>';
+        }
+        
+        suggestionsContainer.innerHTML = suggestionsHTML;
+        
+    } catch (error) {
+        suggestionsContainer.innerHTML = '<div class="search-suggestion-item">Error loading suggestions</div>';
+    }
+}
+
+// Hide search suggestions
+function hideSearchSuggestions() {
+    const suggestionsContainer = document.getElementById('searchSuggestions');
+    if (suggestionsContainer) {
+        suggestionsContainer.style.display = 'none';
+    }
+}
+
+// Handle user suggestion selection
+function selectUserSuggestion(username) {
+    document.getElementById('searchInput').value = `u:${username}`;
+    hideSearchSuggestions();
+    handleSearch({ target: { value: `u:${username}` } });
+}
+
+// Handle post suggestion selection
+function selectPostSuggestion(postId) {
+    hideSearchSuggestions();
+    showPostPage(postId);
+}
+
+// Add CSS for search suggestions
+const searchSuggestionsStyles = `
+    .search-suggestions {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        max-height: 300px;
+        overflow-y: auto;
+        display: none;
+    }
+    
+    .search-suggestion-category {
+        padding: 8px 12px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: var(--secondary-color);
+        background: var(--light-bg);
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .search-suggestion-item {
+        padding: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 1px solid var(--border-color);
+        transition: background-color 0.2s ease;
+    }
+    
+    .search-suggestion-item:last-child {
+        border-bottom: none;
+    }
+    
+    .search-suggestion-item:hover {
+        background: var(--hover-color);
+    }
+    
+    .search-suggestion-item i {
+        width: 16px;
+        color: var(--secondary-color);
+    }
+    
+    .search-suggestion-item span {
+        flex: 1;
+        font-weight: 500;
+    }
+    
+    .search-suggestion-item small {
+        color: var(--secondary-color);
+        font-size: 0.75rem;
+    }
+    
+    .search-bar {
+        position: relative;
+    }
+`;
 
 // Special follow function for modals that updates the modal UI
 async function toggleModalFollow(username, button) {
