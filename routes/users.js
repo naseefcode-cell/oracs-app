@@ -58,5 +58,47 @@ router.get('/:username/insights', auth, async (req, res) => {
     });
   }
 });
+// Add this to your users.js file, before the module.exports
+
+// Search users by username or name
+router.get('/search', async (req, res) => {
+    try {
+        const { username, name, limit = 10 } = req.query;
+        
+        if (!username && !name) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide username or name to search'
+            });
+        }
+
+        let query = {};
+        
+        if (username) {
+            query.username = { $regex: username, $options: 'i' };
+        }
+        
+        if (name) {
+            query.name = { $regex: name, $options: 'i' };
+        }
+
+        const users = await User.find(query)
+            .select('username name avatar bio field institution stats')
+            .limit(parseInt(limit))
+            .sort({ 'stats.followerCount': -1, 'stats.postsCount': -1 });
+
+        res.json({
+            success: true,
+            users: users,
+            count: users.length
+        });
+    } catch (error) {
+        console.error('User search error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error while searching users'
+        });
+    }
+});
 
 module.exports = router;
