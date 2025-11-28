@@ -1,4 +1,3 @@
-// server.js - Updated CORS configuration
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -10,110 +9,79 @@ require('dotenv').config();
 const app = express();
 const server = http.createServer(app);
 
-// Enhanced CORS configuration
+// Initialize WebSocket server
+const WebSocketServer = require('./websocket');
+const wss = new WebSocketServer(server);
+
+// Make WebSocket server available to routes
+app.set('websocket', wss);
+
+// Middleware - Production CORS settings
 app.use(cors({
   origin: [
     'https://www.therein.in',
     'https://therein.in',
-    'http://localhost:3000', // For development
     process.env.CLIENT_URL || 'https://www.therein.in'
   ],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  credentials: true
 }));
-
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Enhanced security middleware
+// Security middleware for production
+// Security middleware for production
 app.use((req, res, next) => {
+  // Skip HTTPS redirect for API routes - they should always use HTTPS from frontend
+  if (process.env.NODE_ENV === 'production' && !req.secure && !req.path.startsWith('/api/')) {
+    return res.redirect('https://' + req.headers.host + req.url);
+  }
+  
   // Security headers
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
-  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  
-  // CORS headers
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  
   next();
 });
 
-// MongoDB Connection with enhanced error handling
+// MongoDB Connection with better error handling
 const connectDB = async () => {
   try {
-    console.log('🔗 Connecting to MongoDB Atlas...');
-    
-    if (!process.env.MONGODB_URI) {
-      throw new Error('MONGODB_URI is not defined in environment variables');
-    }
-    
+    console.log('Connecting to MongoDB Atlas...');
     const conn = await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 30000, // 30 seconds
-      socketTimeoutMS: 45000, // 45 seconds
     });
     
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
     console.log(`📊 Database: ${conn.connection.name}`);
-    
-    // Handle MongoDB connection events
-    mongoose.connection.on('error', err => {
-      console.error('❌ MongoDB connection error:', err);
-    });
-    
-    mongoose.connection.on('disconnected', () => {
-      console.log('⚠️ MongoDB disconnected');
-    });
-    
-    process.on('SIGINT', async () => {
-      await mongoose.connection.close();
-      console.log('MongoDB connection closed through app termination');
-      process.exit(0);
-    });
-    
   } catch (error) {
-    console.error('❌ MongoDB connection failed:', error.message);
-    console.log('💡 Please check your MONGODB_URI in environment variables');
+    console.error('❌ MongoDB connection error:', error.message);
     process.exit(1);
   }
 };
 
-// Import routes
-const authRoutes = require('./routes/auth');
-const postRoutes = require('./routes/posts');
-const userRoutes = require('./routes/users');
-const profileRoutes = require('./routes/profile');
+// Routes
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/posts', require('./routes/posts'));
+app.use('/api/posts', require('./routes/comments'));
+app.use('/api/users', require('./routes/users'));
+app.use('/api/profile', require('./routes/profile'));
 const notificationRoutes = require('./routes/notifications');
-const followRoutes = require('./routes/follow');
-
-// Use routes
-app.use('/api/auth', authRoutes);
-app.use('/api/posts', postRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/profile', profileRoutes);
 app.use('/api/notifications', notificationRoutes);
-app.use('/api/follow', followRoutes);
+app.use('/api/follow', require('./routes/follow'));
 
-// Enhanced health check endpoint
 app.get('/api/health', (req, res) => {
-  const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
-  const memoryUsage = process.memoryUsage();
-  
   res.json({ 
     success: true,
     status: 'OK', 
-    database: dbStatus,
+    database: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected',
+    websocket: {
+      clients: wss.clients.size,
+      status: 'Running'
+    },
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'production',
-    domain: 'https://www.therein.in',
-    memory: {
-      used: Math.round(memoryUsage.heapUsed / 1024 / 1024) + 'MB',
-      total: Math.round(memoryUsage.heapTotal / 1024 / 1024) + 'MB'
-    }
+    domain: 'https://www.therein.in'
   });
 });
 
@@ -121,16 +89,16 @@ app.get('/api/health', (req, res) => {
 app.get('/api', (req, res) => {
   res.json({
     success: true,
-    message: 'ThereIn API is running!',
+    message: 'therein API is running!',
     version: '1.0.0',
+    realtime: true,
     domain: 'https://www.therein.in',
-    authentication: true,
     endpoints: {
       auth: '/api/auth',
       posts: '/api/posts',
       users: '/api/users',
-      profile: '/api/profile',
-      notifications: '/api/notifications'
+      notifications: '/api/notifications',
+      comments: '/api/posts/:postId/comments'
     }
   });
 });
@@ -140,19 +108,12 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Enhanced error handling middleware
+// Error handling middleware
 app.use((err, req, res, next) => {
-  console.error('🚨 Server Error:', {
-    message: err.message,
-    stack: err.stack,
-    url: req.url,
-    method: req.method,
-    ip: req.ip
-  });
-  
+  console.error('🚨 Error:', err.stack);
   res.status(500).json({
     success: false,
-    message: 'Internal server error',
+    message: 'Something went wrong!',
     error: process.env.NODE_ENV === 'development' ? err.message : undefined
   });
 });
@@ -161,8 +122,7 @@ app.use((err, req, res, next) => {
 app.use('/api/*', (req, res) => {
   res.status(404).json({
     success: false,
-    message: 'API endpoint not found',
-    path: req.originalUrl
+    message: 'API endpoint not found'
   });
 });
 
@@ -170,23 +130,18 @@ const PORT = process.env.PORT || 5000;
 
 // Connect to database and start server
 connectDB().then(() => {
-  server.listen(PORT, '0.0.0.0', () => {
-    console.log('\n🚀 ThereIn Production Server Started Successfully!');
-    console.log(`📍 Server URL: http://0.0.0.0:${PORT}`);
-    console.log(`🌐 Production URL: https://www.therein.in`);
-    console.log(`🔗 API: https://www.therein.in/api`);
-    console.log(`❤️  Health: https://www.therein.in/api/health`);
+  server.listen(PORT, () => {
+    console.log('\n🚀 Oracs Production Server Started Successfully!');
+    console.log(`📍 Production URL: https://www.oracs.in`);
+    console.log(`🔗 API: https://www.oracs.in/api`);
+    console.log(`❤️  Health: https://www.oracs.in/api/health`);
     console.log(`⚡ Environment: ${process.env.NODE_ENV || 'production'}`);
-    console.log(`📡 Port: ${PORT}`);
+    console.log(`📡 MongoDB: Connected to Atlas Cluster`);
+    console.log(`🔌 WebSocket: Real-time server running`);
+    console.log(`👥 Connected clients: 0`);
     console.log(`⏰ Started at: ${new Date().toLocaleString()}`);
-    
-    // Log important environment variables (without sensitive data)
-    console.log(`🔧 Config:`, {
-      nodeEnv: process.env.NODE_ENV,
-      hasMongoURI: !!process.env.MONGODB_URI,
-      hasJWTSecret: !!process.env.JWT_SECRET,
-      hasGmailUser: !!process.env.GMAIL_USER
-    });
+    console.log(`🔒 HTTPS: Enabled`);
+    console.log(`🌐 CORS: Configured for production domain`);
   });
 }).catch(error => {
   console.error('❌ Failed to start server:', error);
