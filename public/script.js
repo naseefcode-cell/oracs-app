@@ -830,7 +830,6 @@ handleCommentLikeUpdate(postId, commentId, userId, liked, likeCount) {
     `;
 }
     createCommentHTML(comment, postId) {
-    // Consistent like state detection
     const isCommentLiked = comment.likes && Array.isArray(comment.likes) && 
         comment.likes.some(like => 
             (like._id && like._id === currentUser?._id) || 
@@ -839,6 +838,7 @@ handleCommentLikeUpdate(postId, commentId, userId, liked, likeCount) {
         );
     
     const canDeleteComment = currentUser && (currentUser._id === comment.author._id || currentUser._id === comment.author);
+    const displayName = comment.author.name || `Anonymous-${comment.author.username.split('-').pop()}`;
     
     return `
     <div class="comment" data-comment-id="${comment._id}">
@@ -848,56 +848,16 @@ handleCommentLikeUpdate(postId, commentId, userId, liked, likeCount) {
             </div>
             <div class="flex-1">
                 <div class="flex items-center gap-2">
-                    <div class="font-semibold" style="cursor: pointer;" onclick="showProfilePage('${comment.author.username}')">${comment.author.name}</div>
+                    <div class="font-semibold" style="cursor: pointer;" onclick="showProfilePage('${comment.author.username}')">${displayName}</div>
                     <div class="text-xs text-secondary">${getTimeAgo(comment.createdAt)}</div>
                 </div>
-                <div class="text-sm mt-1">${comment.content}</div>
-                
-                <div class="comment-actions mt-2 flex items-center gap-4">
-                    <button class="comment-action-btn ${isCommentLiked ? 'liked' : ''}" onclick="likeComment('${postId}', '${comment._id}')">
-                        <i class="fas fa-heart"></i>
-                        <span>${comment.likes ? comment.likes.length : 0}</span>
-                    </button>
-                    <button class="comment-action-btn" onclick="toggleReplyForm('${comment._id}')">
-                        <i class="fas fa-reply"></i>
-                        <span>Reply</span>
-                    </button>
-                    ${canDeleteComment ? `
-                    <button class="comment-action-btn text-error" onclick="deleteComment('${postId}', '${comment._id}')">
-                        <i class="fas fa-trash"></i>
-                        <span>Delete</span>
-                    </button>
-                    ` : ''}
-                </div>
-
-                <div class="reply-form mt-3 hidden" id="reply-form-${comment._id}">
-                    <textarea 
-                        class="form-input form-textarea" 
-                        id="reply-input-${comment._id}" 
-                        placeholder="Write a reply..."
-                        rows="2"
-                        maxlength="500"
-                        oninput="handleCommentTyping('${postId}', '${comment._id}')"
-                    ></textarea>
-                    <div class="flex justify-between items-center mt-2">
-                        <div class="text-xs text-secondary" id="reply-char-count-${comment._id}">0/500</div>
-                        <div class="flex gap-2">
-                            <button class="btn btn-outline btn-sm" onclick="toggleReplyForm('${comment._id}')">Cancel</button>
-                            <button class="btn btn-primary btn-sm" onclick="addReply('${postId}', '${comment._id}')">Post Reply</button>
-                        </div>
-                    </div>
-                </div>
-
-                ${comment.replies && comment.replies.length > 0 ? `
-                    <div class="replies mt-4 ml-6 border-l-2 pl-4" style="border-color: var(--border-color);">
-                        ${comment.replies.map(reply => this.createReplyHTML(reply, postId, comment._id)).join('')}
-                    </div>
-                ` : ''}
+                <!-- Rest of comment HTML -->
             </div>
         </div>
     </div>
     `;
 }
+
     // In the createReplyHTML method, ensure it has:
 createReplyHTML(reply, postId, commentId) {
     // Consistent like state detection for replies
@@ -1853,27 +1813,13 @@ function updateFeedInfo(data) {
     feedFilters.insertAdjacentHTML('beforeend', feedInfoHTML);
 }
 
-// Enhanced search function that resets to 'all' feed
-// Enhanced search function that supports u: prefix for user search
+// Update handleSearch function
 async function handleSearch(e) {
     const query = e.target.value.trim();
     
     if (query.length > 2) {
-        // Check if it's a user search (starts with u:)
-        if (query.startsWith('u:')) {
-            const username = query.slice(2).trim();
-            if (username.length > 0) {
-                await searchUsers(username);
-                return;
-            }
-        }
-        
-        // Regular post search
-        if (currentFeed !== 'all') {
-            currentFeed = 'all';
-            updateFeedFiltersUI();
-        }
-        await loadPosts(query);
+        // Search by name only (no more u: prefix)
+        await searchUsersByName(query);
     } else if (query.length === 0) {
         // Reset to normal posts when search is cleared
         await loadPosts();
@@ -1881,22 +1827,21 @@ async function handleSearch(e) {
     }
 }
 
-// Function to search users
-async function searchUsers(username) {
+// Replace searchUsers function with searchUsersByName
+async function searchUsersByName(name) {
     try {
-        const data = await api.get(`/users/search?username=${encodeURIComponent(username)}`);
+        const data = await api.get(`/users/search?name=${encodeURIComponent(name)}`);
         
         if (data.success && data.users && data.users.length > 0) {
-            showUserSearchResults(data.users, username);
+            showUserSearchResults(data.users, name);
         } else {
-            showUserSearchResults([], username);
+            showUserSearchResults([], name);
         }
     } catch (error) {
         console.error('User search error:', error);
-        showUserSearchResults([], username);
+        showUserSearchResults([], name);
     }
 }
-
 // Function to display user search results
 function showUserSearchResults(users, searchQuery) {
     const postsList = document.getElementById('postsList');
@@ -4584,34 +4529,6 @@ function showOTPVerificationModal(userId, email) {
 }
 
 // Username availability check
-async function checkUsernameAvailability(username) {
-    if (username.length < 3) {
-        document.getElementById('usernameAvailability').textContent = 'Username must be at least 3 characters';
-        document.getElementById('usernameAvailability').className = 'text-xs text-error mt-1';
-        return;
-    }
-
-    try {
-        const data = await api.get(`/auth/check-username/${username}`);
-        
-        if (data.success) {
-            if (data.available) {
-                document.getElementById('usernameAvailability').textContent = 'Username is available';
-                document.getElementById('usernameAvailability').className = 'text-xs text-success mt-1';
-            } else {
-                document.getElementById('usernameAvailability').textContent = 'Username is taken';
-                document.getElementById('usernameAvailability').className = 'text-xs text-error mt-1';
-                
-                if (data.suggestions && data.suggestions.length > 0) {
-                    const suggestions = data.suggestions.slice(0, 3).join(', ');
-                    document.getElementById('usernameAvailability').textContent += `. Suggestions: ${suggestions}`;
-                }
-            }
-        }
-    } catch (error) {
-        console.error('Username check failed:', error);
-    }
-}
 
 // Bio character counter
 function setupBioCharCounter() {
@@ -4722,21 +4639,7 @@ function setupEventListeners() {
     document.getElementById('changePasswordForm').addEventListener('submit', handleChangePassword);
     document.getElementById('deleteAccountForm').addEventListener('submit', handleDeleteAccount);
     
-    const usernameInput = document.getElementById('signupUsername');
-    if (usernameInput) {
-        usernameInput.addEventListener('input', debounce(function() {
-            checkUsernameAvailability(this.value);
-        }, 500));
-    }
-    
-    searchInput.addEventListener('input', debounce(handleSearch, 300));
-    
-    document.getElementById('createPostBtn').addEventListener('click', () => {
-        showModal('createPostModal');
-    });
-
-    setupBioCharCounter();
-}
+  
 
 function setupGlobalEventListeners() {
     document.querySelectorAll('.close-btn').forEach(btn => {
