@@ -60,27 +60,21 @@ router.get('/:username/insights', auth, async (req, res) => {
 });
 // Add this to your users.js file, before the module.exports
 
-// Search users by username or name
+// Search users by name (username is now anonymous)
 router.get('/search', async (req, res) => {
     try {
-        const { username, name, limit = 10 } = req.query;
+        const { name, limit = 10 } = req.query;
         
-        if (!username && !name) {
+        if (!name) {
             return res.status(400).json({
                 success: false,
-                message: 'Please provide username or name to search'
+                message: 'Please provide a name to search'
             });
         }
 
-        let query = {};
-        
-        if (username) {
-            query.username = { $regex: username, $options: 'i' };
-        }
-        
-        if (name) {
-            query.name = { $regex: name, $options: 'i' };
-        }
+        const query = {
+            name: { $regex: name, $options: 'i' }
+        };
 
         const users = await User.find(query)
             .select('username name avatar bio field institution stats')
@@ -100,5 +94,4 @@ router.get('/search', async (req, res) => {
         });
     }
 });
-
 module.exports = router;
