@@ -22,7 +22,7 @@ if (process.env.NODE_ENV === 'production' && process.env.PRERENDER_TOKEN) {
   app.use(prerender
     .set('prerenderToken', process.env.PRERENDER_TOKEN)
     .set('protocol', 'https')
-    .set('host', 'www.oracs.in')
+    .set('host', 'www.therein.in')
     .set('forwardHeaders', true)
     
     // Whitelist domains
