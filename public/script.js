@@ -4711,12 +4711,7 @@ function setupEventListeners() {
     document.getElementById('changePasswordForm').addEventListener('submit', handleChangePassword);
     document.getElementById('deleteAccountForm').addEventListener('submit', handleDeleteAccount);
     
-    const usernameInput = document.getElementById('signupUsername');
-    if (usernameInput) {
-        usernameInput.addEventListener('input', debounce(function() {
-            checkUsernameAvailability(this.value);
-        }, 500));
-    }
+
     
     
 
