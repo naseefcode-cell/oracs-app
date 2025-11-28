@@ -4267,12 +4267,17 @@ async function handleSignup(e) {
     e.preventDefault();
     
     const formData = {
-        username: document.getElementById('signupUsername').value,
-        name: document.getElementById('signupName').value,
+        // Remove username field
+        name: document.getElementById('signupName').value.trim(),
         email: document.getElementById('signupEmail').value,
         password: document.getElementById('signupPassword').value,
         field: document.getElementById('signupField').value
     };
+
+    // If name is empty, set it to null (server will generate anonymous username)
+    if (!formData.name) {
+        formData.name = null;
+    }
 
     try {
         const data = await api.post('/auth/register', formData);
