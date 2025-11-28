@@ -4606,34 +4606,6 @@ function showOTPVerificationModal(userId, email) {
 }
 
 // Username availability check
-async function checkUsernameAvailability(username) {
-    if (username.length < 3) {
-        document.getElementById('usernameAvailability').textContent = 'Username must be at least 3 characters';
-        document.getElementById('usernameAvailability').className = 'text-xs text-error mt-1';
-        return;
-    }
-
-    try {
-        const data = await api.get(`/auth/check-username/${username}`);
-        
-        if (data.success) {
-            if (data.available) {
-                document.getElementById('usernameAvailability').textContent = 'Username is available';
-                document.getElementById('usernameAvailability').className = 'text-xs text-success mt-1';
-            } else {
-                document.getElementById('usernameAvailability').textContent = 'Username is taken';
-                document.getElementById('usernameAvailability').className = 'text-xs text-error mt-1';
-                
-                if (data.suggestions && data.suggestions.length > 0) {
-                    const suggestions = data.suggestions.slice(0, 3).join(', ');
-                    document.getElementById('usernameAvailability').textContent += `. Suggestions: ${suggestions}`;
-                }
-            }
-        }
-    } catch (error) {
-        console.error('Username check failed:', error);
-    }
-}
 
 // Bio character counter
 function setupBioCharCounter() {
@@ -4732,11 +4704,6 @@ function logout() {
 
 // Event listeners
 function setupEventListeners() {
-    document.getElementById('postForm').addEventListener('submit', handleCreatePost);
-    document.getElementById('loginForm').addEventListener('submit', handleLogin);
-    document.getElementById('signupForm').addEventListener('submit', handleSignup);
-    document.getElementById('editProfileForm').addEventListener('submit', handleEditProfile);
-    document.getElementById('editPostForm').addEventListener('submit', handleEditPost);
     
     document.getElementById('forgotPasswordForm').addEventListener('submit', handleForgotPassword);
     document.getElementById('resetPasswordForm').addEventListener('submit', handleResetPassword);
@@ -4751,14 +4718,8 @@ function setupEventListeners() {
         }, 500));
     }
     
-    searchInput.addEventListener('input', debounce(handleSearch, 300));
     
-    document.getElementById('createPostBtn').addEventListener('click', () => {
-        showModal('createPostModal');
-    });
 
-    setupBioCharCounter();
-}
 
 function setupGlobalEventListeners() {
     document.querySelectorAll('.close-btn').forEach(btn => {
