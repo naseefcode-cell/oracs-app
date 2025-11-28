@@ -1854,19 +1854,138 @@ function updateFeedInfo(data) {
 }
 
 // Enhanced search function that resets to 'all' feed
+// Enhanced search function that supports u: prefix for user search
 async function handleSearch(e) {
     const query = e.target.value.trim();
     
     if (query.length > 2) {
+        // Check if it's a user search (starts with u:)
+        if (query.startsWith('u:')) {
+            const username = query.slice(2).trim();
+            if (username.length > 0) {
+                await searchUsers(username);
+                return;
+            }
+        }
+        
+        // Regular post search
         if (currentFeed !== 'all') {
             currentFeed = 'all';
             updateFeedFiltersUI();
         }
         await loadPosts(query);
     } else if (query.length === 0) {
+        // Reset to normal posts when search is cleared
         await loadPosts();
+        hideUserSearchResults();
     }
 }
+
+// Function to search users
+async function searchUsers(username) {
+    try {
+        const data = await api.get(`/users/search?username=${encodeURIComponent(username)}`);
+        
+        if (data.success && data.users && data.users.length > 0) {
+            showUserSearchResults(data.users, username);
+        } else {
+            showUserSearchResults([], username);
+        }
+    } catch (error) {
+        console.error('User search error:', error);
+        showUserSearchResults([], username);
+    }
+}
+
+// Function to display user search results
+function showUserSearchResults(users, searchQuery) {
+    const postsList = document.getElementById('postsList');
+    
+    if (users.length === 0) {
+        postsList.innerHTML = `
+            <div class="card text-center p-8">
+                <i class="fas fa-user-slash text-4xl text-secondary mb-4"></i>
+                <h3 class="text-lg font-semibold mb-2">No users found</h3>
+                <p class="text-secondary">No users found matching "${searchQuery}"</p>
+            </div>
+        `;
+        return;
+    }
+
+    postsList.innerHTML = `
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-users text-primary"></i>
+                    Users matching "${searchQuery}"
+                </h3>
+            </div>
+            <div class="space-y-3 p-4">
+                ${users.map(user => createUserSearchResultHTML(user)).join('')}
+            </div>
+        </div>
+    `;
+}
+
+// Function to create HTML for user search results
+function createUserSearchResultHTML(user) {
+    const avatar = JSON.parse(user.avatar);
+    
+    return `
+        <div class="user-search-result flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+             onclick="showProfilePage('${user.username}')">
+            <div class="avatar medium" style="background: ${avatar.color}">
+                ${avatar.initials}
+            </div>
+            <div class="flex-1">
+                <div class="font-semibold">${user.name}</div>
+                <div class="text-secondary">@${user.username}</div>
+                ${user.field ? `<div class="text-sm text-secondary mt-1">${user.field}</div>` : ''}
+                ${user.bio ? `<div class="text-sm mt-2 line-clamp-2">${user.bio}</div>` : ''}
+            </div>
+            <div class="user-stats text-sm text-secondary text-right">
+                <div class="font-semibold">${user.stats?.postsCount || 0}</div>
+                <div>posts</div>
+            </div>
+            <i class="fas fa-chevron-right text-secondary"></i>
+        </div>
+    `;
+}
+
+// Function to hide user search results and show normal posts
+function hideUserSearchResults() {
+    // This will be handled by loadPosts() when called with empty query
+}
+
+// Add CSS for user search results
+const userSearchStyles = `
+    .user-search-result {
+        transition: all 0.2s ease;
+    }
+    
+    .user-search-result:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .avatar.medium {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+`;
+
+// Inject the styles
+const styleSheet = document.createElement('style');
+styleSheet.textContent = userSearchStyles;
+document.head.appendChild(styleSheet);
 
 // Load personalized feed recommendations
 async function loadFeedRecommendations() {
