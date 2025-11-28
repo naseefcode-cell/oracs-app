@@ -745,13 +745,11 @@ handleCommentLikeUpdate(postId, commentId, userId, liked, likeCount) {
         return indicator;
     }
 
-// In the createPostHTML function, update the author display
-createPostHTML(post) {
+    createPostHTML(post) {
     const needsReadMore = post.content.length > 300;
     const truncatedContent = needsReadMore ? post.content.substring(0, 300) + '...' : post.content;
-    const displayName = post.author.name || 'Anonymous';
     
-    // Check if current user has liked this post
+    // Check if current user has liked this post - FIXED VERSION
     const isLikedByCurrentUser = post.likes && (
         Array.isArray(post.likes) 
             ? post.likes.some(like => 
@@ -771,9 +769,9 @@ createPostHTML(post) {
                 </div>
                 <div class="post-meta">
                     <div class="post-author" onclick="showProfilePage('${post.author.username}')" style="cursor: pointer;">
-                        ${displayName}
+                        ${post.author.name}
                     </div>
-                    <div class="post-username">${post.author.username}</div>
+                    <div class="post-username">@${post.author.username}</div>
                     <div class="post-time">${getTimeAgo(post.createdAt)}</div>
                 </div>
             </div>
@@ -1855,15 +1853,17 @@ function updateFeedInfo(data) {
     feedFilters.insertAdjacentHTML('beforeend', feedInfoHTML);
 }
 
+// Enhanced search function that resets to 'all' feed
+// Enhanced search function that supports u: prefix for user search
 async function handleSearch(e) {
     const query = e.target.value.trim();
     
     if (query.length > 2) {
         // Check if it's a user search (starts with u:)
         if (query.startsWith('u:')) {
-            const name = query.slice(2).trim();
-            if (name.length > 0) {
-                await searchUsers(name);
+            const username = query.slice(2).trim();
+            if (username.length > 0) {
+                await searchUsers(username);
                 return;
             }
         }
@@ -1881,46 +1881,20 @@ async function handleSearch(e) {
     }
 }
 
-// Function to search users by name
-async function searchUsers(name) {
+// Function to search users
+async function searchUsers(username) {
     try {
-        const data = await api.get(`/users/search?name=${encodeURIComponent(name)}`);
+        const data = await api.get(`/users/search?username=${encodeURIComponent(username)}`);
         
         if (data.success && data.users && data.users.length > 0) {
-            showUserSearchResults(data.users, name);
+            showUserSearchResults(data.users, username);
         } else {
-            showUserSearchResults([], name);
+            showUserSearchResults([], username);
         }
     } catch (error) {
         console.error('User search error:', error);
-        showUserSearchResults([], name);
+        showUserSearchResults([], username);
     }
-}
-
-// Update the user search result display to show anonymous usernames properly
-function createUserSearchResultHTML(user) {
-    const avatar = JSON.parse(user.avatar);
-    const displayName = user.name || 'Anonymous';
-    
-    return `
-        <div class="user-search-result flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
-             onclick="showProfilePage('${user.username}')">
-            <div class="avatar medium" style="background: ${avatar.color}">
-                ${avatar.initials}
-            </div>
-            <div class="flex-1">
-                <div class="font-semibold">${displayName}</div>
-                <div class="text-secondary">${user.username}</div>
-                ${user.field ? `<div class="text-sm text-secondary mt-1">${user.field}</div>` : ''}
-                ${user.bio ? `<div class="text-sm mt-2 line-clamp-2">${user.bio}</div>` : ''}
-            </div>
-            <div class="user-stats text-sm text-secondary text-right">
-                <div class="font-semibold">${user.stats?.postsCount || 0}</div>
-                <div>posts</div>
-            </div>
-            <i class="fas fa-chevron-right text-secondary"></i>
-        </div>
-    `;
 }
 
 // Function to display user search results
@@ -3562,7 +3536,6 @@ async function checkFollowStatus(username) {
 
 function renderProfilePage(profile) {
     const avatar = JSON.parse(profile.avatar);
-    const displayName = profile.name || 'Anonymous';
     
     document.getElementById('profileHeaderContent').innerHTML = `
         <div class="profile-info">
@@ -3570,8 +3543,8 @@ function renderProfilePage(profile) {
                 ${avatar.initials}
             </div>
             <div class="profile-details">
-                <h1 class="profile-name">${displayName}</h1>
-                <div class="profile-username">${profile.username}</div>
+                <h1 class="profile-name">${profile.name}</h1>
+                <div class="profile-username">@${profile.username}</div>
                 <div class="profile-field">${profile.field || 'No field specified'}</div>
                 <div class="profile-stats">
                     <div class="stat-item" onclick="showFollowersModal('${profile.username}')">
@@ -3634,6 +3607,7 @@ function renderProfilePage(profile) {
 
     setupProfileTabs();
 }
+
 function setupProfileTabs() {
     document.getElementById('profileTabs').innerHTML = `
         <div class="profile-tab active" onclick="switchProfileTab('posts')">Posts</div>
@@ -4289,13 +4263,12 @@ async function handleLogin(e) {
     }
 }
 
-// In the handleSignup function, remove username requirement
 async function handleSignup(e) {
     e.preventDefault();
     
     const formData = {
-        // Remove username field entirely
-        name: document.getElementById('signupName').value || 'Anonymous',
+        username: document.getElementById('signupUsername').value,
+        name: document.getElementById('signupName').value,
         email: document.getElementById('signupEmail').value,
         password: document.getElementById('signupPassword').value,
         field: document.getElementById('signupField').value
@@ -4307,7 +4280,7 @@ async function handleSignup(e) {
         if (data.success) {
             closeModal(document.getElementById('signupModal'));
             showOTPVerificationModal(data.userId, data.email);
-            realTimeClient.showToast('Account created successfully! Verification code sent to your email!', 'success');
+            realTimeClient.showToast('Verification code sent to your email!', 'success');
             
             if (data.developmentOTP) {
                 console.log('Development OTP:', data.developmentOTP);
@@ -4606,6 +4579,34 @@ function showOTPVerificationModal(userId, email) {
 }
 
 // Username availability check
+async function checkUsernameAvailability(username) {
+    if (username.length < 3) {
+        document.getElementById('usernameAvailability').textContent = 'Username must be at least 3 characters';
+        document.getElementById('usernameAvailability').className = 'text-xs text-error mt-1';
+        return;
+    }
+
+    try {
+        const data = await api.get(`/auth/check-username/${username}`);
+        
+        if (data.success) {
+            if (data.available) {
+                document.getElementById('usernameAvailability').textContent = 'Username is available';
+                document.getElementById('usernameAvailability').className = 'text-xs text-success mt-1';
+            } else {
+                document.getElementById('usernameAvailability').textContent = 'Username is taken';
+                document.getElementById('usernameAvailability').className = 'text-xs text-error mt-1';
+                
+                if (data.suggestions && data.suggestions.length > 0) {
+                    const suggestions = data.suggestions.slice(0, 3).join(', ');
+                    document.getElementById('usernameAvailability').textContent += `. Suggestions: ${suggestions}`;
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Username check failed:', error);
+    }
+}
 
 // Bio character counter
 function setupBioCharCounter() {
@@ -4704,6 +4705,11 @@ function logout() {
 
 // Event listeners
 function setupEventListeners() {
+    document.getElementById('postForm').addEventListener('submit', handleCreatePost);
+    document.getElementById('loginForm').addEventListener('submit', handleLogin);
+    document.getElementById('signupForm').addEventListener('submit', handleSignup);
+    document.getElementById('editProfileForm').addEventListener('submit', handleEditProfile);
+    document.getElementById('editPostForm').addEventListener('submit', handleEditPost);
     
     document.getElementById('forgotPasswordForm').addEventListener('submit', handleForgotPassword);
     document.getElementById('resetPasswordForm').addEventListener('submit', handleResetPassword);
@@ -4711,10 +4717,21 @@ function setupEventListeners() {
     document.getElementById('changePasswordForm').addEventListener('submit', handleChangePassword);
     document.getElementById('deleteAccountForm').addEventListener('submit', handleDeleteAccount);
     
-
+    const usernameInput = document.getElementById('signupUsername');
+    if (usernameInput) {
+        usernameInput.addEventListener('input', debounce(function() {
+            checkUsernameAvailability(this.value);
+        }, 500));
+    }
     
+    searchInput.addEventListener('input', debounce(handleSearch, 300));
     
+    document.getElementById('createPostBtn').addEventListener('click', () => {
+        showModal('createPostModal');
+    });
 
+    setupBioCharCounter();
+}
 
 function setupGlobalEventListeners() {
     document.querySelectorAll('.close-btn').forEach(btn => {
