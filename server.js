@@ -125,7 +125,34 @@ app.use('/api/*', (req, res) => {
     message: 'API endpoint not found'
   });
 });
-
+// Prerender.io Configuration
+if (process.env.NODE_ENV === 'production' && process.env.PRERENDER_TOKEN) {
+  app.use(prerender.set('prerenderToken', process.env.PRERENDER_TOKEN));
+  app.use(prerender.set('protocol', 'https'));
+  app.use(prerender.set('host', 'www.oracs.in'));
+  
+  // Optional: Configure crawler user agents
+  app.use(prerender.set('crawlerUserAgents', [
+    'googlebot',
+    'bingbot',
+    'yandex',
+    'baiduspider',
+    'facebookexternalhit',
+    'twitterbot',
+    'rogerbot',
+    'linkedinbot',
+    'embedly',
+    'quora link preview',
+    'showyoubot',
+    'outbrain',
+    'pinterest',
+    'slackbot',
+    'vkShare',
+    'W3C_Validator'
+  ]));
+  
+  console.log('✅ Prerender.io configured for production');
+}
 const PORT = process.env.PORT || 5000;
 
 // Connect to database and start server
