@@ -1042,6 +1042,21 @@ createReplyHTML(reply, postId, commentId) {
 }
 
 let realTimeClient = new RealTimeClient();
+// Check if user is logged in and redirect if trying to access auth pages
+function checkAuthStatus() {
+    const token = localStorage.getItem('token');
+    const currentUser = localStorage.getItem('currentUser');
+    
+    // If on auth pages but already logged in, redirect to home
+    if (window.location.pathname.includes('login.html') || 
+        window.location.pathname.includes('signup.html')) {
+        if (token && currentUser) {
+            window.location.href = 'index.html';
+        }
+    }
+}
+
+// Call this on page load in your auth pages
 
 // Initialize the application
 async function initApp() {
