@@ -1151,8 +1151,8 @@ function updateUI() {
         
     } else {
         userActions.innerHTML = `
-            <button class="btn btn-outline" onclick="showLoginModal()">Log In</button>
-            <button class="btn btn-primary" onclick="showSignupModal()">Sign Up</button>
+            <a class="btn btn-outline" href="login.html">Log In</a>
+            <a class="btn btn-primary" href="signup.html">Sign Up</a>
         `;
         createPostContainer.classList.add('hidden');
         updatePostsContainer();
