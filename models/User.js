@@ -1,6 +1,5 @@
-
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const argon2 = require('argon2');
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -28,7 +27,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    minlength: 6
+    minlength: 8
   },
   avatar: {
     type: String,
@@ -75,7 +74,8 @@ const userSchema = new mongoose.Schema({
   },
   otp: {
     code: String,
-    expires: Date
+    expires: Date,
+    attempts: { type: Number, default: 0 }
   },
   resetPasswordToken: String,
   resetPasswordExpires: Date,
@@ -83,6 +83,13 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+  loginAttempts: {
+    type: Number,
+    default: 0
+  },
+  lockUntil: Date,
+  lastLogin: Date,
+  lastPasswordChange: Date,
   preferences: {
     emailNotifications: { type: Boolean, default: true },
     pushNotifications: { type: Boolean, default: true },
@@ -123,14 +130,29 @@ const userSchema = new mongoose.Schema({
 userSchema.index({ username: 1 });
 userSchema.index({ email: 1 });
 userSchema.index({ 'notifications.createdAt': -1 });
+userSchema.index({ lockUntil: 1 });
 
-// Hash password before saving
+// Virtual for account lock status
+userSchema.virtual('isLocked').get(function() {
+  return !!(this.lockUntil && this.lockUntil > Date.now());
+});
+
+// Hash password before saving using Argon2
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
   
   try {
-    const salt = await bcrypt.genSalt(12);
-    this.password = await bcrypt.hash(this.password, salt);
+    // Use Argon2id for password hashing (resistant to both GPU and side-channel attacks)
+    this.password = await argon2.hash(this.password, {
+      type: argon2.argon2id,
+      memoryCost: 2 ** 16, // 64MB
+      timeCost: 3,
+      parallelism: 1,
+      hashLength: 32
+    });
+    
+    // Update last password change
+    this.lastPasswordChange = new Date();
     next();
   } catch (error) {
     next(error);
@@ -157,12 +179,47 @@ userSchema.pre('save', function(next) {
   next();
 });
 
-// Compare password method
+// Compare password method with Argon2
 userSchema.methods.comparePassword = async function(candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
+  try {
+    return await argon2.verify(this.password, candidatePassword);
+  } catch (error) {
+    console.error('Password comparison error:', error);
+    return false;
+  }
 };
 
-// Add notification method (updated to avoid version conflicts)
+// Increment login attempts
+userSchema.methods.incrementLoginAttempts = async function() {
+  // If we have a previous lock that has expired, restart at 1
+  if (this.lockUntil && this.lockUntil < Date.now()) {
+    return this.updateOne({
+      $set: { loginAttempts: 1 },
+      $unset: { lockUntil: 1 }
+    });
+  }
+  
+  // Otherwise, increment
+  const updates = { $inc: { loginAttempts: 1 } };
+  
+  // Lock the account if we've reached max attempts and it's not locked already
+  if (this.loginAttempts + 1 >= 5 && !this.isLocked) {
+    updates.$set = { lockUntil: Date.now() + 2 * 60 * 60 * 1000 }; // 2 hours
+  }
+  
+  return this.updateOne(updates);
+};
+
+// Reset login attempts on successful login
+userSchema.methods.resetLoginAttempts = function() {
+  return this.updateOne({
+    $set: { loginAttempts: 0 },
+    $unset: { lockUntil: 1 },
+    lastLogin: new Date()
+  });
+};
+
+// Add notification method
 userSchema.methods.addNotification = async function(notificationData) {
   try {
     const notification = {
@@ -175,7 +232,6 @@ userSchema.methods.addNotification = async function(notificationData) {
       createdAt: new Date()
     };
 
-    // Use findByIdAndUpdate to avoid version conflicts
     await this.constructor.findByIdAndUpdate(
       this._id,
       {
@@ -205,9 +261,9 @@ userSchema.virtual('followingCount').get(function() {
   return this.following.length;
 });
 
-// Virtual for posts count (you'll need to populate this from Post model)
+// Virtual for posts count
 userSchema.virtual('postsCount').get(function() {
-  return 0; // This should be populated from the Post model
+  return 0;
 });
 
 // To JSON transform
@@ -217,6 +273,8 @@ userSchema.methods.toJSON = function() {
   delete user.otp;
   delete user.resetPasswordToken;
   delete user.resetPasswordExpires;
+  delete user.loginAttempts;
+  delete user.lockUntil;
   return user;
 };
 
