@@ -1,1 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ThereIn</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            padding: 2rem;
+        }
+        
+        .auth-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            overflow: hidden;
+        }
+        
+        .auth-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .auth-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .auth-header p {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.9;
+        }
+        
+        .auth-body {
+            padding: 2rem;
+        }
+        
+        .auth-footer {
+            padding: 1rem 2rem;
+            text-align: center;
+            background: var(--light-bg);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .back-to-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .back-to-home:hover {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <a href="index.html" class="back-to-home">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Home
+                </a>
+                <h1>Welcome Back</h1>
+                <p>Log in to your ThereIn account</p>
+            </div>
+            
+            <div class="auth-body">
+                <div class="alert alert-error" id="loginErrorAlert" style="display: none;"></div>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label" for="loginEmail">Email or Username</label>
+                        <input type="text" class="form-input" id="loginEmail" placeholder="Enter your email or username" required>
+                        <div class="form-error" id="loginEmailError" style="display: none;">Email or username is required</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="loginPassword">Password</label>
+                        <input type="password" class="form-input" id="loginPassword" placeholder="Enter your password" required>
+                        <div class="form-error" id="loginPasswordError" style="display: none;">Password is required</div>
+                    </div>
+                    
+                    <div class="form-group text-right">
+                        <a href="#" class="text-sm text-primary" onclick="showForgotPassword()">Forgot your password?</a>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-full">Log In</button>
+                </form>
+            </div>
+            
+            <div class="auth-footer">
+                <span class="text-sm text-secondary">Don't have an account? </span>
+                <a href="signup.html" class="text-sm text-primary">Sign up</a>
+            </div>
+        </div>
+    </div>
 
+    <!-- Forgot Password Modal (kept as modal for simplicity) -->
+    <div class="modal" id="forgotPasswordModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Reset Your Password</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-error" id="forgotPasswordErrorAlert" style="display: none;"></div>
+                <form id="forgotPasswordForm">
+                    <div class="form-group">
+                        <label class="form-label" for="forgotPasswordEmail">Email</label>
+                        <input type="email" class="form-input" id="forgotPasswordEmail" placeholder="Enter your email">
+                        <div class="form-error" id="forgotPasswordEmailError" style="display: none;">Valid email is required</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-full">Send Reset Code</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://www.therein.in/api';
+        
+        // Simple API utility for login page
+        const api = {
+            async request(endpoint, options = {}) {
+                const headers = {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                };
+
+                try {
+                    const response = await fetch(`${API_BASE}${endpoint}`, {
+                        ...options,
+                        headers
+                    });
+
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.message || `HTTP error! status: ${response.status}`);
+                    }
+
+                    return data;
+                } catch (error) {
+                    console.error('API request failed:', error);
+                    throw error;
+                }
+            },
+
+            async post(endpoint, data) {
+                return this.request(endpoint, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+            }
+        };
+
+        // Form handling
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging In...';
+            submitBtn.disabled = true;
+
+            // Hide errors
+            document.getElementById('loginErrorAlert').style.display = 'none';
+            document.querySelectorAll('#loginForm .form-error').forEach(el => el.style.display = 'none');
+
+            const formData = {
+                identifier: document.getElementById('loginEmail').value,
+                password: document.getElementById('loginPassword').value
+            };
+
+            let hasErrors = false;
+            if (!formData.identifier) {
+                document.getElementById('loginEmailError').style.display = 'block';
+                hasErrors = true;
+            }
+            if (!formData.password) {
+                document.getElementById('loginPasswordError').style.display = 'block';
+                hasErrors = true;
+            }
+
+            if (hasErrors) {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                return;
+            }
+
+            try {
+                const data = await api.post('/auth/login', formData);
+                
+                if (data.success) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('currentUser', JSON.stringify(data.user));
+                    
+                    // Redirect to home page
+                    window.location.href = 'index.html';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                
+                if (error.message && error.message.includes('verify your email')) {
+                    // Handle email verification required
+                    document.getElementById('loginErrorAlert').textContent = 'Please verify your email address. Check your inbox for the verification code.';
+                } else {
+                    document.getElementById('loginErrorAlert').textContent = error.message || 'Login failed. Please try again.';
+                }
+                document.getElementById('loginErrorAlert').style.display = 'block';
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Forgot password functionality
+        function showForgotPassword() {
+            document.getElementById('forgotPasswordModal').style.display = 'flex';
+        }
+
+        function closeModal(modal) {
+            modal.style.display = 'none';
+        }
+
+        document.getElementById('forgotPasswordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('forgotPasswordEmail').value.trim();
+            
+            document.getElementById('forgotPasswordErrorAlert').style.display = 'none';
+            document.getElementById('forgotPasswordEmailError').style.display = 'none';
+
+            if (!email) {
+                document.getElementById('forgotPasswordEmailError').style.display = 'block';
+                return;
+            }
+
+            try {
+                const data = await api.post('/auth/forgot-password', { email });
+                
+                if (data.success) {
+                    closeModal(document.getElementById('forgotPasswordModal'));
+                    alert('Password reset code sent to your email!');
+                }
+            } catch (error) {
+                document.getElementById('forgotPasswordErrorAlert').textContent = error.message;
+                document.getElementById('forgotPasswordErrorAlert').style.display = 'block';
+            }
+        });
+
+        // Close modal when clicking outside or on close button
+        document.querySelectorAll('.close-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                closeModal(this.closest('.modal'));
+            });
+        });
+        
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal(this);
+                }
+            });
+        });
+
+        // Check if user is already logged in
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const currentUser = localStorage.getItem('currentUser');
+            
+            if (token && currentUser) {
+                // User is already logged in, redirect to home
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Check auth on page load
+        checkAuth();
+    </script>
+</body>
+</html>
