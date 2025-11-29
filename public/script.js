@@ -1056,6 +1056,7 @@ function checkAuthStatus() {
     }
 }
 
+
 // Call this on page load in your auth pages
 
 // Initialize the application
@@ -1173,7 +1174,6 @@ function updateUI() {
         updatePostsContainer();
     }
 }
-
 // Post Page Functions
 async function showPostPage(postId) {
     homePage.style.display = 'none';
