@@ -3683,9 +3683,7 @@ function renderProfilePage(profile) {
                 <button class="btn btn-primary" onclick="showEditProfileModal()">
                     Edit Profile
                 </button>
-                <a href="settings.html" class="btn btn-outline" onclick="handleSettingsNavigation(event)>
-                Settings
-                </a>
+                <a href="settings.html" class="btn btn-outline">Settings</a>
             ` : ''}
         </div>
     `;
