@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-adsense-account" content="ca-pub-5671202996488643">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0A84FF">
+    <title>Settings - ThereIn</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .settings-page {
+            padding: 2rem 0;
+        }
+
+        .settings-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .settings-section {
+            margin-bottom: 2rem;
+        }
+
+        .settings-section .card {
+            margin-bottom: 1rem;
+        }
+
+        .settings-option {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .settings-option:last-child {
+            border-bottom: none;
+        }
+
+        .option-info {
+            flex: 1;
+        }
+
+        .option-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .option-description {
+            font-size: 0.875rem;
+            color: var(--secondary-color);
+        }
+
+        .danger-zone {
+            border-left: 4px solid var(--error-color);
+        }
+
+        .danger-zone .card-header {
+            border-left: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-flask"></i>
+                    ThereIn-beta
+                </a>
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search research posts...">
+                </div>
+                <div class="user-actions" id="userActions">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Settings Page -->
+    <div class="settings-page">
+        <div class="container">
+            <div class="page-header">
+                <button class="btn btn-outline" onclick="goBack()">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+                <h1>Account Settings</h1>
+            </div>
+
+            <div class="settings-container">
+                <!-- Notifications Section -->
+                <div class="settings-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-bell"></i>
+                                Notifications
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="settings-option">
+                                <div class="option-info">
+                                    <div class="option-title">Email Notifications</div>
+                                    <div class="option-description">Receive email notifications for important updates</div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="emailNotifications" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="settings-option">
+                                <div class="option-info">
+                                    <div class="option-title">Push Notifications</div>
+                                    <div class="option-description">Receive browser notifications</div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="pushNotifications" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Privacy Section -->
+                <div class="settings-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-lock"></i>
+                                Privacy
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="settings-option">
+                                <div class="option-info">
+                                    <div class="option-title">Private Account</div>
+                                    <div class="option-description">When your account is private, only approved followers can see your posts</div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="privateAccount">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Section -->
+                <div class="settings-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-user-cog"></i>
+                                Account
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="settings-option" onclick="showChangePasswordPage()" style="cursor: pointer;">
+                                <div class="option-info">
+                                    <div class="option-title">Change Password</div>
+                                    <div class="option-description">Update your account password</div>
+                                </div>
+                                <i class="fas fa-chevron-right text-secondary"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="settings-section">
+                    <div class="card danger-zone">
+                        <div class="card-header">
+                            <h3 class="card-title text-error">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Danger Zone
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="settings-option">
+                                <div class="option-info">
+                                    <div class="option-title">Delete Account</div>
+                                    <div class="option-description">Permanently delete your account and all data</div>
+                                </div>
+                                <button class="btn btn-danger" onclick="showDeleteAccountPage()">
+                                    Delete Account
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Page (initially hidden) -->
+    <div id="changePasswordPage" style="display: none;">
+        <div class="container">
+            <div class="page-header">
+                <button class="btn btn-outline" onclick="showSettingsPage()">
+                    <i class="fas fa-arrow-left"></i> Back to Settings
+                </button>
+                <h1>Change Password</h1>
+            </div>
+            <div class="settings-container">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="alert alert-error" id="changePasswordErrorAlert" style="display: none;"></div>
+                        <form id="changePasswordForm">
+                            <div class="form-group">
+                                <label class="form-label" for="currentPassword">Current Password</label>
+                                <input type="password" class="form-input" id="currentPassword" placeholder="Enter your current password">
+                                <div class="form-error" id="currentPasswordError" style="display: none;">Current password is required</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="newPasswordChange">New Password</label>
+                                <input type="password" class="form-input" id="newPasswordChange" placeholder="Enter new password">
+                                <div class="form-error" id="newPasswordChangeError" style="display: none;">Password must be at least 6 characters</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="confirmPassword">Confirm New Password</label>
+                                <input type="password" class="form-input" id="confirmPassword" placeholder="Confirm new password">
+                                <div class="form-error" id="confirmPasswordError" style="display: none;">Passwords must match</div>
+                            </div>
+                            <div class="flex gap-3 mt-6">
+                                <button type="button" class="btn btn-outline flex-1" onclick="showSettingsPage()">Cancel</button>
+                                <button type="submit" class="btn btn-primary flex-1">Change Password</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Account Page (initially hidden) -->
+    <div id="deleteAccountPage" style="display: none;">
+        <div class="container">
+            <div class="page-header">
+                <button class="btn btn-outline" onclick="showSettingsPage()">
+                    <i class="fas fa-arrow-left"></i> Back to Settings
+                </button>
+                <h1>Delete Account</h1>
+            </div>
+            <div class="settings-container">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="alert alert-error" id="deleteAccountErrorAlert" style="display: none;"></div>
+                        
+                        <div class="card danger-zone mb-6">
+                            <div class="card-header">
+                                <h3 class="card-title text-error">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    Warning: This action cannot be undone
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-sm text-secondary mb-4">
+                                    This will permanently delete your account and all associated data including:
+                                </p>
+                                <ul class="text-sm text-secondary space-y-2 mb-6">
+                                    <li><i class="fas fa-times text-error"></i> All your research posts</li>
+                                    <li><i class="fas fa-times text-error"></i> Comments and replies</li>
+                                    <li><i class="fas fa-times text-error"></i> Likes and saves</li>
+                                    <li><i class="fas fa-times text-error"></i> Followers and following data</li>
+                                    <li><i class="fas fa-times text-error"></i> Profile information</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <form id="deleteAccountForm">
+                            <div class="form-group">
+                                <label class="form-label" for="deletePassword">Enter your password to confirm</label>
+                                <input type="password" class="form-input" id="deletePassword" placeholder="Enter your password">
+                                <div class="form-error" id="deletePasswordError" style="display: none;">Password is required</div>
+                            </div>
+                            <div class="flex gap-3 mt-6">
+                                <button type="button" class="btn btn-outline flex-1" onclick="showSettingsPage()">Cancel</button>
+                                <button type="submit" class="btn btn-danger flex-1">Delete Account</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="settings.js"></script>
+</body>
+</html>
