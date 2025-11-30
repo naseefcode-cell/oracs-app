@@ -3686,6 +3686,7 @@ function renderProfilePage(profile) {
                 <button class="btn btn-outline" onclick="showSettingsModal()">
                     Settings
                 </button>
+                <a href="settings.html" class="btn btn-outline">Settings</a>
             ` : ''}
         </div>
     `;
