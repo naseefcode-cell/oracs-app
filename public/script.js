@@ -1747,13 +1747,6 @@ function shareViaEmail() {
     closeModal(document.getElementById('sharePostModal'));
 }
 
-// Update the existing showHomePage function to handle URL routing
-const originalShowHomePage = showHomePage;
-showHomePage = function() {
-    originalShowHomePage();
-    postPage.style.display = 'none';
-    window.history.pushState({}, '', window.location.pathname);
-};
 
 // Handle browser back/forward buttons
 window.addEventListener('popstate', function(event) {
