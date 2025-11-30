@@ -764,11 +764,12 @@ handleCommentLikeUpdate(postId, commentId, userId, liked, likeCount) {
     <div class="post" data-post-id="${post._id}" data-full-content="${this.encodeHTML(post.content)}">
         <div class="post-header">
             <div class="post-user-info">
-                <div class="avatar" style="background: ${JSON.parse(post.author.avatar).color}; cursor: pointer;" onclick="showProfilePage('${post.author.username}')">
+                <div class="avatar" style="background: ${JSON.parse(post.author.avatar).color}; cursor: pointer;" 
+                     onclick="navigateToProfile('${post.author.username}')">
                     ${JSON.parse(post.author.avatar).initials}
                 </div>
                 <div class="post-meta">
-                    <div class="post-author" onclick="showProfilePage('${post.author.username}')" style="cursor: pointer;">
+                    <div class="post-author" onclick="navigateToProfile('${post.author.username}')" style="cursor: pointer;">
                         ${post.author.name}
                     </div>
                     <div class="post-username">@${post.author.username}</div>
@@ -843,14 +844,14 @@ handleCommentLikeUpdate(postId, commentId, userId, liked, likeCount) {
     return `
     <div class="comment" data-comment-id="${comment._id}">
         <div class="flex items-start gap-3">
-            <div class="avatar small" style="background: ${JSON.parse(comment.author.avatar).color}; cursor: pointer;" onclick="showProfilePage('${comment.author.username}')">
+            <div class="avatar small" style="background: ${JSON.parse(comment.author.avatar).color}; cursor: pointer;" 
+                 onclick="navigateToProfile('${comment.author.username}')">
                 ${JSON.parse(comment.author.avatar).initials}
             </div>
             <div class="flex-1">
                 <div class="flex items-center gap-2">
-                    <div class="font-semibold" style="cursor: pointer;" onclick="showProfilePage('${comment.author.username}')">${comment.author.name}</div>
-                    <div class="text-xs text-secondary">${getTimeAgo(comment.createdAt)}</div>
-                </div>
+                    <div class="font-semibold" style="cursor: pointer;" 
+                         onclick="navigateToProfile('${comment.author.username}')">${comment.author.name}</div>
                 <div class="text-sm mt-1">${comment.content}</div>
                 
                 <div class="comment-actions mt-2 flex items-center gap-4">
@@ -1059,17 +1060,19 @@ function checkAuthStatus() {
 
 // Call this on page load in your auth pages
 
-// Initialize the application
 async function initApp() {
     try {
-        console.log('🌐 Initializing Oracs Application...');
-        console.log('📍 Production Environment: https://www.oracs.in');
+        console.log('🌐 Initializing ThereIn Application...');
         
         // Load user likes from localStorage
         const storedLikes = localStorage.getItem('userLikes');
         if (storedLikes) {
             userLikes = JSON.parse(storedLikes);
         }
+        
+        // Setup URL routing first
+        setupURLRouting();
+        updateProfileLinks();
         
         await checkAuth();
         updatePostsContainer();
@@ -1085,19 +1088,93 @@ async function initApp() {
         
         setupEventListeners();
         setupGlobalEventListeners();
-        
-        // Check for post ID in URL hash
-        const hash = window.location.hash;
-        if (hash.startsWith('#/post/')) {
-            const postId = hash.split('/')[2];
-            showPostPage(postId);
-        }
 
-        console.log('✅ Oracs Application Initialized Successfully');
+        console.log('✅ ThereIn Application Initialized Successfully');
     } catch (error) {
         console.error('❌ App initialization failed:', error);
         realTimeClient.showToast('Application initialization failed. Please refresh the page.', 'error');
     }
+}
+// URL Routing for Profiles
+function setupURLRouting() {
+    // Handle browser navigation (back/forward buttons)
+    window.addEventListener('popstate', handleRoute);
+    
+    // Initial route handling
+    handleRoute();
+}
+
+function handleRoute() {
+    const path = window.location.pathname;
+    
+    // Extract username from /profile/username pattern
+    const profileMatch = path.match(/^\/profile\/([^\/]+)/);
+    
+    if (profileMatch) {
+        const username = profileMatch[1];
+        showProfilePage(username);
+    } else {
+        // Handle other routes
+        switch (path) {
+            case '/':
+            case '/index.html':
+                showHomePage();
+                break;
+            case '/notifications':
+                showAllNotifications();
+                break;
+            default:
+                // Check if it's a post URL
+                const postMatch = path.match(/^\/post\/([^\/]+)/);
+                if (postMatch) {
+                    showPostPage(postMatch[1]);
+                } else {
+                    showHomePage();
+                }
+        }
+    }
+}
+
+function navigateToProfile(username) {
+    const profileUrl = `/profile/${username}`;
+    window.history.pushState({}, '', profileUrl);
+    showProfilePage(username);
+}
+
+// Update the existing showProfilePage function to use URL
+const originalShowProfilePage = showProfilePage;
+showProfilePage = function(username) {
+    // Update URL if not already correct
+    const expectedUrl = `/profile/${username}`;
+    if (window.location.pathname !== expectedUrl) {
+        window.history.pushState({}, '', expectedUrl);
+    }
+    
+    originalShowProfilePage(username);
+};
+
+// Update showHomePage to handle URL
+const originalShowHomePage = showHomePage;
+showHomePage = function() {
+    if (window.location.pathname !== '/' && window.location.pathname !== '/index.html') {
+        window.history.pushState({}, '', '/');
+    }
+    originalShowHomePage();
+};
+
+// Update all profile links to use the new navigation
+function updateProfileLinks() {
+    // This will be called to update any dynamic profile links
+    document.addEventListener('click', function(e) {
+        const profileLink = e.target.closest('[data-profile-link]');
+        if (profileLink) {
+            e.preventDefault();
+            const username = profileLink.getAttribute('data-profile-username');
+            if (username) {
+                navigateToProfile(username);
+            }
+        }
+    });
 }
 // Authentication functions
 async function checkAuth() {
