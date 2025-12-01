@@ -204,6 +204,7 @@
             document.querySelectorAll('#signupForm .form-error').forEach(el => el.style.display = 'none');
 
             const formData = {
+                username: document.getElementById('signupUsername').value,
                 name: document.getElementById('signupName').value,
                 email: document.getElementById('signupEmail').value,
                 password: document.getElementById('signupPassword').value,
