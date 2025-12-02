@@ -3721,7 +3721,10 @@ function renderAboutTab() {
     const memberFor = getTimeDifference(currentProfile.createdAt);
     
     profileTabContent.innerHTML = `
-
+        <div class="card">
+            <div class="card-body">
+                <div class="about-section">
+                    <h3 class="text-lg font-semibold mb-4">Account Details</h3>
                         
                         <div class="about-item">
                             <div class="about-item-title">
@@ -3732,6 +3735,8 @@ function renderAboutTab() {
                                 ${joinDate} (${memberFor})
                             </div>
                         </div>
+                    </div>
+                        
                         
 
                         
