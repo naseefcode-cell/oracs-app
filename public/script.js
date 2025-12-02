@@ -3690,6 +3690,181 @@ function renderProfilePage(profile) {
 
     setupProfileTabs();
 }
+function getTimeDifference(dateString) {
+    const joinDate = new Date(dateString);
+    const now = new Date();
+    const diffMs = now - joinDate;
+    const diffDays = Math.floor(diffMs / 86400000);
+    const diffMonths = Math.floor(diffDays / 30);
+    const diffYears = Math.floor(diffDays / 365);
+    
+    if (diffYears > 0) {
+        return `${diffYears} year${diffYears > 1 ? 's' : ''}`;
+    } else if (diffMonths > 0) {
+        return `${diffMonths} month${diffMonths > 1 ? 's' : ''}`;
+    } else {
+        return `${diffDays} day${diffDays !== 1 ? 's' : ''}`;
+    }
+}
+function renderAboutTab() {
+    if (!currentProfile) return;
+    
+    const profileTabContent = document.getElementById('profileTabContent');
+    
+    // Format dates
+    const joinDate = new Date(currentProfile.createdAt).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    
+    const memberFor = getTimeDifference(currentProfile.createdAt);
+    
+    profileTabContent.innerHTML = `
+        <div class="card">
+            <div class="card-body">
+                <div class="about-section">
+                    <h3 class="text-lg font-semibold mb-4">Account Details</h3>
+                    
+                    <div class="space-y-4">
+                        ${currentProfile.bio ? `
+                            <div class="about-item">
+                                <div class="about-item-title">
+                                    <i class="fas fa-user text-primary mr-2"></i>
+                                    Bio
+                                </div>
+                                <div class="about-item-content">${currentProfile.bio}</div>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="about-item">
+                            <div class="about-item-title">
+                                <i class="fas fa-calendar-plus text-primary mr-2"></i>
+                                Account Created
+                            </div>
+                            <div class="about-item-content">
+                                ${joinDate} (${memberFor})
+                            </div>
+                        </div>
+                        
+                        ${currentProfile.field ? `
+                            <div class="about-item">
+                                <div class="about-item-title">
+                                    <i class="fas fa-graduation-cap text-primary mr-2"></i>
+                                    Research Field
+                                </div>
+                                <div class="about-item-content">${currentProfile.field}</div>
+                            </div>
+                        ` : ''}
+                        
+                        ${currentProfile.institution ? `
+                            <div class="about-item">
+                                <div class="about-item-title">
+                                    <i class="fas fa-university text-primary mr-2"></i>
+                                    Institution
+                                </div>
+                                <div class="about-item-content">${currentProfile.institution}</div>
+                            </div>
+                        ` : ''}
+                        
+                        ${currentProfile.location ? `
+                            <div class="about-item">
+                                <div class="about-item-title">
+                                    <i class="fas fa-map-marker-alt text-primary mr-2"></i>
+                                    Location
+                                </div>
+                                <div class="about-item-content">${currentProfile.location}</div>
+                            </div>
+                        ` : ''}
+                        
+                        ${currentProfile.website ? `
+                            <div class="about-item">
+                                <div class="about-item-title">
+                                    <i class="fas fa-globe text-primary mr-2"></i>
+                                    Website
+                                </div>
+                                <div class="about-item-content">
+                                    <a href="${currentProfile.website}" target="_blank" class="text-primary hover:underline">
+                                        ${currentProfile.website}
+                                    </a>
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        <!-- Social Links -->
+                        ${currentProfile.socialLinks ? `
+                            <div class="about-item">
+                                <div class="about-item-title">
+                                    <i class="fas fa-share-alt text-primary mr-2"></i>
+                                    Social Links
+                                </div>
+                                <div class="about-item-content">
+                                    <div class="flex flex-wrap gap-3 mt-2">
+                                        ${currentProfile.socialLinks.twitter ? `
+                                            <a href="${currentProfile.socialLinks.twitter}" target="_blank" 
+                                               class="social-link twitter" title="Twitter">
+                                                <i class="fab fa-twitter"></i>
+                                            </a>
+                                        ` : ''}
+                                        
+                                        ${currentProfile.socialLinks.linkedin ? `
+                                            <a href="${currentProfile.socialLinks.linkedin}" target="_blank" 
+                                               class="social-link linkedin" title="LinkedIn">
+                                                <i class="fab fa-linkedin"></i>
+                                            </a>
+                                        ` : ''}
+                                        
+                                        ${currentProfile.socialLinks.github ? `
+                                            <a href="${currentProfile.socialLinks.github}" target="_blank" 
+                                               class="social-link github" title="GitHub">
+                                                <i class="fab fa-github"></i>
+                                            </a>
+                                        ` : ''}
+                                        
+                                        ${currentProfile.socialLinks.orcid ? `
+                                            <a href="${currentProfile.socialLinks.orcid}" target="_blank" 
+                                               class="social-link orcid" title="ORCID">
+                                                <i class="fab fa-orcid"></i>
+                                            </a>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        <!-- Stats Summary -->
+                        <div class="about-item">
+                            <div class="about-item-title">
+                                <i class="fas fa-chart-bar text-primary mr-2"></i>
+                                Activity Summary
+                            </div>
+                            <div class="about-item-content">
+                                <div class="grid grid-cols-2 gap-3 mt-2">
+                                    <div class="stat-box">
+                                        <div class="stat-number">${currentProfile.stats?.postsCount || 0}</div>
+                                        <div class="stat-label">Posts</div>
+                                    </div>
+                                    <div class="stat-box">
+                                        <div class="stat-number">${currentProfile.stats?.followerCount || 0}</div>
+                                        <div class="stat-label">Followers</div>
+                                    </div>
+                                    <div class="stat-box">
+                                        <div class="stat-number">${currentProfile.stats?.followingCount || 0}</div>
+                                        <div class="stat-label">Following</div>
+                                    </div>
+                                    <div class="stat-box">
+                                        <div class="stat-number">${currentProfile.stats?.totalLikes || 0}</div>
+                                        <div class="stat-label">Total Likes</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
 
 function setupProfileTabs() {
     document.getElementById('profileTabs').innerHTML = `
@@ -3699,10 +3874,22 @@ function setupProfileTabs() {
 }
 
 function switchProfileTab(tabName) {
+    // Update active tab
     document.querySelectorAll('.profile-tab').forEach(tab => {
         tab.classList.remove('active');
+        if (tab.textContent.toLowerCase().includes(tabName)) {
+            tab.classList.add('active');
+        }
     });
-    event.target.classList.add('active');
+    
+    // Update content
+    const profileTabContent = document.getElementById('profileTabContent');
+    
+    if (tabName === 'posts') {
+        loadUserPosts(currentProfileUsername);
+    } else if (tabName === 'about') {
+        renderAboutTab();
+    }
 }
 
 async function loadUserPosts(username) {
