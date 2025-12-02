@@ -3721,21 +3721,7 @@ function renderAboutTab() {
     const memberFor = getTimeDifference(currentProfile.createdAt);
     
     profileTabContent.innerHTML = `
-        <div class="card">
-            <div class="card-body">
-                <div class="about-section">
-                    <h3 class="text-lg font-semibold mb-4">Account Details</h3>
-                    
-                    <div class="space-y-4">
-                        ${currentProfile.bio ? `
-                            <div class="about-item">
-                                <div class="about-item-title">
-                                    <i class="fas fa-user text-primary mr-2"></i>
-                                    Bio
-                                </div>
-                                <div class="about-item-content">${currentProfile.bio}</div>
-                            </div>
-                        ` : ''}
+
                         
                         <div class="about-item">
                             <div class="about-item-title">
@@ -3751,78 +3737,8 @@ function renderAboutTab() {
                         
                        
                         
-                        <!-- Social Links -->
-                        ${currentProfile.socialLinks ? `
-                            <div class="about-item">
-                                <div class="about-item-title">
-                                    <i class="fas fa-share-alt text-primary mr-2"></i>
-                                    Social Links
-                                </div>
-                                <div class="about-item-content">
-                                    <div class="flex flex-wrap gap-3 mt-2">
-                                        ${currentProfile.socialLinks.twitter ? `
-                                            <a href="${currentProfile.socialLinks.twitter}" target="_blank" 
-                                               class="social-link twitter" title="Twitter">
-                                                <i class="fab fa-twitter"></i>
-                                            </a>
-                                        ` : ''}
-                                        
-                                        ${currentProfile.socialLinks.linkedin ? `
-                                            <a href="${currentProfile.socialLinks.linkedin}" target="_blank" 
-                                               class="social-link linkedin" title="LinkedIn">
-                                                <i class="fab fa-linkedin"></i>
-                                            </a>
-                                        ` : ''}
-                                        
-                                        ${currentProfile.socialLinks.github ? `
-                                            <a href="${currentProfile.socialLinks.github}" target="_blank" 
-                                               class="social-link github" title="GitHub">
-                                                <i class="fab fa-github"></i>
-                                            </a>
-                                        ` : ''}
-                                        
-                                        ${currentProfile.socialLinks.orcid ? `
-                                            <a href="${currentProfile.socialLinks.orcid}" target="_blank" 
-                                               class="social-link orcid" title="ORCID">
-                                                <i class="fab fa-orcid"></i>
-                                            </a>
-                                        ` : ''}
-                                    </div>
-                                </div>
-                            </div>
-                        ` : ''}
-                        
-                        <!-- Stats Summary -->
-                        <div class="about-item">
-                            <div class="about-item-title">
-                                <i class="fas fa-chart-bar text-primary mr-2"></i>
-                                Activity Summary
-                            </div>
-                            <div class="about-item-content">
-                                <div class="grid grid-cols-2 gap-3 mt-2">
-                                    <div class="stat-box">
-                                        <div class="stat-number">${currentProfile.stats?.postsCount || 0}</div>
-                                        <div class="stat-label">Posts</div>
-                                    </div>
-                                    <div class="stat-box">
-                                        <div class="stat-number">${currentProfile.stats?.followerCount || 0}</div>
-                                        <div class="stat-label">Followers</div>
-                                    </div>
-                                    <div class="stat-box">
-                                        <div class="stat-number">${currentProfile.stats?.followingCount || 0}</div>
-                                        <div class="stat-label">Following</div>
-                                    </div>
-                                    <div class="stat-box">
-                                        <div class="stat-number">${currentProfile.stats?.totalLikes || 0}</div>
-                                        <div class="stat-label">Total Likes</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+
+                   
     `;
 }
 
