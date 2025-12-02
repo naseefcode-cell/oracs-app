@@ -3747,49 +3747,9 @@ function renderAboutTab() {
                             </div>
                         </div>
                         
-                        ${currentProfile.field ? `
-                            <div class="about-item">
-                                <div class="about-item-title">
-                                    <i class="fas fa-graduation-cap text-primary mr-2"></i>
-                                    Research Field
-                                </div>
-                                <div class="about-item-content">${currentProfile.field}</div>
-                            </div>
-                        ` : ''}
+
                         
-                        ${currentProfile.institution ? `
-                            <div class="about-item">
-                                <div class="about-item-title">
-                                    <i class="fas fa-university text-primary mr-2"></i>
-                                    Institution
-                                </div>
-                                <div class="about-item-content">${currentProfile.institution}</div>
-                            </div>
-                        ` : ''}
-                        
-                        ${currentProfile.location ? `
-                            <div class="about-item">
-                                <div class="about-item-title">
-                                    <i class="fas fa-map-marker-alt text-primary mr-2"></i>
-                                    Location
-                                </div>
-                                <div class="about-item-content">${currentProfile.location}</div>
-                            </div>
-                        ` : ''}
-                        
-                        ${currentProfile.website ? `
-                            <div class="about-item">
-                                <div class="about-item-title">
-                                    <i class="fas fa-globe text-primary mr-2"></i>
-                                    Website
-                                </div>
-                                <div class="about-item-content">
-                                    <a href="${currentProfile.website}" target="_blank" class="text-primary hover:underline">
-                                        ${currentProfile.website}
-                                    </a>
-                                </div>
-                            </div>
-                        ` : ''}
+                       
                         
                         <!-- Social Links -->
                         ${currentProfile.socialLinks ? `
