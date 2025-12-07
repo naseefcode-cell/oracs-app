@@ -22,8 +22,7 @@ const generateToken = (userId) => {
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
-
-// Validation middleware
+// Update the validateRegistration array
 const validateRegistration = [
   body('username')
     .isLength({ min: 3, max: 20 })
@@ -32,6 +31,7 @@ const validateRegistration = [
     .withMessage('Username can only contain letters, numbers, and underscores'),
   
   body('name')
+    .optional()  // Make it optional since frontend says it's optional
     .trim()
     .isLength({ min: 2, max: 50 })
     .withMessage('Name must be between 2 and 50 characters'),
@@ -43,7 +43,13 @@ const validateRegistration = [
   
   body('password')
     .isLength({ min: 6 })
-    .withMessage('Password must be at least 6 characters')
+    .withMessage('Password must be at least 6 characters'),
+  
+  body('field')
+    .optional()
+    .trim()
+    .isLength({ max: 100 })
+    .withMessage('Field cannot exceed 100 characters')
 ];
 
 // Check if username is available
@@ -95,8 +101,25 @@ router.post('/register', validateRegistration, async (req, res) => {
         errors: errors.array() 
       });
     }
+// In the /register route, update how you handle name:
+const { username, name, email, password, field } = req.body;
 
-    const { username, name, email, password, field } = req.body;
+// If name is not provided, use 'Anonymous' as stated in frontend
+const displayName = name ? name.trim() : 'Anonymous';
+
+// Create user with displayName instead of name
+const user = new User({
+  username: username.toLowerCase(),
+  name: displayName,  // Use displayName which has fallback
+  email: email.toLowerCase(),
+  password: password,
+  field: field || 'Other',  // Provide default if field not provided
+  emailVerified: false,
+  otp: {
+    code: otpCode,
+    expires: otpExpires
+  }
+});
 
     // Check if user already exists
     const existingUser = await User.findOne({
