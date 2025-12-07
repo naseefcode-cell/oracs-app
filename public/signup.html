@@ -191,85 +191,59 @@
         };
 
         // Form handling
-       document.getElementById('signupForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  
-  const submitBtn = this.querySelector('button[type="submit"]');
-  const originalText = submitBtn.innerHTML;
-  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
-  submitBtn.disabled = true;
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+            submitBtn.disabled = true;
 
-  // Reset errors
-  document.getElementById('signupErrorAlert').style.display = 'none';
-  document.querySelectorAll('#signupForm .form-error').forEach(el => el.style.display = 'none');
+            // Hide errors
+            document.getElementById('signupErrorAlert').style.display = 'none';
+            document.querySelectorAll('#signupForm .form-error').forEach(el => el.style.display = 'none');
 
-  // Get form values
-  const username = document.getElementById('signupUsername').value.trim();
-  const name = document.getElementById('signupName').value.trim();
-  const email = document.getElementById('signupEmail').value.trim();
-  const password = document.getElementById('signupPassword').value;
-  const field = document.getElementById('signupField').value.trim();
+            const formData = {
+                username: document.getElementById('signupUsername').value,
+                name: document.getElementById('signupName').value,
+                email: document.getElementById('signupEmail').value,
+                password: document.getElementById('signupPassword').value,
+                field: document.getElementById('signupField').value
+            };
 
-  // Basic validation
-  let hasErrors = false;
-  
-  // Username validation
-  if (!username || username.length < 3) {
-    document.getElementById('signupUsernameError').textContent = 'Username must be at least 3 characters';
-    document.getElementById('signupUsernameError').style.display = 'block';
-    hasErrors = true;
-  } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-    document.getElementById('signupUsernameError').textContent = 'Username can only contain letters, numbers, and underscores';
-    document.getElementById('signupUsernameError').style.display = 'block';
-    hasErrors = true;
-  }
-  
-  // Email validation
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    document.getElementById('signupEmailError').textContent = 'Valid email is required';
-    document.getElementById('signupEmailError').style.display = 'block';
-    hasErrors = true;
-  }
-  
-  // Password validation
-  if (!password || password.length < 6) {
-    document.getElementById('signupPasswordError').textContent = 'Password must be at least 6 characters';
-    document.getElementById('signupPasswordError').style.display = 'block';
-    hasErrors = true;
-  }
+            let hasErrors = false;
+            if (!formData.email) {
+                document.getElementById('signupEmailError').style.display = 'block';
+                hasErrors = true;
+            }
+            if (!formData.password || formData.password.length < 6) {
+                document.getElementById('signupPasswordError').style.display = 'block';
+                hasErrors = true;
+            }
 
-  if (hasErrors) {
-    submitBtn.innerHTML = originalText;
-    submitBtn.disabled = false;
-    return;
-  }
+            if (hasErrors) {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                return;
+            }
 
-  // Prepare form data
-  const formData = {
-    username: username,
-    name: name || undefined,  // Send undefined if empty, not empty string
-    email: email,
-    password: password,
-    field: field || undefined // Send undefined if empty
-  };
-
-  try {
-    const data = await api.post('/auth/register', formData);
-    
-    if (data.success) {
-      // Show OTP verification modal
-      document.getElementById('otpUserId').value = data.userId;
-      document.getElementById('otpVerificationModal').style.display = 'flex';
-    }
-  } catch (error) {
-    console.error('Signup error:', error);
-    document.getElementById('signupErrorAlert').textContent = error.message || 'Registration failed. Please try again.';
-    document.getElementById('signupErrorAlert').style.display = 'block';
-  } finally {
-    submitBtn.innerHTML = originalText;
-    submitBtn.disabled = false;
-  }
-});
+            try {
+                const data = await api.post('/auth/register', formData);
+                
+                if (data.success) {
+                    // Show OTP verification modal
+                    document.getElementById('otpUserId').value = data.userId;
+                    document.getElementById('otpVerificationModal').style.display = 'flex';
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                document.getElementById('signupErrorAlert').textContent = error.message || 'Registration failed. Please try again.';
+                document.getElementById('signupErrorAlert').style.display = 'block';
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
 
         // OTP verification
         document.getElementById('otpVerificationForm').addEventListener('submit', async function(e) {
