@@ -7,52 +7,47 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#0A84FF">
-    <title>ThereIn - the loudspeaker of the world.</title>
+    <title>ThereIn - Research Platform</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
-    <meta name="description" content="ThereIn - A collaborative platform for researchers to share findings, discuss discoveries, and advance scientific knowledge across multiple disciplines.">
-<meta name="keywords" content="research, science, academic papers, neuroscience, climate science, computer science, biology, physics, medicine, collaboration">
-<meta name="author" content="ThereIn">
-<meta name="robots" content="index, follow, max-snippet:150, max-image-preview:large">
-
-<!-- Open Graph Tags -->
-<meta property="og:title" content="ThereIn - The Loudspeaker of the World">
-<meta property="og:description" content="A collaborative platform for researchers to share findings and advance scientific knowledge.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://www.therein.in/">
-<meta property="og:image" content="https://www.therein.in/images/og-image.jpg">
-<meta property="og:site_name" content="ThereIn">
-
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="ThereIn - The Loudspeaker of the World">
-<meta name="twitter:description" content="A collaborative platform for researchers to share findings and advance scientific knowledge.">
-<meta name="twitter:image" content="https://www.therein.in/images/twitter-image.jpg">
     <style>
-        /* Twitter/X-like UI Styles */
         :root {
-            --primary-color: #0A84FF;
-            --primary-hover: #0069d9;
+            --primary-color: #1D9BF0;
+            --primary-hover: #1a8cd8;
             --text-color: #0F1419;
             --text-secondary: #536471;
             --border-color: #EFF3F4;
             --bg-color: #FFFFFF;
             --bg-secondary: #F7F9F9;
             --hover-color: rgba(0, 0, 0, 0.03);
+            --error-color: #F4212E;
+            --success-color: #00BA7C;
             --sidebar-width: 275px;
             --right-sidebar-width: 350px;
         }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+        body.dark-mode {
+            --text-color: #E7E9EA;
+            --text-secondary: #71767B;
+            --border-color: #2F3336;
+            --bg-color: #000000;
+            --bg-secondary: #16181C;
+            --hover-color: rgba(255, 255, 255, 0.03);
         }
 
-        /* Main Layout - Twitter-like 3-column */
-        .app-container {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+        }
+
+        .container {
             display: grid;
             grid-template-columns: var(--sidebar-width) 1fr var(--right-sidebar-width);
             min-height: 100vh;
@@ -60,7 +55,7 @@
             margin: 0 auto;
         }
 
-        /* Left Sidebar Navigation */
+        /* Left Sidebar */
         .left-sidebar {
             position: fixed;
             top: 0;
@@ -68,9 +63,9 @@
             width: var(--sidebar-width);
             height: 100vh;
             padding: 0 12px;
-            border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
+            border-right: 1px solid var(--border-color);
         }
 
         .logo-container {
@@ -81,28 +76,30 @@
             display: inline-flex;
             align-items: center;
             gap: 12px;
+            padding: 12px;
+            border-radius: 50%;
+            transition: background-color 0.2s;
             text-decoration: none;
             color: var(--text-color);
-            font-size: 24px;
-            font-weight: 700;
-            padding: 12px;
-            border-radius: 9999px;
-            transition: background-color 0.2s;
         }
 
         .logo:hover {
             background-color: var(--hover-color);
         }
 
-        .logo i {
+        .logo-icon {
+            font-size: 28px;
             color: var(--primary-color);
         }
 
-        .nav-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        nav {
             margin-top: 16px;
+            flex: 1;
         }
 
         .nav-item {
@@ -110,12 +107,13 @@
             align-items: center;
             gap: 20px;
             padding: 12px;
+            margin: 4px 0;
             border-radius: 9999px;
             text-decoration: none;
             color: var(--text-color);
             font-size: 20px;
-            font-weight: 400;
             transition: background-color 0.2s;
+            cursor: pointer;
         }
 
         .nav-item:hover {
@@ -126,7 +124,7 @@
             font-weight: 700;
         }
 
-        .nav-item .nav-icon {
+        .nav-icon {
             width: 26px;
             height: 26px;
             display: flex;
@@ -134,13 +132,9 @@
             justify-content: center;
         }
 
-        .nav-item .nav-text {
-            font-size: 20px;
-        }
-
         .post-button {
             margin-top: 16px;
-            width: 100%;
+            width: 90%;
             height: 52px;
             border-radius: 9999px;
             background-color: var(--primary-color);
@@ -156,6 +150,18 @@
             background-color: var(--primary-hover);
         }
 
+        .post-button.mobile {
+            display: none;
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
         .user-profile-card {
             margin-top: auto;
             margin-bottom: 12px;
@@ -164,8 +170,8 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            cursor: pointer;
             transition: background-color 0.2s;
+            cursor: pointer;
         }
 
         .user-profile-card:hover {
@@ -205,11 +211,12 @@
             text-overflow: ellipsis;
         }
 
-        /* Main Feed */
-        .main-feed {
+        /* Main Content */
+        .main-content {
             min-height: 100vh;
             border-right: 1px solid var(--border-color);
             border-left: 1px solid var(--border-color);
+            margin-left: var(--sidebar-width);
         }
 
         .feed-header {
@@ -219,13 +226,16 @@
             background-color: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-color);
-            padding: 0 16px;
         }
 
-        .feed-title {
+        body.dark-mode .feed-header {
+            background-color: rgba(0, 0, 0, 0.65);
+        }
+
+        .feed-header h1 {
             font-size: 20px;
             font-weight: 700;
-            padding: 16px 0;
+            padding: 16px;
             margin: 0;
         }
 
@@ -238,11 +248,15 @@
             flex: 1;
             text-align: center;
             padding: 16px 0;
-            font-weight: 700;
+            font-weight: 500;
             color: var(--text-secondary);
             cursor: pointer;
-            transition: color 0.2s;
+            transition: background-color 0.2s;
             position: relative;
+            background: none;
+            border: none;
+            font-size: 15px;
+            font-family: inherit;
         }
 
         .feed-tab:hover {
@@ -251,6 +265,7 @@
 
         .feed-tab.active {
             color: var(--text-color);
+            font-weight: 700;
         }
 
         .feed-tab.active::after {
@@ -265,9 +280,114 @@
             border-radius: 9999px;
         }
 
-        /* Posts Styling - Twitter-like */
+        /* Create Post Box */
+        .create-post-box {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .create-post-box.active {
+            display: block;
+        }
+
+        .create-post-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .create-post-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .create-post-input {
+            flex: 1;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-color);
+            font-family: inherit;
+            resize: none;
+            outline: none;
+            height: 60px;
+        }
+
+        .create-post-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .create-post-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .post-actions-left {
+            display: flex;
+            gap: 12px;
+        }
+
+        .post-action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: none;
+            color: var(--primary-color);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .post-action-btn:hover {
+            background-color: rgba(29, 155, 240, 0.1);
+        }
+
+        .post-submit-btn {
+            padding: 8px 24px;
+            border-radius: 9999px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .post-submit-btn:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+        }
+
+        .post-submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Posts */
+        .posts-container {
+            position: relative;
+        }
+
         .post {
-            padding: 12px 16px;
+            padding: 16px;
             border-bottom: 1px solid var(--border-color);
             transition: background-color 0.2s;
             cursor: pointer;
@@ -306,6 +426,7 @@
             align-items: center;
             gap: 4px;
             margin-bottom: 2px;
+            flex-wrap: wrap;
         }
 
         .post-author {
@@ -341,11 +462,10 @@
 
         .post-title {
             font-size: 15px;
-            font-weight: 400;
+            font-weight: 700;
             line-height: 1.5;
-            margin: 0;
+            margin: 8px 0 4px 0;
             color: var(--text-color);
-            margin-bottom: 4px;
         }
 
         .post-text {
@@ -353,6 +473,29 @@
             line-height: 1.5;
             color: var(--text-color);
             margin: 0;
+        }
+
+        .post-text.truncated {
+            max-height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        .read-more-btn {
+            color: var(--primary-color);
+            background: none;
+            border: none;
+            font-size: 15px;
+            cursor: pointer;
+            padding: 4px 0;
+            margin-top: 4px;
+        }
+
+        .read-more-btn:hover {
+            text-decoration: underline;
         }
 
         .post-tags {
@@ -413,9 +556,90 @@
             font-size: 16px;
         }
 
+        /* Comments Section */
+        .comments-section {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--bg-secondary);
+        }
+
+        .comment-form {
+            margin-bottom: 16px;
+        }
+
+        .comment-input {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 15px;
+            color: var(--text-color);
+            resize: vertical;
+            min-height: 60px;
+            font-family: inherit;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .comment-submit-btn {
+            margin-top: 8px;
+            padding: 8px 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 9999px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .comment {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comment-header {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .comment-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .comment-author {
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .comment-time {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-left: 8px;
+        }
+
+        .comment-content {
+            font-size: 15px;
+            line-height: 1.4;
+            margin-left: 40px;
+        }
+
         /* Right Sidebar */
         .right-sidebar {
-            padding: 0 16px;
+            padding: 16px;
             position: sticky;
             top: 0;
             height: 100vh;
@@ -423,14 +647,10 @@
         }
 
         .search-container {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            background-color: var(--bg-color);
-            padding: 12px 0;
+            margin-bottom: 16px;
         }
 
-        .search-bar {
+        .search-box {
             position: relative;
         }
 
@@ -442,7 +662,9 @@
             border: 1px solid transparent;
             border-radius: 9999px;
             font-size: 15px;
+            color: var(--text-color);
             outline: none;
+            font-family: inherit;
         }
 
         .search-input:focus {
@@ -459,15 +681,15 @@
             font-size: 16px;
         }
 
-        .trending-card, .who-to-follow-card, .about-card {
+        .trending-card, .who-to-follow-card {
             background-color: var(--bg-secondary);
             border-radius: 16px;
-            margin-top: 16px;
+            margin-bottom: 16px;
             overflow: hidden;
         }
 
         .card-header {
-            padding: 12px 16px;
+            padding: 16px;
             font-size: 20px;
             font-weight: 700;
             border-bottom: 1px solid var(--border-color);
@@ -486,12 +708,6 @@
 
         .trending-item:last-child, .follow-user:last-child {
             border-bottom: none;
-        }
-
-        .trending-category {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 2px;
         }
 
         .trending-topic {
@@ -550,8 +766,13 @@
             transition: background-color 0.2s;
         }
 
+        body.dark-mode .follow-btn {
+            background-color: white;
+            color: black;
+        }
+
         .follow-btn:hover {
-            background-color: #272c30;
+            opacity: 0.9;
         }
 
         .follow-btn.following {
@@ -654,196 +875,143 @@
             margin-left: 4px;
         }
 
-        .profile-website {
-            color: var(--primary-color);
-            font-size: 15px;
+        /* Mobile Navigation */
+        .mobile-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--bg-color);
+            border-top: 1px solid var(--border-color);
+            display: none;
+            justify-content: space-around;
+            padding: 12px 0;
+            z-index: 100;
+        }
+
+        .mobile-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-secondary);
             text-decoration: none;
+            font-size: 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
         }
 
-        .profile-website:hover {
-            text-decoration: underline;
+        .mobile-nav-item.active {
+            color: var(--primary-color);
         }
 
-        /* Mobile Responsive */
-        @media (max-width: 1280px) {
-            .app-container {
-                grid-template-columns: 88px 1fr var(--right-sidebar-width);
-            }
-
-            .left-sidebar {
-                width: 88px;
-                align-items: center;
-            }
-
-            .nav-text, .logo-text, .user-info {
-                display: none;
-            }
-
-            .post-button {
-                width: 52px;
-                height: 52px;
-                padding: 0;
-            }
-
-            .post-button::after {
-                content: '+';
-                font-size: 24px;
-            }
-
-            .post-button span {
-                display: none;
-            }
+        .mobile-nav-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
         }
 
-        @media (max-width: 1024px) {
-            .app-container {
-                grid-template-columns: 88px 1fr;
-            }
-
-            .right-sidebar {
-                display: none;
-            }
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
         }
 
-        @media (max-width: 500px) {
-            .app-container {
-                grid-template-columns: 1fr;
-            }
-
-            .left-sidebar {
-                display: none;
-            }
-
-            .main-feed {
-                border-left: none;
-                border-right: none;
-            }
-
-            /* Mobile Bottom Navigation */
-            .mobile-nav {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background-color: var(--bg-color);
-                border-top: 1px solid var(--border-color);
-                display: flex;
-                justify-content: space-around;
-                padding: 12px 0;
-                z-index: 100;
-            }
-
-            .mobile-nav-item {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                color: var(--text-secondary);
-                text-decoration: none;
-                font-size: 12px;
-            }
-
-            .mobile-nav-item.active {
-                color: var(--primary-color);
-            }
-
-            .mobile-nav-icon {
-                font-size: 24px;
-                margin-bottom: 4px;
-            }
-
-            .mobile-post-button {
-                position: fixed;
-                bottom: 76px;
-                right: 20px;
-                width: 56px;
-                height: 56px;
-                border-radius: 50%;
-                background-color: var(--primary-color);
-                color: white;
-                border: none;
-                font-size: 24px;
-                cursor: pointer;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                z-index: 99;
-            }
-
-            .feed-header {
-                padding-top: 4px;
-            }
-
-            .feed-title {
-                padding: 8px 0;
-            }
-
-            .feed-tab {
-                padding: 12px 0;
-            }
+        .modal-content {
+            background-color: var(--bg-color);
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
         }
 
-        /* Modal Updates for Mobile */
-        @media (max-width: 500px) {
-            .modal-content {
-                width: 90%;
-                margin: 20px auto;
-                max-height: 80vh;
-                overflow-y: auto;
-            }
-
-            .post {
-                padding: 12px;
-            }
-
-            .post-avatar {
-                width: 40px;
-                height: 40px;
-                font-size: 16px;
-            }
-
-            .action-btn {
-                padding: 6px;
-                min-width: 32px;
-            }
+        .modal-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        /* Dark mode support */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --text-color: #FFFFFF;
-                --text-secondary: #71767B;
-                --border-color: #2F3336;
-                --bg-color: #000000;
-                --bg-secondary: #16181C;
-                --hover-color: rgba(255, 255, 255, 0.03);
-            }
-
-            .feed-header {
-                background-color: rgba(0, 0, 0, 0.65);
-            }
-
-            .search-input {
-                background-color: var(--bg-secondary);
-                color: var(--text-color);
-            }
-
-            .follow-btn {
-                background-color: var(--text-color);
-            }
-
-            .follow-btn.following {
-                color: var(--text-color);
-                border-color: var(--border-color);
-            }
-
-            .profile-avatar-large {
-                border-color: var(--bg-color);
-            }
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
         }
 
-        /* Utility Classes */
-        .hidden {
-            display: none !important;
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-color);
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
         }
 
+        .close-btn:hover {
+            background-color: var(--hover-color);
+        }
+
+        .modal-body {
+            padding: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 15px;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        /* Loading */
         .loading {
             padding: 40px;
             text-align: center;
@@ -852,62 +1020,257 @@
 
         .loading-spinner {
             animation: spin 1s linear infinite;
+            font-size: 24px;
+            margin-bottom: 16px;
         }
 
         @keyframes spin {
             100% { transform: rotate(360deg); }
         }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 10000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            max-width: 300px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-success {
+            background: var(--success-color);
+        }
+
+        .toast-error {
+            background: var(--error-color);
+        }
+
+        .toast-info {
+            background: var(--primary-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 1280px) {
+            .container {
+                grid-template-columns: 88px 1fr var(--right-sidebar-width);
+            }
+            
+            .left-sidebar {
+                width: 88px;
+                align-items: center;
+            }
+            
+            .logo-text, .nav-text, .user-info {
+                display: none;
+            }
+            
+            .post-button {
+                width: 52px;
+                height: 52px;
+                padding: 0;
+            }
+            
+            .post-button::after {
+                content: '+';
+                font-size: 24px;
+            }
+            
+            .post-button span {
+                display: none;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 88px 1fr;
+            }
+            
+            .right-sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .left-sidebar {
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                border-left: none;
+            }
+            
+            .mobile-nav {
+                display: flex;
+            }
+            
+            .post-button.mobile {
+                display: block;
+            }
+            
+            .create-post-box {
+                display: none !important;
+            }
+            
+            .post {
+                padding: 12px;
+            }
+            
+            .post-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+            
+            .action-btn {
+                padding: 6px;
+                min-width: 32px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 20px auto;
+                max-height: 80vh;
+            }
+        }
+
+        /* Utility */
+        .hidden {
+            display: none !important;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 9999px;
+            border: none;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--hover-color);
+        }
+
+        .btn-danger {
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            opacity: 0.9;
+        }
+
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 14px;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-2 { margin-top: 8px; }
+        .mt-4 { margin-top: 16px; }
+        .mb-2 { margin-bottom: 8px; }
+        .mb-4 { margin-bottom: 16px; }
+        .p-4 { padding: 16px; }
+        .gap-2 { gap: 8px; }
+        .gap-4 { gap: 16px; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .flex-1 { flex: 1; }
+        .text-secondary { color: var(--text-secondary); }
+        .text-error { color: var(--error-color); }
+        .text-success { color: var(--success-color); }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Left Sidebar Navigation -->
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Left Sidebar -->
         <div class="left-sidebar">
             <div class="logo-container">
                 <a href="#" class="logo" onclick="showHomePage(); return false;">
-                    <i class="fas fa-flask"></i>
+                    <i class="fas fa-flask logo-icon"></i>
                     <span class="logo-text">ThereIn</span>
                 </a>
             </div>
             
-            <nav class="nav-menu">
-                <a href="#" class="nav-item active" onclick="showHomePage(); return false;">
+            <nav>
+                <button class="nav-item active" onclick="showHomePage(); return false;">
                     <div class="nav-icon">
                         <i class="fas fa-home"></i>
                     </div>
                     <span class="nav-text">Home</span>
-                </a>
+                </button>
                 
-                <a href="#" class="nav-item" id="exploreNav" onclick="switchFeed('all'); return false;">
+                <button class="nav-item" onclick="switchFeed('all'); return false;">
                     <div class="nav-icon">
-                        <i class="fas fa-search"></i>
+                        <i class="fas fa-hashtag"></i>
                     </div>
                     <span class="nav-text">Explore</span>
-                </a>
+                </button>
                 
-                <a href="#" class="nav-item" id="notificationsNav" onclick="showAllNotifications(); return false;">
+                <button class="nav-item" onclick="showAllNotifications(); return false;">
                     <div class="nav-icon">
                         <i class="fas fa-bell"></i>
                     </div>
                     <span class="nav-text">Notifications</span>
-                </a>
+                </button>
                 
-                <a href="#" class="nav-item" id="profileNav" onclick="showProfilePage(currentUser?.username || ''); return false;">
+                <button class="nav-item" id="profileNavBtn" onclick="showProfilePage(currentUser?.username || ''); return false;">
                     <div class="nav-icon">
                         <i class="fas fa-user"></i>
                     </div>
                     <span class="nav-text">Profile</span>
-                </a>
+                </button>
                 
-                <a href="#" class="nav-item" onclick="showSettingsModal(); return false;">
+                <button class="nav-item" onclick="showSettingsModal(); return false;">
                     <div class="nav-icon">
                         <i class="fas fa-cog"></i>
                     </div>
                     <span class="nav-text">Settings</span>
-                </a>
+                </button>
             </nav>
             
-            <button class="post-button" onclick="showModal('createPostModal')">
+            <button class="post-button" onclick="showCreatePostModal()">
                 <span>Post</span>
             </button>
             
@@ -921,55 +1284,76 @@
             </div>
         </div>
 
-        <!-- Main Feed -->
-        <div class="main-feed" id="homePage">
+        <!-- Main Content -->
+        <div class="main-content" id="homePage">
             <div class="feed-header">
-                <h1 class="feed-title" id="feedTitle">Home</h1>
+                <h1 id="feedTitle">Home</h1>
                 <div class="feed-tabs">
-                    <div class="feed-tab active" onclick="switchFeed('all')">For you</div>
-                    <div class="feed-tab" onclick="switchFeed('following')">Following</div>
-                    <div class="feed-tab" onclick="switchFeed('trending')">Trending</div>
+                    <button class="feed-tab active" onclick="switchFeed('all')">For you</button>
+                    <button class="feed-tab" onclick="switchFeed('following')">Following</button>
+                    <button class="feed-tab" onclick="switchFeed('trending')">Trending</button>
                 </div>
             </div>
             
-            <!-- Create Post Area -->
-            <div class="post" id="createPostArea" style="border-bottom: 1px solid var(--border-color); padding: 16px; cursor: auto;">
-                <div class="post-header">
-                    <div class="post-avatar" id="currentUserAvatar">T</div>
-                    <div style="flex: 1;">
-                        <textarea 
-                            id="quickPostInput" 
-                            placeholder="What's happening in research?" 
-                            style="width: 100%; border: none; outline: none; font-size: 20px; resize: none; font-family: inherit; background: transparent; color: var(--text-color);"
-                            rows="3"
-                        ></textarea>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
-                            <div style="display: flex; gap: 12px;">
-                                <button class="action-btn"><i class="fas fa-image"></i></button>
-                                <button class="action-btn"><i class="fas fa-hashtag"></i></button>
-                                <button class="action-btn"><i class="fas fa-smile"></i></button>
-                            </div>
-                            <button class="post-button" style="width: auto; padding: 0 24px;" onclick="quickCreatePost()">Post</button>
-                        </div>
+            <!-- Create Post Box -->
+            <div class="create-post-box" id="createPostBox">
+                <div class="create-post-header">
+                    <div class="create-post-avatar" id="currentUserAvatar">T</div>
+                    <textarea 
+                        class="create-post-input" 
+                        id="createPostInput" 
+                        placeholder="What's happening in research?" 
+                        rows="3"
+                    ></textarea>
+                </div>
+                <div class="create-post-actions">
+                    <div class="post-actions-left">
+                        <button class="post-action-btn" onclick="addImageToPost()">
+                            <i class="fas fa-image"></i>
+                        </button>
+                        <button class="post-action-btn" onclick="addTagToPost()">
+                            <i class="fas fa-hashtag"></i>
+                        </button>
+                        <button class="post-action-btn" onclick="addEmojiToPost()">
+                            <i class="fas fa-smile"></i>
+                        </button>
                     </div>
+                    <button class="post-submit-btn" id="postSubmitBtn" onclick="createPost()" disabled>
+                        Post
+                    </button>
                 </div>
             </div>
             
-            <!-- Posts List -->
-            <div id="postsList">
+            <!-- Posts Container -->
+            <div class="posts-container" id="postsContainer">
                 <div class="loading">
                     <i class="fas fa-spinner loading-spinner"></i>
-                    <div style="margin-top: 12px;">Loading posts...</div>
+                    <div>Loading posts...</div>
                 </div>
             </div>
+        </div>
+
+        <!-- Profile Page -->
+        <div class="main-content" id="profilePage" style="display: none;">
+            <!-- Profile content will be loaded dynamically -->
+        </div>
+
+        <!-- Notifications Page -->
+        <div class="main-content" id="notificationsPage" style="display: none;">
+            <!-- Notifications content will be loaded dynamically -->
+        </div>
+
+        <!-- Post Detail Page -->
+        <div class="main-content" id="postPage" style="display: none;">
+            <!-- Post detail content will be loaded dynamically -->
         </div>
 
         <!-- Right Sidebar -->
         <div class="right-sidebar">
             <div class="search-container">
-                <div class="search-bar">
+                <div class="search-box">
                     <i class="fas fa-search search-icon"></i>
-                    <input type="text" id="searchInput" class="search-input" placeholder="Search ThereIn">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search ThereIn">
                 </div>
             </div>
             
@@ -992,130 +1376,296 @@
                 </div>
                 <div class="show-more" onclick="loadWhoToFollow()">Show more</div>
             </div>
-            
-            <div class="about-card">
-                <div class="card-header">About</div>
-                <div style="padding: 16px; font-size: 15px; color: var(--text-secondary); line-height: 1.5;">
-                    ThereIn is a platform for researchers to share findings, collaborate, and discuss scientific discoveries.
-                </div>
-            </div>
         </div>
+    </div>
 
-        <!-- Mobile Bottom Navigation -->
-        <div class="mobile-nav" style="display: none;">
-            <a href="#" class="mobile-nav-item active" onclick="showHomePage(); return false;">
-                <i class="fas fa-home mobile-nav-icon"></i>
-                <span>Home</span>
-            </a>
-            <a href="#" class="mobile-nav-item" onclick="switchFeed('all'); return false;">
-                <i class="fas fa-search mobile-nav-icon"></i>
-                <span>Explore</span>
-            </a>
-            <a href="#" class="mobile-nav-item" onclick="showModal('createPostModal'); return false;">
-                <i class="fas fa-plus mobile-nav-icon"></i>
-                <span>Post</span>
-            </a>
-            <a href="#" class="mobile-nav-item" onclick="showAllNotifications(); return false;">
-                <i class="fas fa-bell mobile-nav-icon"></i>
-                <span>Notifications</span>
-            </a>
-            <a href="#" class="mobile-nav-item" onclick="showProfilePage(currentUser?.username || ''); return false;">
-                <i class="fas fa-user mobile-nav-icon"></i>
-                <span>Profile</span>
-            </a>
-        </div>
-
-        <button class="mobile-post-button" onclick="showModal('createPostModal')" style="display: none;">
-            <i class="fas fa-plus"></i>
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav">
+        <button class="mobile-nav-item active" onclick="showHomePage(); return false;">
+            <i class="fas fa-home mobile-nav-icon"></i>
+            <span>Home</span>
+        </button>
+        
+        <button class="mobile-nav-item" onclick="switchFeed('all'); return false;">
+            <i class="fas fa-hashtag mobile-nav-icon"></i>
+            <span>Explore</span>
+        </button>
+        
+        <button class="mobile-nav-item" onclick="showCreatePostModal()">
+            <i class="fas fa-plus mobile-nav-icon"></i>
+            <span>Post</span>
+        </button>
+        
+        <button class="mobile-nav-item" onclick="showAllNotifications(); return false;">
+            <i class="fas fa-bell mobile-nav-icon"></i>
+            <span>Notifications</span>
+        </button>
+        
+        <button class="mobile-nav-item" id="mobileProfileBtn" onclick="showProfilePage(currentUser?.username || ''); return false;">
+            <i class="fas fa-user mobile-nav-icon"></i>
+            <span>Profile</span>
         </button>
     </div>
 
-    <!-- Profile Page -->
-    <div id="profilePage" class="main-feed" style="display: none;">
-        <!-- Profile content will be loaded here -->
-    </div>
+    <!-- Mobile Post Button -->
+    <button class="post-button mobile" onclick="showCreatePostModal()">
+        <i class="fas fa-plus"></i>
+    </button>
 
-    <!-- Notifications Page -->
-    <div id="notificationsPage" class="main-feed" style="display: none;">
-        <!-- Notifications content will be loaded here -->
-    </div>
-
-    <!-- Post Detail Page -->
-    <div id="postPage" class="main-feed" style="display: none;">
-        <!-- Post detail content will be loaded here -->
-    </div>
-
-    <!-- Modals (Keep existing modals from original code) -->
+    <!-- Modals (keep existing modals from original) -->
     <!-- Create Post Modal -->
     <div class="modal" id="createPostModal">
-        <!-- Keep existing modal content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Create Research Post</h2>
+                <button class="close-btn" onclick="closeModal('createPostModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-error" id="postErrorAlert" style="display: none;"></div>
+                <form id="postForm">
+                    <div class="form-group">
+                        <label class="form-label" for="postTitle">Title</label>
+                        <input type="text" class="form-input" id="postTitle" placeholder="Enter your research title">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="postCategory">Research Category</label>
+                        <select class="form-input form-select" id="postCategory">
+                            <option value="">Select a category</option>
+                            <option value="Neuroscience">Neuroscience</option>
+                            <option value="Climate Science">Climate Science</option>
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="Biology">Biology</option>
+                            <option value="Physics">Physics</option>
+                            <option value="Medicine">Medicine</option>
+                            <option value="Psychology">Psychology</option>
+                            <option value="Economics">Economics</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="postContent">Research Summary</label>
+                        <textarea class="form-input form-textarea" id="postContent" placeholder="Describe your research findings..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="postTags">Tags (separated by commas)</label>
+                        <input type="text" class="form-input" id="postTags" placeholder="Add relevant tags separated by commas">
+                    </div>
+                    <button type="button" class="btn btn-primary w-full" onclick="submitPostForm()">Publish Research</button>
+                </form>
+            </div>
+        </div>
     </div>
 
     <!-- Edit Post Modal -->
     <div class="modal" id="editPostModal">
-        <!-- Keep existing modal content -->
-    </div>
-
-    <!-- Share Post Modal -->
-    <div class="modal" id="sharePostModal">
-        <!-- Keep existing modal content -->
-    </div>
-
-    <!-- Edit Profile Modal -->
-    <div class="modal" id="editProfileModal">
-        <!-- Keep existing modal content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Research Post</h2>
+                <button class="close-btn" onclick="closeModal('editPostModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-error" id="editPostErrorAlert" style="display: none;"></div>
+                <form id="editPostForm">
+                    <input type="hidden" id="editPostId">
+                    <div class="form-group">
+                        <label class="form-label" for="editPostTitle">Title</label>
+                        <input type="text" class="form-input" id="editPostTitle" placeholder="Enter your research title">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editPostCategory">Research Category</label>
+                        <select class="form-input form-select" id="editPostCategory">
+                            <option value="">Select a category</option>
+                            <option value="Neuroscience">Neuroscience</option>
+                            <option value="Climate Science">Climate Science</option>
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="Biology">Biology</option>
+                            <option value="Physics">Physics</option>
+                            <option value="Medicine">Medicine</option>
+                            <option value="Psychology">Psychology</option>
+                            <option value="Economics">Economics</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editPostContent">Research Summary</label>
+                        <textarea class="form-input form-textarea" id="editPostContent" placeholder="Describe your research findings..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editPostTags">Tags (separated by commas)</label>
+                        <input type="text" class="form-input" id="editPostTags" placeholder="Add relevant tags separated by commas">
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="button" class="btn btn-danger flex-1" onclick="handleDeletePostFromEdit()">Delete Post</button>
+                        <button type="button" class="btn btn-primary flex-1" onclick="submitEditPostForm()">Update Post</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     <!-- Login Modal -->
     <div class="modal" id="loginModal">
-        <!-- Keep existing modal content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Log In to ThereIn</h2>
+                <button class="close-btn" onclick="closeModal('loginModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-error" id="loginErrorAlert" style="display: none;"></div>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label" for="loginEmail">Email or Username</label>
+                        <input type="text" class="form-input" id="loginEmail" placeholder="Enter your email or username">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="loginPassword">Password</label>
+                        <input type="password" class="form-input" id="loginPassword" placeholder="Enter your password">
+                    </div>
+                    <div class="form-group text-center">
+                        <a href="#" class="text-secondary" onclick="showForgotPasswordModal()" style="font-size: 14px;">Forgot your password?</a>
+                    </div>
+                    <button type="button" class="btn btn-primary w-full" onclick="submitLoginForm()">Log In</button>
+                </form>
+                <div class="text-center mt-4">
+                    <span class="text-secondary" style="font-size: 14px;">Don't have an account? </span>
+                    <a href="#" class="text-primary" onclick="showSignupModal()" style="font-size: 14px;">Sign up</a>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Sign Up Modal -->
     <div class="modal" id="signupModal">
-        <!-- Keep existing modal content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Join ThereIn</h2>
+                <button class="close-btn" onclick="closeModal('signupModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-error" id="signupErrorAlert" style="display: none;"></div>
+                <form id="signupForm">
+                    <div class="form-group">
+                        <label class="form-label" for="signupName">Display Name (Optional)</label>
+                        <input type="text" class="form-input" id="signupName" placeholder="Enter your display name (optional)">
+                        <div class="text-secondary mt-1" style="font-size: 12px;">If not provided, we'll use "Anonymous"</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="signupEmail">Email</label>
+                        <input type="email" class="form-input" id="signupEmail" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="signupPassword">Password</label>
+                        <input type="password" class="form-input" id="signupPassword" placeholder="Create a password" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="signupField">Research Field (Optional)</label>
+                        <input type="text" class="form-input" id="signupField" placeholder="Your primary research field">
+                    </div>
+                    <button type="button" class="btn btn-primary w-full" onclick="submitSignupForm()">Create Account</button>
+                </form>
+                <div class="text-center mt-4">
+                    <span class="text-secondary" style="font-size: 14px;">Already have an account? </span>
+                    <a href="#" class="text-primary" onclick="showLoginModal()" style="font-size: 14px;">Log in</a>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- All other modals... -->
+    <!-- Edit Profile Modal -->
+    <div class="modal" id="editProfileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Profile</h2>
+                <button class="close-btn" onclick="closeModal('editProfileModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-error" id="editProfileErrorAlert" style="display: none;"></div>
+                <form id="editProfileForm">
+                    <div class="form-group">
+                        <label class="form-label" for="editName">Full Name</label>
+                        <input type="text" class="form-input" id="editName" placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editBio">Bio</label>
+                        <textarea class="form-input form-textarea" id="editBio" placeholder="Tell others about yourself and your research..." maxlength="500"></textarea>
+                        <div class="text-secondary text-right" id="bioCharCount" style="font-size: 12px;">0/500</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editField">Research Field</label>
+                        <input type="text" class="form-input" id="editField" placeholder="Your primary research field">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editInstitution">Institution</label>
+                        <input type="text" class="form-input" id="editInstitution" placeholder="Your university or organization">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editLocation">Location</label>
+                        <input type="text" class="form-input" id="editLocation" placeholder="Your location">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editWebsite">Website</label>
+                        <input type="url" class="form-input" id="editWebsite" placeholder="https://example.com">
+                    </div>
+                    
+                    <div class="mb-4 p-3" style="background-color: var(--bg-secondary); border-radius: 8px;">
+                        <h3 class="mb-2" style="font-size: 14px; font-weight: 600;">Social Links</h3>
+                        <div class="space-y-3">
+                            <div class="form-group mb-2">
+                                <label class="form-label" for="editTwitter" style="font-size: 13px;">Twitter</label>
+                                <input type="url" class="form-input" id="editTwitter" placeholder="https://twitter.com/username" style="font-size: 14px;">
+                            </div>
+                            <div class="form-group mb-2">
+                                <label class="form-label" for="editLinkedIn" style="font-size: 13px;">LinkedIn</label>
+                                <input type="url" class="form-input" id="editLinkedIn" placeholder="https://linkedin.com/in/username" style="font-size: 14px;">
+                            </div>
+                            <div class="form-group mb-2">
+                                <label class="form-label" for="editGitHub" style="font-size: 13px;">GitHub</label>
+                                <input type="url" class="form-input" id="editGitHub" placeholder="https://github.com/username" style="font-size: 14px;">
+                            </div>
+                            <div class="form-group mb-2">
+                                <label class="form-label" for="editORCID" style="font-size: 13px;">ORCID</label>
+                                <input type="url" class="form-input" id="editORCID" placeholder="https://orcid.org/0000-0000-0000-0000" style="font-size: 14px;">
+                            </div>
+                        </div>
+                    </div>
 
-    <script src="script.js">
-        // Mobile detection and setup
+                    <div class="flex gap-2">
+                        <button type="button" class="btn btn-outline flex-1" onclick="closeModal('editProfileModal')">Cancel</button>
+                        <button type="button" class="btn btn-primary flex-1" onclick="submitEditProfileForm()">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add other modals as needed (Notifications, Settings, etc.) -->
+
+    <script src="script.js"></script>
+    <script>
+        // Mobile detection and UI setup
         function setupMobileUI() {
-            const isMobile = window.innerWidth <= 500;
+            const isMobile = window.innerWidth <= 768;
             
             if (isMobile) {
                 document.querySelector('.left-sidebar').style.display = 'none';
                 document.querySelector('.right-sidebar').style.display = 'none';
                 document.querySelector('.mobile-nav').style.display = 'flex';
-                document.querySelector('.mobile-post-button').style.display = 'block';
-                document.querySelector('.main-feed').style.borderRight = 'none';
-                document.querySelector('.main-feed').style.borderLeft = 'none';
+                document.querySelector('.post-button.mobile').style.display = 'block';
+                document.querySelector('.main-content').style.borderLeft = 'none';
             } else {
                 document.querySelector('.left-sidebar').style.display = 'flex';
                 document.querySelector('.right-sidebar').style.display = 'block';
                 document.querySelector('.mobile-nav').style.display = 'none';
-                document.querySelector('.mobile-post-button').style.display = 'none';
-                document.querySelector('.main-feed').style.borderRight = '1px solid var(--border-color)';
-                document.querySelector('.main-feed').style.borderLeft = '1px solid var(--border-color)';
+                document.querySelector('.post-button.mobile').style.display = 'none';
+                document.querySelector('.main-content').style.borderLeft = '1px solid var(--border-color)';
             }
-        }
-
-        // Quick create post function
-        async function quickCreatePost() {
-            const content = document.getElementById('quickPostInput').value.trim();
-            if (!content) return;
-            
-            // Call existing create post functionality
-            // This would need to be integrated with your existing API
-            console.log('Quick post:', content);
-            document.getElementById('quickPostInput').value = '';
         }
 
         // Initialize mobile UI
         window.addEventListener('resize', setupMobileUI);
         document.addEventListener('DOMContentLoaded', function() {
             setupMobileUI();
-            // Initialize your app here
+            initApp();
         });
 
         if ("serviceWorker" in navigator) {
