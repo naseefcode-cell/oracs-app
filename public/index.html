@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,527 +12,504 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     <meta name="description" content="ThereIn - A collaborative platform for researchers to share findings, discuss discoveries, and advance scientific knowledge across multiple disciplines.">
-<meta name="keywords" content="research, science, academic papers, neuroscience, climate science, computer science, biology, physics, medicine, collaboration">
-<meta name="author" content="ThereIn">
-<meta name="robots" content="index, follow, max-snippet:150, max-image-preview:large">
+    <meta name="keywords" content="research, science, academic papers, neuroscience, climate science, computer science, biology, physics, medicine, collaboration">
+    <meta name="author" content="ThereIn">
+    <meta name="robots" content="index, follow, max-snippet:150, max-image-preview:large">
 
-<!-- Open Graph Tags -->
-<meta property="og:title" content="ThereIn - The Loudspeaker of the World">
-<meta property="og:description" content="A collaborative platform for researchers to share findings and advance scientific knowledge.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://www.therein.in/">
-<meta property="og:image" content="https://www.therein.in/images/og-image.jpg">
-<meta property="og:site_name" content="ThereIn">
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="ThereIn - The Loudspeaker of the World">
+    <meta property="og:description" content="A collaborative platform for researchers to share findings and advance scientific knowledge.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.therein.in/">
+    <meta property="og:image" content="https://www.therein.in/images/og-image.jpg">
+    <meta property="og:site_name" content="ThereIn">
 
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="ThereIn - The Loudspeaker of the World">
-<meta name="twitter:description" content="A collaborative platform for researchers to share findings and advance scientific knowledge.">
-<meta name="twitter:image" content="https://www.therein.in/images/twitter-image.jpg">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ThereIn - The Loudspeaker of the World">
+    <meta name="twitter:description" content="A collaborative platform for researchers to share findings and advance scientific knowledge.">
+    <meta name="twitter:image" content="https://www.therein.in/images/twitter-image.jpg">
     <style>
-        /* Post Detail Page Styles */
-        .post-page {
-            display: none;
-            padding: 1rem 0;
-        }
-
-        .post-detail-container {
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 2rem;
-            margin-top: 1rem;
-        }
-
-        .post-detail-main {
-            min-width: 0; /* Prevent overflow */
-        }
-
-        .post-detail-sidebar {
+        /* X-style specific inline styles */
+        .home-timeline-header {
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--twitter-border);
             position: sticky;
-            top: 100px;
-            height: fit-content;
+            top: 60px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 50;
         }
-
-        .post-detail-title {
-            font-size: 2rem;
+        
+        .home-timeline-header h2 {
+            font-size: 20px;
+            font-weight: 800;
+            margin: 0;
+        }
+        
+        /* Create post composer */
+        .post-composer {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--twitter-border);
+        }
+        
+        .composer-header {
             font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 1rem;
-            color: var(--text-color);
+            font-size: 20px;
+            margin-bottom: 16px;
+            color: var(--twitter-dark);
         }
-
-        .post-detail-text {
-            font-size: 1.1rem;
-            line-height: 1.7;
-            color: var(--text-color);
-            margin-bottom: 1.5rem;
-            white-space: pre-line;
-        }
-
-        .post-stats {
+        
+        .composer-content {
             display: flex;
-            gap: 1.5rem;
-            margin: 1.5rem 0;
-            padding: 1rem 0;
-            border-top: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
+            gap: 12px;
         }
-
-        .stat {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--secondary-color);
-            font-size: 0.9rem;
+        
+        .composer-avatar {
+            flex-shrink: 0;
         }
-
-        .post-detail-actions {
-            border-top: 1px solid var(--border-color);
-            padding-top: 1rem;
-            margin-top: 1rem;
+        
+        .composer-form {
+            flex: 1;
         }
-
-        /* Share Options */
-        .share-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.5rem;
-        }
-
-        .share-option-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background: var(--bg-color);
-            color: var(--text-color);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .share-option-btn:hover {
-            background: var(--hover-color);
-            border-color: var(--primary-color);
-            transform: translateY(-2px);
-        }
-
-        .share-option-btn i {
-            font-size: 1.25rem;
-        }
-
-        /* Share Modal */
-        .share-modal-options {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .share-modal-option {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background: var(--bg-color);
-            color: var(--text-color);
-            cursor: pointer;
-            transition: all 0.2s ease;
+        
+        .composer-input {
             width: 100%;
-            text-align: left;
+            border: none;
+            outline: none;
+            font-size: 20px;
+            min-height: 56px;
+            resize: none;
+            font-family: inherit;
+            color: var(--twitter-dark);
         }
-
-        .share-modal-option:hover {
-            background: var(--hover-color);
-            border-color: var(--primary-color);
+        
+        .composer-input::placeholder {
+            color: #8b98a5;
         }
-
-        .share-icon {
-            width: 40px;
-            height: 40px;
+        
+        .composer-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--twitter-border);
+        }
+        
+        .composer-tools {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .composer-tool-btn {
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--light-bg);
-            color: var(--text-color);
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
         }
-
-        .share-icon.twitter {
-            background: #1DA1F2;
-            color: white;
+        
+        .composer-tool-btn:hover {
+            background: rgba(29, 155, 240, 0.1);
         }
-
-        .share-icon.linkedin {
-            background: #0077B5;
-            color: white;
+        
+        /* Left sidebar navigation */
+        .nav-menu {
+            padding: 16px;
         }
-
-        .share-icon.facebook {
-            background: #4267B2;
-            color: white;
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 12px;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 4px;
+            text-decoration: none;
+            color: var(--twitter-dark);
         }
-
-        .share-text {
+        
+        .nav-item:hover {
+            background: var(--twitter-light);
+        }
+        
+        .nav-item.active {
+            font-weight: 700;
+        }
+        
+        .nav-item i {
+            font-size: 24px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .nav-item-text {
+            font-size: 20px;
+        }
+        
+        /* Right sidebar widgets */
+        .search-widget {
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .search-widget input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 1px solid var(--twitter-border);
+            border-radius: 9999px;
+            font-size: 15px;
+            background: var(--twitter-light);
+            outline: none;
+        }
+        
+        .search-widget input:focus {
+            background: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 1px var(--primary-color);
+        }
+        
+        /* Who to follow */
+        .who-to-follow {
+            margin-bottom: 16px;
+        }
+        
+        .follow-suggestion {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .follow-suggestion:hover {
+            background: var(--twitter-light);
+        }
+        
+        .follow-suggestion-info {
             flex: 1;
+            min-width: 0;
         }
-
-        .share-title {
-            font-weight: 600;
-            margin-bottom: 0.25rem;
+        
+        .follow-suggestion-name {
+            font-weight: 700;
+            font-size: 15px;
         }
-
-        .share-description {
-            font-size: 0.875rem;
+        
+        .follow-suggestion-username {
             color: var(--secondary-color);
+            font-size: 13px;
         }
-
-        /* Trending Posts in Sidebar */
-        .trending-post-item {
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--border-color);
+        
+        /* Trends for you */
+        .trend-item {
+            padding: 12px 16px;
             cursor: pointer;
-            transition: color 0.2s ease;
+            transition: background-color 0.2s ease;
         }
-
-        .trending-post-item:hover {
+        
+        .trend-item:hover {
+            background: var(--twitter-light);
+        }
+        
+        .trend-category {
+            color: var(--secondary-color);
+            font-size: 13px;
+        }
+        
+        .trend-title {
+            font-weight: 700;
+            font-size: 15px;
+            margin: 2px 0;
+        }
+        
+        .trend-stats {
+            color: var(--secondary-color);
+            font-size: 13px;
+        }
+        
+        /* Post detail page */
+        .post-detail {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--twitter-border);
+        }
+        
+        .post-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+        
+        .post-detail-back {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            cursor: pointer;
             color: var(--primary-color);
         }
-
-        .trending-post-item:last-child {
-            border-bottom: none;
+        
+        .post-detail-back:hover {
+            background: var(--twitter-light);
         }
-
-        .trending-post-title {
-            font-weight: 600;
-            font-size: 0.9rem;
-            line-height: 1.4;
-            margin-bottom: 0.25rem;
+        
+        .post-detail-title {
+            font-size: 23px;
+            font-weight: 800;
+            line-height: 1.3;
+            margin: 16px 0;
+            color: var(--twitter-dark);
         }
-
-        .trending-post-meta {
-            font-size: 0.75rem;
+        
+        .post-detail-meta {
+            display: flex;
+            align-items: center;
+            gap: 4px;
             color: var(--secondary-color);
+            font-size: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--twitter-border);
         }
-
-        /* Make post titles clickable in feed */
-        .post-title {
+        
+        .post-detail-stats {
+            display: flex;
+            gap: 20px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--twitter-border);
+            color: var(--secondary-color);
+            font-size: 15px;
+        }
+        
+        .post-detail-stat {
             cursor: pointer;
-            transition: color 0.2s ease;
         }
-
-        .post-title:hover {
-            color: var(--primary-color);
+        
+        .post-detail-stat:hover {
+            text-decoration: underline;
         }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .post-detail-container {
-                grid-template-columns: 1fr;
+        
+        .post-detail-stat strong {
+            color: var(--twitter-dark);
+            font-weight: 700;
+        }
+        
+        .post-detail-actions {
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--twitter-border);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 688px) {
+            .nav-item-text {
+                display: none;
             }
             
-            .post-detail-sidebar {
-                position: static;
+            .nav-item {
+                justify-content: center;
+                padding: 12px;
+                width: 48px;
+                height: 48px;
             }
             
             .post-detail-title {
-                font-size: 1.5rem;
+                font-size: 20px;
             }
             
-            .share-options {
-                grid-template-columns: 1fr;
+            .composer-input {
+                font-size: 18px;
             }
         }
-
-        /* Additional CSS for enhanced features */
-        .feed-filters {
-            display: flex;
-            justify-content: between;
-            align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
+        
+        /* Profile page adjustments */
+        .profile-edit-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
         }
-
-        .feed-tabs {
-            display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
-            flex: 1;
+        
+        .profile-nav {
+            position: sticky;
+            top: 120px;
+            background: white;
+            z-index: 40;
         }
-
-        .feed-tab {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            background: var(--bg-color);
-            color: var(--text-color);
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s ease;
-        }
-
-        .feed-tab:hover {
-            background: var(--hover-color);
-            border-color: var(--primary-color);
-        }
-
-        .feed-tab.active {
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
-
-        .feed-sort {
-            min-width: 120px;
-        }
-
-        .feed-info {
-            padding-top: 12px;
-            margin-top: 12px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .recommended-post {
-            padding: 8px 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .recommended-post:last-child {
-            border-bottom: none;
-        }
-
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 12px 16px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 500;
-            z-index: 10000;
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-            max-width: 300px;
-        }
-
-        .toast.show {
-            transform: translateX(0);
-        }
-
-        .toast-success {
-            background: #10b981;
-        }
-
-        .toast-error {
-            background: #ef4444;
-        }
-
-        .toast-info {
-            background: #3b82f6;
-        }
-
-        .toast-content {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .toast-content i {
-            font-size: 16px;
-        }
-
-        .typing-indicator {
-            font-style: italic;
-            color: var(--secondary-color);
-            font-size: 12px;
-            padding: 8px 12px;
-            display: none;
-        }
-
-        .action-btn {
-            transition: all 0.2s ease-in-out;
-        }
-
-        .action-btn:hover {
-            transform: translateY(-1px);
-        }
-
-        @media (max-width: 768px) {
-            .feed-filters {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .feed-tabs {
-                order: 2;
-            }
-            
-            .feed-sort {
-                order: 1;
-                align-self: flex-end;
-            }
-            /* About Tab Styles */
-.about-section {
-    padding: 1.5rem;
-}
-
-.about-item {
-    margin-bottom: 1.5rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.about-item:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-}
-
-.about-item-title {
-    display: flex;
-    align-items: center;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: var(--text-color);
-}
-
-.about-item-content {
-    color: var(--secondary-color);
-    line-height: 1.6;
-}
-
-.stat-box {
-    text-align: center;
-    padding: 0.75rem;
-    background: var(--light-bg);
-    border-radius: 8px;
-}
-
-.stat-box .stat-number {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--primary-color);
-}
-
-.stat-box .stat-label {
-    font-size: 0.75rem;
-    color: var(--secondary-color);
-    margin-top: 0.25rem;
-}
-
-.social-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--light-bg);
-    color: var(--text-color);
-    transition: all 0.2s ease;
-}
-
-.social-link:hover {
-    transform: translateY(-2px);
-}
-
-.social-link.twitter:hover {
-    background: #1DA1F2;
-    color: white;
-}
-
-.social-link.linkedin:hover {
-    background: #0077B5;
-    color: white;
-}
-
-.social-link.github:hover {
-    background: #333;
-    color: white;
-}
-
-.social-link.orcid:hover {
-    background: #A6CE39;
-    color: white;
-}
+        
+        /* Smooth transitions */
+        * {
+            transition: background-color 0.2s ease, border-color 0.2s ease;
         }
     </style>
 </head>
 <body>
     <!-- Header -->
     <header>
-        <div class="container">
-            <div class="header-content">
-                <a href="#" class="logo">
-                    <i class="fas fa-flask"></i>
-                    ThereIn-beta
-                </a>
-                <div class="search-bar">
-                    <input type="text" id="searchInput" placeholder="Search research posts...">
+        <div class="header-content">
+            <a href="#" class="logo">
+                <i class="fas fa-flask"></i>
+                <span>ThereIn</span>
+            </a>
+            
+            <div class="navigation">
+                <div class="nav-tabs">
+                    <button class="nav-tab active" onclick="showHomePage()">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </button>
+                    <button class="nav-tab" onclick="showAllNotifications()">
+                        <i class="fas fa-bell"></i>
+                        <span>Notifications</span>
+                    </button>
+                    <button class="nav-tab" onclick="showHomePage()">
+                        <i class="fas fa-envelope"></i>
+                        <span>Messages</span>
+                    </button>
                 </div>
-                <div class="user-actions" id="userActions">
-                    <!-- Will be populated by JavaScript -->
-                </div>
+            </div>
+            
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search research posts...">
+            </div>
+            
+            <div class="user-actions" id="userActions">
+                <!-- Will be populated by JavaScript -->
             </div>
         </div>
     </header>
 
-    <!-- Home Page -->
-    <div id="homePage" class="container">
-        <div class="main-content">
-            <div class="posts-container">
-                <!-- Create Post Button -->
-                <div class="card hidden" id="createPostContainer">
-                    <button class="btn btn-primary w-full" id="createPostBtn">
-                        <i class="fas fa-plus"></i> Create New Research Post
-                    </button>
-                </div>
+    <!-- Main Layout -->
+    <div class="main-content">
+        <!-- Left Sidebar -->
+        <div class="left-sidebar">
+            <div class="nav-menu">
+                <a href="#" class="nav-item active" onclick="showHomePage(); return false;">
+                    <i class="fas fa-home"></i>
+                    <span class="nav-item-text">Home</span>
+                </a>
+                <a href="#" class="nav-item" onclick="handleSearch({target:{value:''}}); showHomePage(); return false;">
+                    <i class="fas fa-search"></i>
+                    <span class="nav-item-text">Explore</span>
+                </a>
+                <a href="#" class="nav-item" onclick="showAllNotifications(); return false;">
+                    <i class="fas fa-bell"></i>
+                    <span class="nav-item-text">Notifications</span>
+                </a>
+                <a href="#" class="nav-item" onclick="showHomePage(); return false;">
+                    <i class="fas fa-envelope"></i>
+                    <span class="nav-item-text">Messages</span>
+                </a>
+                <a href="#" class="nav-item" id="profileNavLink">
+                    <i class="fas fa-user"></i>
+                    <span class="nav-item-text">Profile</span>
+                </a>
+                <a href="#" class="nav-item" onclick="showModal('createPostModal'); return false;">
+                    <i class="fas fa-feather-alt"></i>
+                    <span class="nav-item-text">Post</span>
+                </a>
+            </div>
+            
+            <button class="btn btn-primary w-full mt-4" id="createPostBtn" onclick="showModal('createPostModal')">
+                <i class="fas fa-plus"></i>
+                <span>Create Post</span>
+            </button>
+        </div>
 
-                <!-- Posts List -->
-                <div id="postsList">
-                    <div class="loading">
-                        <i class="fas fa-spinner loading-spinner"></i>
-                        <div class="mt-4">Loading posts...</div>
+        <!-- Main Feed -->
+        <div class="posts-container" id="homePage">
+            <!-- Timeline Header -->
+            <div class="home-timeline-header">
+                <h2>Home</h2>
+            </div>
+
+            <!-- Create Post Composer -->
+            <div class="post-composer hidden" id="createPostContainer">
+                <div class="composer-content">
+                    <div class="composer-avatar">
+                        <div class="avatar" id="currentUserAvatar">U</div>
+                    </div>
+                    <div class="composer-form">
+                        <textarea 
+                            class="composer-input" 
+                            placeholder="What's happening in research?"
+                            onclick="showModal('createPostModal')"
+                            readonly
+                        ></textarea>
                     </div>
                 </div>
             </div>
 
-            <!-- Sidebar -->
-            <div class="sidebar">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <i class="fas fa-fire text-primary"></i>
-                            Trending Research
-                        </h3>
-                    </div>
-                    <div id="trendingList">
-                        <div class="loading">
-                            <i class="fas fa-spinner loading-spinner"></i>
-                        </div>
+            <!-- Posts List -->
+            <div id="postsList">
+                <div class="loading">
+                    <i class="fas fa-spinner loading-spinner"></i>
+                    <div class="mt-4">Loading posts...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="right-sidebar">
+            <!-- Search Widget -->
+            <div class="search-widget">
+                <input type="text" placeholder="Search ThereIn">
+            </div>
+
+            <!-- Trends Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Trends for you</h3>
+                </div>
+                <div id="trendingList">
+                    <div class="loading">
+                        <i class="fas fa-spinner loading-spinner"></i>
                     </div>
                 </div>
+            </div>
 
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <i class="fas fa-info-circle text-primary"></i>
-                            About ThereIn
-                        </h3>
+            <!-- Who to Follow -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Who to follow</h3>
+                </div>
+                <div class="card-body">
+                    <div class="follow-suggestion">
+                        <div class="avatar small" style="background: #3b82f6;">RS</div>
+                        <div class="follow-suggestion-info">
+                            <div class="follow-suggestion-name">Research Society</div>
+                            <div class="follow-suggestion-username">@research_soc</div>
+                        </div>
+                        <button class="btn btn-primary btn-sm">Follow</button>
                     </div>
+                    <div class="follow-suggestion">
+                        <div class="avatar small" style="background: #10b981;">SP</div>
+                        <div class="follow-suggestion-info">
+                            <div class="follow-suggestion-name">Science Portal</div>
+                            <div class="follow-suggestion-username">@scienceportal</div>
+                        </div>
+                        <button class="btn btn-primary btn-sm">Follow</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Card -->
+            <div class="card">
+                <div class="card-body">
                     <p class="text-sm text-secondary">
                         A platform for researchers to share findings, collaborate, and discuss scientific discoveries.
                     </p>
@@ -543,185 +521,106 @@
     <!-- Profile Page -->
     <div id="profilePage" class="profile-page">
         <div class="profile-header">
-            <div class="container">
-                <div id="profileHeaderContent">
-                    <!-- Profile header content will be loaded here -->
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <div class="profile-content">
-                <div class="profile-main">
-                    <div class="card">
-                        <div id="profileMainContent">
-                            <!-- Profile main content will be loaded here -->
-                        </div>
-                    </div>
-                    
-                    <div class="card">
-                        <div class="profile-tabs" id="profileTabs">
-                            <!-- Profile tabs will be loaded here -->
-                        </div>
-                        <div id="profileTabContent">
-                            <!-- Profile tab content will be loaded here -->
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="profile-sidebar">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-chart-line text-primary"></i>
-                                Insights
-                            </h3>
-                        </div>
-                        <div id="profileInsights">
-                            <div class="loading">
-                                <i class="fas fa-spinner loading-spinner"></i>
+            <div class="profile-cover"></div>
+            <div class="profile-info-container">
+                <div class="profile-info">
+                    <div class="profile-avatar-large" id="profileAvatar">U</div>
+                    <div class="profile-details">
+                        <h1 class="profile-name" id="profileName">User Name</h1>
+                        <div class="profile-username" id="profileUsername">@username</div>
+                        <div class="profile-bio" id="profileBio">No bio yet.</div>
+                        <div class="profile-stats">
+                            <div class="stat-item" onclick="showFollowersModal()">
+                                <span class="stat-number" id="followerCount">0</span>
+                                <span class="stat-label">Followers</span>
+                            </div>
+                            <div class="stat-item" onclick="showFollowingModal()">
+                                <span class="stat-number" id="followingCount">0</span>
+                                <span class="stat-label">Following</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="postCount">0</span>
+                                <span class="stat-label">Posts</span>
                             </div>
                         </div>
                     </div>
+                    <div class="profile-edit-btn" id="profileEditBtn"></div>
                 </div>
+            </div>
+        </div>
+        
+        <div class="profile-nav">
+            <div class="profile-tabs" id="profileTabs">
+                <!-- Profile tabs will be loaded here -->
+            </div>
+        </div>
+        
+        <div class="posts-container">
+            <div id="profileTabContent">
+                <!-- Profile content will be loaded here -->
             </div>
         </div>
     </div>
 
     <!-- Notifications Page -->
-    <div id="notificationsPage" class="notifications-page">
-        <div class="container">
-            <div class="page-header">
-                <h1>Notifications</h1>
-                <div class="header-actions">
-                    <button class="btn btn-outline" onclick="markAllNotificationsAsRead()">Mark all as read</button>
-                    <button class="btn btn-outline" onclick="clearAllNotifications()">Clear all</button>
-                </div>
+    <div id="notificationsPage" class="profile-page">
+        <div class="posts-container">
+            <div class="home-timeline-header">
+                <h2>Notifications</h2>
             </div>
-            <div class="notifications-container">
-                <div id="notificationsContent">
-                    <div class="loading">
-                        <i class="fas fa-spinner loading-spinner"></i>
-                        <div class="mt-4">Loading notifications...</div>
-                    </div>
+            <div id="notificationsContent">
+                <div class="loading">
+                    <i class="fas fa-spinner loading-spinner"></i>
+                    <div class="mt-4">Loading notifications...</div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Post Detail Page -->
-    <div id="postPage" class="post-page">
-        <div class="container">
-            <div class="page-header">
-                <button class="btn btn-outline" onclick="showHomePage()">
-                    <i class="fas fa-arrow-left"></i> Back to Posts
-                </button>
-                <div class="header-actions" id="postPageActions">
-                    <!-- Share button and other actions will be added here -->
+    <div id="postPage" class="profile-page">
+        <div class="posts-container">
+            <div class="post-detail">
+                <div class="post-detail-header">
+                    <button class="post-detail-back" onclick="showHomePage()">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+                <div id="postDetailContent">
+                    <!-- Post content will be loaded here -->
                 </div>
             </div>
-            <div class="post-detail-container">
-                <div class="post-detail-main">
-                    <div id="postDetailContent">
-                        <!-- Post content will be loaded here -->
-                    </div>
-                </div>
-                    <!-- Comments Section -->
-                    <div class="card mt-6" id="postDetailCommentsSection" style="display: none;">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-comments"></i>
-                                Comments (<span id="postDetailCommentsCount">0</span>)
-                            </h3>
-                        </div>
-                        <div class="card-body">
-                            <!-- Comment Form -->
-                            <div class="comment-form mb-6">
-                                <textarea 
-                                class="form-input form-textarea" 
-                                id="postDetailCommentInput" 
-                                placeholder="Add your comment..." 
-                                rows="3"
-                                maxlength="1000"
-                                oninput="handlePostDetailCommentTyping()"
-                            ></textarea>
-                             <div class="comments-list" id="postDetailCommentsList">
-                            <div class="text-center text-secondary py-8">
-                                <i class="fas fa-comments text-4xl mb-4"></i>
-                                <p>No comments yet. Be the first to comment!</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-                
-                <div class="post-detail-sidebar">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-share-alt"></i>
-                                Share This Post
-                            </h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="share-options">
-                                <button class="share-option-btn" onclick="copyPostLink()">
-                                    <i class="fas fa-link"></i>
-                                    Copy Link
-                                </button>
-                                <button class="share-option-btn" onclick="shareOnTwitter()">
-                                    <i class="fab fa-twitter"></i>
-                                    Twitter
-                                </button>
-                                <button class="share-option-btn" onclick="shareOnLinkedIn()">
-                                    <i class="fab fa-linkedin"></i>
-                                    LinkedIn
-                                </button>
-                                <button class="share-option-btn" onclick="shareOnFacebook()">
-                                    <i class="fab fa-facebook"></i>
-                                    Facebook
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="card mt-4">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-fire"></i>
-                                Trending Posts
-                            </h3>
-                        </div>
-                        <div id="postDetailTrending">
-                            <div class="loading">
-                                <i class="fas fa-spinner loading-spinner"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            
+            <!-- Comments Section -->
+            <div id="postDetailCommentsSection">
+                <!-- Comments will be loaded here -->
             </div>
         </div>
     </div>
 
-    <!-- Modals -->
+    <!-- Floating Create Post Button (Mobile) -->
+    <button class="create-post-btn" onclick="showModal('createPostModal')">
+        <i class="fas fa-feather-alt"></i>
+    </button>
+
+    <!-- Modals (Keep existing modals but they'll inherit X-style from CSS) -->
     <!-- Create Post Modal -->
     <div class="modal" id="createPostModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">Create Research Post</h2>
                 <button class="close-btn">&times;</button>
+                <h2 class="modal-title">Create Post</h2>
             </div>
             <div class="modal-body">
                 <div class="alert alert-error" id="postErrorAlert"></div>
                 <form id="postForm">
                     <div class="form-group">
-                        <label class="form-label" for="postTitle">Title</label>
-                        <input type="text" class="form-input" id="postTitle" placeholder="Enter your research title">
+                        <input type="text" class="form-input" id="postTitle" placeholder="Title">
                         <div class="form-error" id="postTitleError">Title is required</div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="postCategory">Research Category</label>
                         <select class="form-input form-select" id="postCategory">
-                            <option value="">Select a category</option>
+                            <option value="">Select category</option>
                             <option value="Neuroscience">Neuroscience</option>
                             <option value="Climate Science">Climate Science</option>
                             <option value="Computer Science">Computer Science</option>
@@ -735,66 +634,30 @@
                         <div class="form-error" id="postCategoryError">Category is required</div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="postContent">Research Summary</label>
-                        <textarea class="form-input form-textarea" id="postContent" placeholder="Describe your research findings..."></textarea>
+                        <textarea class="form-input form-textarea" id="postContent" placeholder="What's happening in research?" rows="6"></textarea>
                         <div class="form-error" id="postContentError">Content is required</div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="postTags">Tags (separated by commas)</label>
-                        <input type="text" class="form-input" id="postTags" placeholder="Add relevant tags separated by commas">
+                        <input type="text" class="form-input" id="postTags" placeholder="Tags (comma separated)">
                     </div>
-                    <button type="submit" class="btn btn-primary w-full">Publish Research</button>
+                    <button type="submit" class="btn btn-primary w-full">Post</button>
                 </form>
             </div>
         </div>
     </div>
 
+    <!-- Other modals (Edit Post, Share Post, Edit Profile, Login, Signup, etc.) -->
+    <!-- Keep all your existing modals - they'll inherit the X-style from the CSS -->
+
     <!-- Edit Post Modal -->
     <div class="modal" id="editPostModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">Edit Research Post</h2>
                 <button class="close-btn">&times;</button>
+                <h2 class="modal-title">Edit Post</h2>
             </div>
             <div class="modal-body">
-                <div class="alert alert-error" id="editPostErrorAlert"></div>
-                <form id="editPostForm">
-                    <input type="hidden" id="editPostId">
-                    <div class="form-group">
-                        <label class="form-label" for="editPostTitle">Title</label>
-                        <input type="text" class="form-input" id="editPostTitle" placeholder="Enter your research title">
-                        <div class="form-error" id="editPostTitleError">Title is required</div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="editPostCategory">Research Category</label>
-                        <select class="form-input form-select" id="editPostCategory">
-                            <option value="">Select a category</option>
-                            <option value="Neuroscience">Neuroscience</option>
-                            <option value="Climate Science">Climate Science</option>
-                            <option value="Computer Science">Computer Science</option>
-                            <option value="Biology">Biology</option>
-                            <option value="Physics">Physics</option>
-                            <option value="Medicine">Medicine</option>
-                            <option value="Psychology">Psychology</option>
-                            <option value="Economics">Economics</option>
-                            <option value="Other">Other</option>
-                        </select>
-                        <div class="form-error" id="editPostCategoryError">Category is required</div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="editPostContent">Research Summary</label>
-                        <textarea class="form-input form-textarea" id="editPostContent" placeholder="Describe your research findings..."></textarea>
-                        <div class="form-error" id="editPostContentError">Content is required</div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="editPostTags">Tags (separated by commas)</label>
-                        <input type="text" class="form-input" id="editPostTags" placeholder="Add relevant tags separated by commas">
-                    </div>
-                    <div class="flex gap-3">
-                        <button type="button" class="btn btn-danger flex-1" onclick="handleDeletePostFromEdit()">Delete Post</button>
-                        <button type="submit" class="btn btn-primary flex-1">Update Post</button>
-                    </div>
-                </form>
+                <!-- Keep existing edit post form -->
             </div>
         </div>
     </div>
@@ -803,61 +666,11 @@
     <div class="modal" id="sharePostModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">Share Post</h2>
                 <button class="close-btn">&times;</button>
+                <h2 class="modal-title">Share Post</h2>
             </div>
             <div class="modal-body">
-                <div class="share-modal-options">
-                    <button class="share-modal-option" onclick="copyPostLink()">
-                        <div class="share-icon">
-                            <i class="fas fa-link"></i>
-                        </div>
-                        <div class="share-text">
-                            <div class="share-title">Copy Link</div>
-                            <div class="share-description">Copy post URL to clipboard</div>
-                        </div>
-                    </button>
-                    
-                    <button class="share-modal-option" onclick="shareOnTwitter()">
-                        <div class="share-icon twitter">
-                            <i class="fab fa-twitter"></i>
-                        </div>
-                        <div class="share-text">
-                            <div class="share-title">Share on Twitter</div>
-                            <div class="share-description">Share with your Twitter followers</div>
-                        </div>
-                    </button>
-                    
-                    <button class="share-modal-option" onclick="shareOnLinkedIn()">
-                        <div class="share-icon linkedin">
-                            <i class="fab fa-linkedin"></i>
-                        </div>
-                        <div class="share-text">
-                            <div class="share-title">Share on LinkedIn</div>
-                            <div class="share-description">Share with your professional network</div>
-                        </div>
-                    </button>
-                    
-                    <button class="share-modal-option" onclick="shareOnFacebook()">
-                        <div class="share-icon facebook">
-                            <i class="fab fa-facebook"></i>
-                        </div>
-                        <div class="share-text">
-                            <div class="share-title">Share on Facebook</div>
-                            <div class="share-description">Share with your Facebook friends</div>
-                        </div>
-                    </button>
-                    
-                    <button class="share-modal-option" onclick="shareViaEmail()">
-                        <div class="share-icon">
-                            <i class="fas fa-envelope"></i>
-                        </div>
-                        <div class="share-text">
-                            <div class="share-title">Share via Email</div>
-                            <div class="share-description">Send via email</div>
-                        </div>
-                    </button>
-                </div>
+                <!-- Keep existing share options -->
             </div>
         </div>
     </div>
@@ -866,345 +679,84 @@
     <div class="modal" id="editProfileModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">Edit Profile</h2>
                 <button class="close-btn">&times;</button>
+                <h2 class="modal-title">Edit Profile</h2>
             </div>
             <div class="modal-body">
-                <div class="alert alert-error" id="editProfileErrorAlert"></div>
-                <form id="editProfileForm">
-                    <div class="form-group">
-                        <label class="form-label" for="editName">Full Name</label>
-                        <input type="text" class="form-input" id="editName" placeholder="Enter your full name">
-                        <div class="form-error" id="editNameError">Name is required</div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="editBio">Bio</label>
-                        <textarea class="form-input form-textarea" id="editBio" placeholder="Tell others about yourself and your research..." maxlength="500"></textarea>
-                        <div class="text-xs text-secondary text-right" id="bioCharCount">0/500</div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="editField">Research Field</label>
-                        <input type="text" class="form-input" id="editField" placeholder="Your primary research field">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="editInstitution">Institution</label>
-                        <input type="text" class="form-input" id="editInstitution" placeholder="Your university or organization">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="editLocation">Location</label>
-                        <input type="text" class="form-input" id="editLocation" placeholder="Your location">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="editWebsite">Website</label>
-                        <input type="url" class="form-input" id="editWebsite" placeholder="https://example.com">
-                    </div>
-                    
-                    <div class="card mt-4">
-                        <div class="card-header">
-                            <h3 class="card-title text-sm">Social Links</h3>
-                        </div>
-                        <div class="space-y-3">
-                            <div class="form-group">
-                                <label class="form-label" for="editTwitter">Twitter</label>
-                                <input type="url" class="form-input" id="editTwitter" placeholder="https://twitter.com/username">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label" for="editLinkedIn">LinkedIn</label>
-                                <input type="url" class="form-input" id="editLinkedIn" placeholder="https://linkedin.com/in/username">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label" for="editGitHub">GitHub</label>
-                                <input type="url" class="form-input" id="editGitHub" placeholder="https://github.com/username">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label" for="editORCID">ORCID</label>
-                                <input type="url" class="form-input" id="editORCID" placeholder="https://orcid.org/0000-0000-0000-0000">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-3 mt-6">
-                        <button type="button" class="btn btn-outline flex-1" onclick="closeModal(document.getElementById('editProfileModal'))">Cancel</button>
-                        <button type="submit" class="btn btn-primary flex-1">Save Changes</button>
-                    </div>
-                </form>
+                <!-- Keep existing edit profile form -->
             </div>
         </div>
     </div>
-
-
 
     <!-- Login Modal -->
     <div class="modal" id="loginModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">Log In to ThereIn</h2>
                 <button class="close-btn">&times;</button>
+                <h2 class="modal-title">Log In</h2>
             </div>
             <div class="modal-body">
-                <div class="alert alert-error" id="loginErrorAlert"></div>
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label class="form-label" for="loginEmail">Email or Username</label>
-                        <input type="text" class="form-input" id="loginEmail" placeholder="Enter your email or username">
-                        <div class="form-error" id="loginEmailError">Email or username is required</div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="loginPassword">Password</label>
-                        <input type="password" class="form-input" id="loginPassword" placeholder="Enter your password">
-                        <div class="form-error" id="loginPasswordError">Password is required</div>
-                    </div>
-                    <div class="form-group text-center">
-                        <a href="#" class="text-sm text-primary" onclick="showForgotPasswordModal()">Forgot your password?</a>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-full">Log In</button>
-                </form>
-                <div class="text-center mt-4">
-                    <span class="text-sm text-secondary">Don't have an account? </span>
-                    <a href="#" class="text-sm text-primary" id="showSignup">Sign up</a>
-                </div>
+                <!-- Keep existing login form -->
             </div>
         </div>
     </div>
 
     <!-- Sign Up Modal -->
-   <!-- In the signup modal, remove username field -->
-<div class="modal" id="signupModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">Join ThereIn</h2>
-            <button class="close-btn">&times;</button>
-        </div>
-        <div class="modal-body">
-            <div class="alert alert-error" id="signupErrorAlert"></div>
-            <form id="signupForm">
-                <div class="form-group">
-                    <label class="form-label" for="signupName">Display Name (Optional)</label>
-                    <input type="text" class="form-input" id="signupName" placeholder="Enter your display name (optional)">
-                    <div class="text-xs text-secondary mt-1">If not provided, we'll use "Anonymous"</div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="signupEmail">Email</label>
-                    <input type="email" class="form-input" id="signupEmail" placeholder="Enter your email" required>
-                    <div class="form-error" id="signupEmailError">Valid email is required</div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="signupPassword">Password</label>
-                    <input type="password" class="form-input" id="signupPassword" placeholder="Create a password" required>
-                    <div class="form-error" id="signupPasswordError">Password must be at least 6 characters</div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="signupField">Research Field (Optional)</label>
-                    <input type="text" class="form-input" id="signupField" placeholder="Your primary research field">
-                </div>
-                <button type="submit" class="btn btn-primary w-full">Create Account</button>
-            </form>
-            <div class="text-center mt-4">
-                <span class="text-sm text-secondary">Already have an account? </span>
-                <a href="#" class="text-sm text-primary" id="showLogin">Log in</a>
-            </div>
-        </div>
-    </div>
-</div>
-    <!-- Forgot Password Modal -->
-    <div class="modal" id="forgotPasswordModal">
+    <div class="modal" id="signupModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">Reset Your Password</h2>
                 <button class="close-btn">&times;</button>
+                <h2 class="modal-title">Sign Up</h2>
             </div>
             <div class="modal-body">
-                <div class="alert alert-error" id="forgotPasswordErrorAlert"></div>
-                <form id="forgotPasswordForm">
-                    <div class="form-group">
-                        <label class="form-label" for="forgotPasswordEmail">Email</label>
-                        <input type="email" class="form-input" id="forgotPasswordEmail" placeholder="Enter your email">
-                        <div class="form-error" id="forgotPasswordEmailError">Valid email is required</div>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-full">Send Reset Code</button>
-                </form>
-                <div class="text-center mt-4">
-                    <span class="text-sm text-secondary">Remember your password? </span>
-                    <a href="#" class="text-sm text-primary" onclick="showLoginModal()">Log in</a>
-                </div>
+                <!-- Keep existing signup form -->
             </div>
         </div>
     </div>
 
-    <!-- Reset Password Modal -->
-    <div class="modal" id="resetPasswordModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Create New Password</h2>
-                <button class="close-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="alert alert-error" id="resetPasswordErrorAlert"></div>
-                <form id="resetPasswordForm">
-                    <div class="form-group">
-                        <label class="form-label" for="resetToken">Reset Code</label>
-                        <input type="text" class="form-input" id="resetToken" placeholder="Enter the 6-digit code">
-                        <div class="form-error" id="resetTokenError">Reset code is required</div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="newPassword">New Password</label>
-                        <input type="password" class="form-input" id="newPassword" placeholder="Enter your new password">
-                        <div class="form-error" id="newPasswordError">Password must be at least 6 characters</div>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-full">Reset Password</button>
-                </form>
-                <div class="text-center mt-4">
-                    <span class="text-sm text-secondary">Didn't receive the code? </span>
-                    <a href="#" class="text-sm text-primary" onclick="showForgotPasswordModal()">Resend</a>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Other modals (Forgot Password, Reset Password, OTP Verification, Change Password, Delete Account, Followers, Following) -->
+    <!-- Keep all your existing modal structures -->
 
-    <!-- OTP Verification Modal -->
-    <div class="modal" id="otpVerificationModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Verify Your Email</h2>
-                <button class="close-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="alert alert-error" id="otpErrorAlert"></div>
-                <p class="text-sm text-secondary mb-4">We've sent a 6-digit verification code to your email. Please enter it below.</p>
-                <form id="otpVerificationForm">
-                    <input type="hidden" id="otpUserId">
-                    <div class="form-group">
-                        <label class="form-label" for="otpCode">Verification Code</label>
-                        <input type="text" class="form-input" id="otpCode" placeholder="Enter 6-digit code" maxlength="6">
-                        <div class="form-error" id="otpCodeError">Verification code is required</div>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-full">Verify Email</button>
-                </form>
-                <div class="text-center mt-4">
-                    <span class="text-sm text-secondary">Didn't receive the code? </span>
-                    <a href="#" class="text-sm text-primary" onclick="resendOTP()">Resend</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Change Password Modal -->
-    <div class="modal" id="changePasswordModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Change Password</h2>
-                <button class="close-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="alert alert-error" id="changePasswordErrorAlert"></div>
-                <form id="changePasswordForm">
-                    <div class="form-group">
-                        <label class="form-label" for="currentPassword">Current Password</label>
-                        <input type="password" class="form-input" id="currentPassword" placeholder="Enter your current password">
-                        <div class="form-error" id="currentPasswordError">Current password is required</div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="newPasswordChange">New Password</label>
-                        <input type="password" class="form-input" id="newPasswordChange" placeholder="Enter new password">
-                        <div class="form-error" id="newPasswordChangeError">Password must be at least 6 characters</div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="confirmPassword">Confirm New Password</label>
-                        <input type="password" class="form-input" id="confirmPassword" placeholder="Confirm new password">
-                        <div class="form-error" id="confirmPasswordError">Passwords must match</div>
-                    </div>
-                    <div class="flex gap-3">
-                        <button type="button" class="btn btn-outline flex-1" onclick="closeModal(document.getElementById('changePasswordModal'))">Cancel</button>
-                        <button type="submit" class="btn btn-primary flex-1">Change Password</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Account Modal -->
-    <div class="modal" id="deleteAccountModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Delete Account</h2>
-                <button class="close-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="alert alert-error" id="deleteAccountErrorAlert"></div>
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title text-error">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            Warning: This action cannot be undone
-                        </h3>
-                    </div>
-                    <p class="text-sm text-secondary mb-4">
-                        This will permanently delete your account and all associated data including:
-                    </p>
-                    <ul class="text-sm text-secondary space-y-2 mb-6">
-                        <li><i class="fas fa-times text-error"></i> All your research posts</li>
-                        <li><i class="fas fa-times text-error"></i> Comments and replies</li>
-                        <li><i class="fas fa-times text-error"></i> Likes and saves</li>
-                        <li><i class="fas fa-times text-error"></i> Followers and following data</li>
-                        <li><i class="fas fa-times text-error"></i> Profile information</li>
-                    </ul>
-                </div>
-                <form id="deleteAccountForm">
-                    <div class="form-group">
-                        <label class="form-label" for="deletePassword">Enter your password to confirm</label>
-                        <input type="password" class="form-input" id="deletePassword" placeholder="Enter your password">
-                        <div class="form-error" id="deletePasswordError">Password is required</div>
-                    </div>
-                    <div class="flex gap-3">
-                        <button type="button" class="btn btn-outline flex-1" onclick="closeModal(document.getElementById('deleteAccountModal'))">Cancel</button>
-                        <button type="submit" class="btn btn-danger flex-1">Delete Account</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Followers Modal -->
-    <div class="modal" id="followersModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Followers</h2>
-                <button class="close-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="follow-list" id="followersList">
-                    <div class="loading">
-                        <i class="fas fa-spinner loading-spinner"></i>
-                        <div class="mt-4">Loading followers...</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Following Modal -->
-    <div class="modal" id="followingModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Following</h2>
-                <button class="close-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="follow-list" id="followingList">
-                    <div class="loading">
-                        <i class="fas fa-spinner loading-spinner"></i>
-                        <div class="mt-4">Loading following...</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <script src="script.js">
-          if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/service-worker.js");
-  }
-
+    <script src="script.js"></script>
+    <script>
+        // Update the UI when user logs in
+        function updateProfileNavigation() {
+            if (currentUser) {
+                const profileNavLink = document.getElementById('profileNavLink');
+                if (profileNavLink) {
+                    profileNavLink.onclick = function(e) {
+                        e.preventDefault();
+                        showProfilePage(currentUser.username);
+                    };
+                }
+                
+                // Update avatar in composer
+                const avatar = document.getElementById('currentUserAvatar');
+                if (avatar) {
+                    avatar.textContent = getInitials(currentUser.name);
+                    avatar.style.background = JSON.parse(currentUser.avatar).color;
+                }
+            }
+        }
+        
+        // Update the showHomePage function to show composer for logged-in users
+        const originalShowHomePage = showHomePage;
+        showHomePage = function() {
+            originalShowHomePage();
+            const composer = document.getElementById('createPostContainer');
+            if (composer && currentUser) {
+                composer.classList.remove('hidden');
+            } else if (composer) {
+                composer.classList.add('hidden');
+            }
+            updateProfileNavigation();
+        };
+        
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            initApp();
+            updateProfileNavigation();
+        });
     </script>
 </body>
 </html>
