@@ -473,49 +473,21 @@
 <body>
     <!-- Header -->
     <header>
-    <div class="header-content">
-        <a href="#" class="logo">
-            <i class="fas fa-flask"></i>
-            <span>ThereIn</span>
-        </a>
-        
-        <nav class="nav-menu">
-            <a href="#" class="nav-item active" onclick="showHomePage()">
-                <i class="fas fa-home"></i>
-                <span>Home</span>
-            </a>
-            <a href="#" class="nav-item" onclick="showAllNotifications()">
-                <i class="fas fa-bell"></i>
-                <span>Notifications</span>
-                ${unreadNotificationCount > 0 ? 
-                    `<span class="notification-badge">${unreadNotificationCount > 99 ? '99+' : unreadNotificationCount}</span>` : 
-                    ''}
-            </a>
-            <a href="#" class="nav-item" id="profileNavLink" onclick="showProfilePage('${currentUser?.username || ''}')">
-                <i class="fas fa-user"></i>
-                <span>Profile</span>
-            </a>
-            <a href="#" class="nav-item" onclick="showModal('createPostModal')">
-                <i class="fas fa-plus-circle"></i>
-                <span>Create</span>
-            </a>
-        </nav>
-        
-        <button class="btn-post" onclick="showModal('createPostModal')">
-            <i class="fas fa-plus"></i>
-            <span>Post</span>
-        </button>
-        
-        <div class="sidebar-user" onclick="showProfilePage('${currentUser?.username || ''}')">
-            <div class="user-avatar">${getInitials(currentUser?.name || '')}</div>
-            <div class="user-details">
-                <div class="user-name">${currentUser?.name || 'Guest'}</div>
-                <div class="user-username">@${currentUser?.username || 'guest'}</div>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">
+                    <i class="fas fa-flask"></i>
+                    ThereIn-beta
+                </a>
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search research posts...">
+                </div>
+                <div class="user-actions" id="userActions">
+                    <!-- Will be populated by JavaScript -->
+                </div>
             </div>
-            <i class="fas fa-ellipsis-h"></i>
         </div>
-    </div>
-</header>
+    </header>
 
     <!-- Home Page -->
     <div id="homePage" class="container">
