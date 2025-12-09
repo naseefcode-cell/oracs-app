@@ -471,75 +471,117 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <a href="#" class="logo">
-                    <i class="fas fa-flask"></i>
-                    ThereIn-beta
+<!-- Header -->
+<header>
+    <div class="header-content">
+        <a href="#" class="logo" onclick="showHomePage(); return false;">
+            <i class="fas fa-flask"></i>
+            <span>ThereIn</span>
+        </a>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search research posts...">
+        </div>
+        <div class="user-actions" id="userActions">
+            <!-- Will be populated by JavaScript -->
+        </div>
+    </div>
+</header>
+
+<!-- Home Page -->
+<div id="homePage" class="container">
+    <div class="main-content">
+        <!-- Left Sidebar -->
+        <div class="sidebar-left">
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" onclick="showHomePage(); return false;">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
                 </a>
-                <div class="search-bar">
-                    <input type="text" id="searchInput" placeholder="Search research posts...">
+                <a href="#" class="nav-item" onclick="showHomePage(); return false;">
+                    <i class="fas fa-hashtag"></i>
+                    <span>Explore</span>
+                </a>
+                <a href="#" class="nav-item" onclick="showAllNotifications(); return false;">
+                    <i class="fas fa-bell"></i>
+                    <span>Notifications</span>
+                </a>
+                <a href="#" class="nav-item" onclick="currentUser ? showProfilePage(currentUser.username) : showLoginModal()">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="#" class="nav-item" onclick="showModal('createPostModal')">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Create</span>
+                </a>
+            </nav>
+            <button class="btn btn-primary create-post-btn" onclick="showModal('createPostModal')">
+                <i class="fas fa-plus"></i>
+                <span>Create Post</span>
+            </button>
+        </div>
+
+        <!-- Middle Column (Feed) -->
+        <div class="posts-container">
+            <div class="feed-header">
+                <h2>Home</h2>
+            </div>
+            
+            <!-- Feed Filters -->
+            <div class="card" id="feedFilters" style="border: none; border-radius: 0; margin: 0; padding: 16px; border-bottom: 1px solid var(--border-color);">
+                <div class="feed-filters">
+                    <div class="feed-tabs">
+                        <button class="feed-tab active" onclick="switchFeed('all')">
+                            For you
+                        </button>
+                        <button class="feed-tab" onclick="switchFeed('following')">
+                            Following
+                        </button>
+                        <button class="feed-tab" onclick="switchFeed('trending')">
+                            Trending
+                        </button>
+                    </div>
                 </div>
-                <div class="user-actions" id="userActions">
-                    <!-- Will be populated by JavaScript -->
+            </div>
+
+            <!-- Posts List -->
+            <div id="postsList">
+                <div class="loading" style="padding: 48px 16px;">
+                    <i class="fas fa-spinner loading-spinner"></i>
+                    <div class="mt-4">Loading posts...</div>
                 </div>
             </div>
         </div>
-    </header>
 
-    <!-- Home Page -->
-    <div id="homePage" class="container">
-        <div class="main-content">
-            <div class="posts-container">
-                <!-- Create Post Button -->
-                <div class="card hidden" id="createPostContainer">
-                    <button class="btn btn-primary w-full" id="createPostBtn">
-                        <i class="fas fa-plus"></i> Create New Research Post
-                    </button>
+        <!-- Right Sidebar -->
+        <div class="sidebar">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-fire"></i>
+                        Trending Research
+                    </h3>
                 </div>
-
-                <!-- Posts List -->
-                <div id="postsList">
+                <div id="trendingList">
                     <div class="loading">
                         <i class="fas fa-spinner loading-spinner"></i>
-                        <div class="mt-4">Loading posts...</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Sidebar -->
-            <div class="sidebar">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <i class="fas fa-fire text-primary"></i>
-                            Trending Research
-                        </h3>
-                    </div>
-                    <div id="trendingList">
-                        <div class="loading">
-                            <i class="fas fa-spinner loading-spinner"></i>
-                        </div>
-                    </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-info-circle"></i>
+                        About ThereIn
+                    </h3>
                 </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <i class="fas fa-info-circle text-primary"></i>
-                            About ThereIn
-                        </h3>
-                    </div>
-                    <p class="text-sm text-secondary">
-                        A platform for researchers to share findings, collaborate, and discuss scientific discoveries.
-                    </p>
-                </div>
+                <p class="text-sm text-secondary">
+                    A platform for researchers to share findings, collaborate, and discuss scientific discoveries.
+                </p>
             </div>
         </div>
     </div>
-
+</div>
     <!-- Profile Page -->
     <div id="profilePage" class="profile-page">
         <div class="profile-header">
@@ -609,99 +651,60 @@
     </div>
 
     <!-- Post Detail Page -->
-    <div id="postPage" class="post-page">
-        <div class="container">
-            <div class="page-header">
-                <button class="btn btn-outline" onclick="showHomePage()">
-                    <i class="fas fa-arrow-left"></i> Back to Posts
-                </button>
-                <div class="header-actions" id="postPageActions">
-                    <!-- Share button and other actions will be added here -->
+<div id="postPage" class="post-page">
+    <div class="container">
+        <div class="main-content">
+            <!-- Left Sidebar -->
+            <div class="sidebar-left">
+                <nav class="nav-menu">
+                    <a href="#" class="nav-item" onclick="showHomePage(); return false;">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Back</span>
+                    </a>
+                    <a href="#" class="nav-item active">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-hashtag"></i>
+                        <span>Explore</span>
+                    </a>
+                    <a href="#" class="nav-item" onclick="showAllNotifications(); return false;">
+                        <i class="fas fa-bell"></i>
+                        <span>Notifications</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Middle Column (Post Detail) -->
+            <div class="posts-container">
+                <div class="feed-header">
+                    <h2>Post</h2>
+                </div>
+                <div id="postDetailContent">
+                    <!-- Post content will be loaded here -->
                 </div>
             </div>
-            <div class="post-detail-container">
-                <div class="post-detail-main">
-                    <div id="postDetailContent">
-                        <!-- Post content will be loaded here -->
+
+            <!-- Right Sidebar -->
+            <div class="sidebar">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-fire"></i>
+                            Trending Posts
+                        </h3>
                     </div>
-                </div>
-                    <!-- Comments Section -->
-                    <div class="card mt-6" id="postDetailCommentsSection" style="display: none;">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-comments"></i>
-                                Comments (<span id="postDetailCommentsCount">0</span>)
-                            </h3>
-                        </div>
-                        <div class="card-body">
-                            <!-- Comment Form -->
-                            <div class="comment-form mb-6">
-                                <textarea 
-                                class="form-input form-textarea" 
-                                id="postDetailCommentInput" 
-                                placeholder="Add your comment..." 
-                                rows="3"
-                                maxlength="1000"
-                                oninput="handlePostDetailCommentTyping()"
-                            ></textarea>
-                             <div class="comments-list" id="postDetailCommentsList">
-                            <div class="text-center text-secondary py-8">
-                                <i class="fas fa-comments text-4xl mb-4"></i>
-                                <p>No comments yet. Be the first to comment!</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-                
-                <div class="post-detail-sidebar">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-share-alt"></i>
-                                Share This Post
-                            </h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="share-options">
-                                <button class="share-option-btn" onclick="copyPostLink()">
-                                    <i class="fas fa-link"></i>
-                                    Copy Link
-                                </button>
-                                <button class="share-option-btn" onclick="shareOnTwitter()">
-                                    <i class="fab fa-twitter"></i>
-                                    Twitter
-                                </button>
-                                <button class="share-option-btn" onclick="shareOnLinkedIn()">
-                                    <i class="fab fa-linkedin"></i>
-                                    LinkedIn
-                                </button>
-                                <button class="share-option-btn" onclick="shareOnFacebook()">
-                                    <i class="fab fa-facebook"></i>
-                                    Facebook
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="card mt-4">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-fire"></i>
-                                Trending Posts
-                            </h3>
-                        </div>
-                        <div id="postDetailTrending">
-                            <div class="loading">
-                                <i class="fas fa-spinner loading-spinner"></i>
-                            </div>
+                    <div id="postDetailTrending">
+                        <div class="loading">
+                            <i class="fas fa-spinner loading-spinner"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
+</div>
     <!-- Modals -->
     <!-- Create Post Modal -->
     <div class="modal" id="createPostModal">
