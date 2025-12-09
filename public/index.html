@@ -473,64 +473,73 @@
 <body>
     <!-- Header -->
     <header>
-    <div class="header-content">
-        <a href="#" class="logo" onclick="showHomePage(); return false;">
-            <i class="fas fa-flask"></i>
-            <span>ThereIn</span>
-        </a>
-        
-        <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Search research posts...">
-        </div>
-        
-        <div class="user-actions" id="userActions">
-            <!-- Will be populated by JavaScript -->
-        </div>
-    </div>
-</header>
-   <div class="container">
-    <div class="main-content">
-        <div class="posts-container">
-            <!-- Create Post Button -->
-            <div class="post" id="createPostContainer" style="padding: 16px; border-bottom: 1px solid var(--x-border);">
-                <button class="btn btn-primary w-full" id="createPostBtn">
-                    Create Post
-                </button>
-            </div>
-
-            <!-- Posts List -->
-            <div id="postsList">
-                <div class="loading">
-                    <i class="fas fa-spinner loading-spinner"></i>
-                    <div>Loading posts...</div>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">
+                    <i class="fas fa-flask"></i>
+                    ThereIn-beta
+                </a>
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search research posts...">
+                </div>
+                <div class="user-actions" id="userActions">
+                    <!-- Will be populated by JavaScript -->
                 </div>
             </div>
         </div>
+    </header>
 
-        <!-- Sidebar (Hidden on mobile) -->
-        <div class="sidebar">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Trending Research</h3>
+    <!-- Home Page -->
+    <div id="homePage" class="container">
+        <div class="main-content">
+            <div class="posts-container">
+                <!-- Create Post Button -->
+                <div class="card hidden" id="createPostContainer">
+                    <button class="btn btn-primary w-full" id="createPostBtn">
+                        <i class="fas fa-plus"></i> Create New Research Post
+                    </button>
                 </div>
-                <div id="trendingList">
+
+                <!-- Posts List -->
+                <div id="postsList">
                     <div class="loading">
                         <i class="fas fa-spinner loading-spinner"></i>
+                        <div class="mt-4">Loading posts...</div>
                     </div>
                 </div>
             </div>
 
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">About ThereIn</h3>
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-fire text-primary"></i>
+                            Trending Research
+                        </h3>
+                    </div>
+                    <div id="trendingList">
+                        <div class="loading">
+                            <i class="fas fa-spinner loading-spinner"></i>
+                        </div>
+                    </div>
                 </div>
-                <p class="text-secondary">
-                    A platform for researchers to share findings, collaborate, and discuss scientific discoveries.
-                </p>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-info-circle text-primary"></i>
+                            About ThereIn
+                        </h3>
+                    </div>
+                    <p class="text-sm text-secondary">
+                        A platform for researchers to share findings, collaborate, and discuss scientific discoveries.
+                    </p>
+                </div>
             </div>
         </div>
     </div>
-</div>
+
     <!-- Profile Page -->
     <div id="profilePage" class="profile-page">
         <div class="profile-header">
