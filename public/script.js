@@ -1284,149 +1284,120 @@ async function loadPostDetail(postId) {
         `;
     }
 }
-// Update the renderPostDetail function to ensure proper data attributes and classes
 function renderPostDetail(post) {
     const postDetailContent = document.getElementById('postDetailContent');
-    const postPageActions = document.getElementById('postPageActions');
-    
-    // Format content with line breaks
-    const formattedContent = post.content.replace(/\n/g, '<br>');
-    
-    // Check if current user has liked this post - FIXED VERSION
-    const isLikedByCurrentUser = post.likes && (
-        Array.isArray(post.likes) 
-            ? post.likes.some(like => 
-                (like._id && like._id === currentUser?._id) || 
-                (like === currentUser?._id) ||
-                (typeof like === 'string' && like === currentUser?._id)
-            )
-            : false
-    );
+    const avatar = JSON.parse(post.author.avatar);
     
     postDetailContent.innerHTML = `
-        <div class="card" data-post-id="${post._id}">
-            <div class="post-header">
-                <div class="post-user-info">
-                    <div class="avatar" style="background: ${JSON.parse(post.author.avatar).color}; cursor: pointer;" onclick="showProfilePage('${post.author.username}')">
-                        ${JSON.parse(post.author.avatar).initials}
-                    </div>
-                    <div class="post-meta">
-                        <div class="post-author" onclick="showProfilePage('${post.author.username}')" style="cursor: pointer;">
-                            ${post.author.name}
-                        </div>
-                        <div class="post-username">@${post.author.username}</div>
-                        <div class="post-time">${getTimeAgo(post.createdAt)}</div>
-                    </div>
-                </div>
-                <div class="post-category">${post.category}</div>
+        <!-- Post Header -->
+        <div class="post-header-detail">
+            <div class="post-user-avatar" style="background: ${avatar.color}">
+                ${avatar.initials}
             </div>
-            
-            <div class="post-content">
-                <h1 class="post-detail-title">${post.title}</h1>
-                <div class="post-detail-text">${formattedContent}</div>
-                
-                ${post.tags && post.tags.length > 0 ? `
-                    <div class="post-tags">
-                        ${post.tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
-                    </div>
-                ` : ''}
-                
-                <div class="post-stats">
-                    <div class="stat">
-                        <i class="fas fa-eye"></i>
-                        <span>${post.views || 0} views</span>
-                    </div>
-                    <div class="stat">
-                        <i class="fas fa-heart"></i>
-                        <span>${post.likes.length} likes</span>
-                    </div>
-                    <div class="stat">
-                        <i class="fas fa-comment"></i>
-                        <span>${post.comments.length} comments</span>
-                    </div>
-                    ${post.repostCount > 0 ? `
-                        <div class="stat">
-                            <i class="fas fa-retweet"></i>
-                            <span>${post.repostCount} reposts</span>
-                        </div>
-                    ` : ''}
+            <div class="post-user-info-detail">
+                <div class="post-user-name-row">
+                    <span class="post-user-name-detail">${post.author.name}</span>
+                    <i class="fas fa-check-circle post-verified-badge"></i>
+                    <span class="post-user-username-detail">@${post.author.username}</span>
+                    <span class="post-time-detail">• ${getTimeAgo(post.createdAt)}</span>
                 </div>
-            </div>
-            
-            <div class="post-actions post-detail-actions">
-                <button class="action-btn ${isLikedByCurrentUser ? 'liked' : ''}" 
-                        onclick="likePost('${post._id}')">
-                    <i class="fas fa-heart"></i>
-                    <span>${post.likes.length}</span>
-                </button>
-                <button class="action-btn" onclick="focusCommentInput()">
-                    <i class="fas fa-comment"></i>
-                    <span>${post.comments.length}</span>
-                </button>
-                <button class="action-btn" onclick="showSharePostModal('${post._id}')">
-                    <i class="fas fa-share"></i>
-                    <span>Share</span>
-                </button>
-                ${currentUser && currentUser._id === post.author._id ? `
-                    <button class="action-btn" onclick="editPost('${post._id}')">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="action-btn text-error" onclick="deletePost('${post._id}')">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                ` : ''}
             </div>
         </div>
         
-        <!-- Comments Section -->
-        <div class="card mt-6" id="postDetailCommentsSection">
-            <div class="card-header">
-                <h3 class="card-title">
-                    <i class="fas fa-comments"></i>
-                    Comments (<span id="postDetailCommentsCount">${post.comments.length}</span>)
-                </h3>
-            </div>
-            <div class="card-body">
-                <!-- Comment Form -->
-                ${currentUser ? `
-                    <div class="comment-form mb-6">
-                        <textarea 
-                            class="form-input form-textarea" 
-                            id="postDetailCommentInput" 
-                            placeholder="Add your comment..." 
-                            rows="3"
-                            maxlength="1000"
-                            oninput="handlePostDetailCommentTyping()"
-                        ></textarea>
-                        <div class="flex justify-between items-center mt-2">
-                            <div class="text-xs text-secondary" id="postDetailCommentCharCount">0/1000</div>
-                            <button class="btn btn-primary" onclick="addCommentFromPostPage()">
-                                Post Comment
-                            </button>
-                        </div>
-                    </div>
-                ` : `
-                    <div class="alert alert-info mb-6">
-                        <i class="fas fa-info-circle"></i>
-                        <a href="#" onclick="showLoginModal()" class="text-primary">Log in</a> to add a comment
-                    </div>
-                `}
-                
-                <!-- Comments List -->
-                <div class="comments-list" id="postDetailCommentsList">
-                    ${post.comments && post.comments.length > 0 ? 
-                        renderPostDetailCommentsList(post.comments) : 
-                        `
-                        <div class="text-center text-secondary py-8">
-                            <i class="fas fa-comments text-4xl mb-4"></i>
-                            <p>No comments yet. Be the first to comment!</p>
-                        </div>
-                        `
-                    }
+        <!-- Post Content -->
+        <div class="post-content-detail">
+            <h1 class="post-title-detail">${post.title}</h1>
+            <div class="post-text-detail">${post.content}</div>
+            <div class="post-category-detail">${post.category}</div>
+            
+            ${post.tags && post.tags.length > 0 ? `
+                <div class="post-tags-detail">
+                    ${post.tags.map(tag => `<span class="tag-detail">#${tag}</span>`).join('')}
                 </div>
+            ` : ''}
+        </div>
+        
+        <!-- Post Stats -->
+        <div class="post-stats-detail">
+            <div class="stat-item-detail">
+                <i class="fas fa-eye"></i>
+                <span class="stat-number-detail">${post.views || 0}</span>
+                <span>Views</span>
+            </div>
+            <div class="stat-item-detail">
+                <i class="fas fa-heart"></i>
+                <span class="stat-number-detail">${post.likes.length}</span>
+                <span>Likes</span>
+            </div>
+            <div class="stat-item-detail">
+                <i class="fas fa-comment"></i>
+                <span class="stat-number-detail">${post.comments.length}</span>
+                <span>Comments</span>
             </div>
         </div>
+        
+        <!-- Post Actions -->
+        <div class="post-actions-detail">
+            <button class="post-action-btn ${isLikedByCurrentUser ? 'liked' : ''}" 
+                    onclick="likePost('${post._id}')">
+                <i class="fas fa-heart"></i>
+            </button>
+            <button class="post-action-btn" onclick="focusCommentInput()">
+                <i class="fas fa-comment"></i>
+            </button>
+            <button class="post-action-btn" onclick="showSharePostModal('${post._id}')">
+                <i class="fas fa-share"></i>
+            </button>
+            ${currentUser && currentUser._id === post.author._id ? `
+                <button class="post-action-btn" onclick="editPost('${post._id}')">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="post-action-btn" onclick="deletePost('${post._id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            ` : ''}
+        </div>
+        
+        <!-- Comment Form -->
+        ${currentUser ? `
+            <div class="comment-form-detail">
+                <div class="comment-input-wrapper">
+                    <div class="comment-avatar" style="background: ${JSON.parse(currentUser.avatar).color}">
+                        ${JSON.parse(currentUser.avatar).initials}
+                    </div>
+                    <textarea 
+                        id="postDetailCommentInput"
+                        placeholder="Share your thoughts..."
+                        rows="3"
+                        maxlength="280"
+                        oninput="handlePostDetailCommentTyping()"
+                    ></textarea>
+                </div>
+                <div class="comment-form-actions">
+                    <div class="char-counter" id="postDetailCommentCharCount">0/280</div>
+                    <button class="btn btn-primary" onclick="addCommentFromPostPage()">
+                        Post
+                    </button>
+                </div>
+            </div>
+        ` : `
+            <div class="alert alert-info" style="margin: 16px 0; padding: 12px 16px;">
+                <i class="fas fa-info-circle"></i>
+                <a href="#" onclick="showLoginModal()" style="color: var(--primary-color); text-decoration: underline; margin-left: 8px;">
+                    Log in to add a comment
+                </a>
+            </div>
+        `}
+        
+        <!-- Comments List -->
+        <div class="comments-section-detail" id="postDetailComments">
+            ${post.comments && post.comments.length > 0 ? 
+                renderCommentsList(post.comments) : 
+                '<div class="text-center text-secondary py-8">No comments yet. Be the first to comment!</div>'
+            }
+        </div>
     `;
+}
     
     // Update page actions
     postPageActions.innerHTML = `
