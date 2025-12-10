@@ -1035,10 +1035,13 @@
 </head>
 <body>
     <!-- Header -->
-    <header>
+        <header>
         <div class="container">
             <div class="header-content">
-                <a href="#" class="logo">
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <a href="#" class="logo" onclick="showHomePage(); return false;">
                     <i class="fas fa-flask"></i>
                     ThereIn-beta
                 </a>
@@ -1051,6 +1054,202 @@
             </div>
         </div>
     </header>
+        <div class="app-container">
+        <!-- Desktop Sidebar -->
+        <aside class="sidebar-nav" id="desktopSidebar">
+            <a href="#" class="logo-sidebar" onclick="showHomePage(); return false;">
+                <i class="fas fa-flask"></i>
+                ThereIn
+            </a>
+            
+            <div class="sidebar-menu">
+                <a href="#" class="sidebar-item active" onclick="showHomePage(); return false;">
+                    <i class="fas fa-home"></i>
+                    <span class="sidebar-item-text">Home</span>
+                </a>
+                
+                <a href="#" class="sidebar-item" onclick="showProfilePage(); return false;">
+                    <i class="fas fa-user"></i>
+                    <span class="sidebar-item-text">Profile</span>
+                </a>
+                
+                <div class="sidebar-item" onclick="showNotificationsPage()">
+                    <i class="fas fa-bell"></i>
+                    <span class="sidebar-item-text">Notifications</span>
+                    <span class="notification-badge" id="sidebarNotificationBadge" style="display: none;">0</span>
+                </div>
+                
+                <a href="#" class="sidebar-item" onclick="showSavedPosts(); return false;">
+                    <i class="fas fa-bookmark"></i>
+                    <span class="sidebar-item-text">Saved</span>
+                </a>
+                
+                <div class="sidebar-divider"></div>
+                
+                <div class="sidebar-item" onclick="openSettings()">
+                    <i class="fas fa-cog"></i>
+                    <span class="sidebar-item-text">Settings</span>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary sidebar-post-btn" onclick="showCreatePostModal()">
+                <i class="fas fa-plus"></i> Create Post
+            </button>
+            
+            <div class="sidebar-user-info" id="sidebarUserInfo">
+                <!-- User info will be populated by JavaScript -->
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content-wrapper">
+            <!-- Home Page -->
+            <div id="homePage" class="page active">
+                <!-- Feed Filters -->
+                <div class="feed-filters mb-4">
+                    <div class="feed-tabs">
+                        <button class="feed-tab active" onclick="changeFeedType('for_you')">
+                            <i class="fas fa-home"></i> For You
+                        </button>
+                        <button class="feed-tab" onclick="changeFeedType('following')">
+                            <i class="fas fa-user-friends"></i> Following
+                        </button>
+                        <button class="feed-tab" onclick="changeFeedType('trending')">
+                            <i class="fas fa-fire"></i> Trending
+                        </button>
+                    </div>
+                    <div class="feed-sort">
+                        <select class="form-input form-select" id="feedSort" onchange="changeSortMethod(this.value)">
+                            <option value="latest">Latest</option>
+                            <option value="popular">Most Popular</option>
+                            <option value="top">Top Rated</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Create Post Button (Desktop) -->
+                <div class="card mb-4 hidden" id="createPostContainer">
+                    <button class="btn btn-primary w-full" id="createPostBtn" onclick="showCreatePostModal()">
+                        <i class="fas fa-plus"></i> Create New Research Post
+                    </button>
+                </div>
+
+                <!-- Posts List -->
+                <div id="postsList">
+                    <div class="loading">
+                        <i class="fas fa-spinner loading-spinner"></i>
+                        <div class="mt-4">Loading posts...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Page -->
+            <div id="profilePage" class="profile-page page">
+                <!-- Profile content remains the same -->
+            </div>
+
+            <!-- Notifications Page -->
+            <div id="notificationsPage" class="notifications-page page">
+                <!-- Notifications content remains the same -->
+            </div>
+
+            <!-- Post Detail Page -->
+            <div id="postPage" class="post-page page">
+                <!-- Post detail content remains the same -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="bottom-nav">
+        <div class="bottom-nav-items">
+            <a href="#" class="bottom-nav-item active" onclick="showHomePage(); return false;">
+                <i class="fas fa-home"></i>
+                <span class="bottom-nav-text">Home</span>
+            </a>
+            
+            <a href="#" class="bottom-nav-item" onclick="showProfilePage(); return false;">
+                <i class="fas fa-user"></i>
+                <span class="bottom-nav-text">Profile</span>
+            </a>
+            
+            <button class="bottom-nav-item" onclick="showCreatePostModal()">
+                <i class="fas fa-plus"></i>
+                <span class="bottom-nav-text">Create</span>
+            </button>
+            
+            <button class="bottom-nav-item" onclick="showNotificationsPage()">
+                <i class="fas fa-bell"></i>
+                <span class="bottom-nav-text">Alerts</span>
+                <span class="notification-badge" id="mobileNotificationBadge" style="display: none; position: absolute; top: 4px; right: 20px;">0</span>
+            </button>
+            
+            <button class="bottom-nav-item" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+                <span class="bottom-nav-text">Menu</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div class="mobile-sidebar-overlay" id="mobileSidebarOverlay" onclick="toggleMobileMenu()"></div>
+    
+    <!-- Mobile Sidebar -->
+    <aside class="mobile-sidebar" id="mobileSidebar">
+        <div class="mobile-sidebar-header">
+            <a href="#" class="logo" onclick="showHomePage(); toggleMobileMenu(); return false;">
+                <i class="fas fa-flask"></i>
+                ThereIn
+            </a>
+            <button class="mobile-sidebar-close" onclick="toggleMobileMenu()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="sidebar-menu">
+            <div class="sidebar-item active" onclick="showHomePage(); toggleMobileMenu();">
+                <i class="fas fa-home"></i>
+                <span class="sidebar-item-text">Home</span>
+            </div>
+            
+            <div class="sidebar-item" onclick="showProfilePage(); toggleMobileMenu();">
+                <i class="fas fa-user"></i>
+                <span class="sidebar-item-text">Profile</span>
+            </div>
+            
+            <div class="sidebar-item" onclick="showNotificationsPage(); toggleMobileMenu();">
+                <i class="fas fa-bell"></i>
+                <span class="sidebar-item-text">Notifications</span>
+                <span class="notification-badge" id="mobileMenuNotificationBadge" style="display: none;">0</span>
+            </div>
+            
+            <div class="sidebar-item" onclick="showSavedPosts(); toggleMobileMenu();">
+                <i class="fas fa-bookmark"></i>
+                <span class="sidebar-item-text">Saved Posts</span>
+            </div>
+            
+            <div class="sidebar-item" onclick="toggleMobileMenu(); openSettings();">
+                <i class="fas fa-cog"></i>
+                <span class="sidebar-item-text">Settings</span>
+            </div>
+            
+            <div class="sidebar-divider"></div>
+            
+            <div class="sidebar-item" onclick="toggleMobileMenu(); showCreatePostModal();">
+                <i class="fas fa-plus"></i>
+                <span class="sidebar-item-text">Create Post</span>
+            </div>
+        </div>
+        
+        <div class="sidebar-user-info" id="mobileSidebarUserInfo">
+            <!-- User info will be populated by JavaScript -->
+        </div>
+    </aside>
+
+    <!-- Create Post Floating Button for Mobile -->
+    <button class="create-post-fab" onclick="showCreatePostModal()">
+        <i class="fas fa-plus"></i>
+    </button>
 
     <!-- Home Page -->
     <div id="homePage" class="container">
