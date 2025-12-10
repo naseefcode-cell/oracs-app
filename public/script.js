@@ -1179,16 +1179,24 @@ function navigateToProfile(username) {
 
 // Update the existing showProfilePage function to use URL
 const originalShowProfilePage = showProfilePage;
-showProfilePage = function(username) {
-    // Update URL if not already correct
-    const expectedUrl = `/profile/${username}`;
-    if (window.location.pathname !== expectedUrl) {
-        window.history.pushState({}, '', expectedUrl);
+async function showProfilePage(username = null) {
+    homePage.style.display = 'none';
+    profilePage.style.display = 'block';
+    notificationsPage.style.display = 'none';
+    postPage.style.display = 'none';
+    
+    // If no username provided, show current user's profile
+    if (!username && currentUser) {
+        username = currentUser.username;
+    } else if (!username && !currentUser) {
+        // If no user is logged in, show login modal
+        showLoginModal();
+        return;
     }
     
-    originalShowProfilePage(username);
-};
-
+    currentProfileUsername = username;
+    await loadUserProfile(username);
+}
 // Update showHomePage to handle URL
 const originalShowHomePage = showHomePage;
 showHomePage = function() {
@@ -3622,17 +3630,36 @@ async function loadUserProfile(username) {
         if (data.success) {
             currentProfile = data.profile;
             renderProfilePage(data.profile);
-            await loadUserPosts(username);
-            await loadUserInsights(username);
             
             if (currentUser && currentUser.username !== username) {
                 await checkFollowStatus(username);
             }
+        } else {
+            throw new Error(data.message || 'Failed to load profile');
         }
     } catch (error) {
         console.error('Load profile error:', error);
-        realTimeClient.showToast('Error loading profile', 'error');
-        showHomePage();
+        
+        // Show error in profile page
+        const profileHeaderContent = document.getElementById('profileHeaderContent');
+        const profileMainContent = document.getElementById('profileMainContent');
+        
+        if (profileHeaderContent) {
+            profileHeaderContent.innerHTML = `
+                <div class="text-center p-8">
+                    <i class="fas fa-exclamation-triangle text-error text-4xl mb-4"></i>
+                    <h3 class="text-lg font-semibold mb-2">Profile Not Found</h3>
+                    <p class="text-secondary mb-4">The user @${username} doesn't exist or you don't have permission to view it.</p>
+                    <button class="btn btn-primary" onclick="showHomePage()">Back to Home</button>
+                </div>
+            `;
+        }
+        
+        if (profileMainContent) {
+            profileMainContent.innerHTML = '';
+        }
+        
+        realTimeClient.showToast('Error loading profile: ' + error.message, 'error');
     }
 }
 
@@ -3656,28 +3683,41 @@ async function checkFollowStatus(username) {
 }
 
 function renderProfilePage(profile) {
-    const avatar = JSON.parse(profile.avatar);
+    console.log('Rendering profile:', profile); // Debug log
     
+    // Make sure we have the avatar data
+    let avatar;
+    try {
+        avatar = typeof profile.avatar === 'string' ? JSON.parse(profile.avatar) : profile.avatar;
+    } catch (e) {
+        // Default avatar if parsing fails
+        avatar = {
+            initials: getInitials(profile.name || profile.username || 'U'),
+            color: '#2563eb'
+        };
+    }
+    
+    // Create the profile header
     document.getElementById('profileHeaderContent').innerHTML = `
         <div class="profile-info">
             <div class="profile-avatar-large" style="background: ${avatar.color}">
                 ${avatar.initials}
             </div>
             <div class="profile-details">
-                <h1 class="profile-name">${profile.name}</h1>
-                <div class="profile-username">@${profile.username}</div>
+                <h1 class="profile-name">${profile.name || profile.username || 'Anonymous'}</h1>
+                <div class="profile-username">@${profile.username || 'user'}</div>
                 <div class="profile-field">${profile.field || 'No field specified'}</div>
                 <div class="profile-stats">
                     <div class="stat-item" onclick="showFollowersModal('${profile.username}')">
-                        <span class="stat-number">${profile.stats.followerCount}</span>
+                        <span class="stat-number">${profile.stats?.followerCount || 0}</span>
                         <span class="stat-label">Followers</span>
                     </div>
                     <div class="stat-item" onclick="showFollowingModal('${profile.username}')">
-                        <span class="stat-number">${profile.stats.followingCount}</span>
+                        <span class="stat-number">${profile.stats?.followingCount || 0}</span>
                         <span class="stat-label">Following</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-number">${profile.stats.postsCount}</span>
+                        <span class="stat-number">${profile.stats?.postsCount || 0}</span>
                         <span class="stat-label">Posts</span>
                     </div>
                 </div>
@@ -3685,28 +3725,31 @@ function renderProfilePage(profile) {
         </div>
     `;
 
+    // Create the profile main content
     document.getElementById('profileMainContent').innerHTML = `
         <div class="profile-bio">${profile.bio || 'No bio yet.'}</div>
-        <div class="profile-details-grid mt-4">
-            ${profile.institution ? `
-                <div class="detail-item">
-                    <i class="fas fa-university"></i>
-                    <span>${profile.institution}</span>
-                </div>
-            ` : ''}
-            ${profile.location ? `
-                <div class="detail-item">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>${profile.location}</span>
-                </div>
-            ` : ''}
-            ${profile.website ? `
-                <div class="detail-item">
-                    <i class="fas fa-globe"></i>
-                    <a href="${profile.website}" target="_blank" class="text-primary">${profile.website}</a>
-                </div>
-            ` : ''}
-        </div>
+        ${(profile.institution || profile.location || profile.website) ? `
+            <div class="profile-details-grid mt-4">
+                ${profile.institution ? `
+                    <div class="detail-item">
+                        <i class="fas fa-university"></i>
+                        <span>${profile.institution}</span>
+                    </div>
+                ` : ''}
+                ${profile.location ? `
+                    <div class="detail-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>${profile.location}</span>
+                    </div>
+                ` : ''}
+                ${profile.website ? `
+                    <div class="detail-item">
+                        <i class="fas fa-globe"></i>
+                        <a href="${profile.website}" target="_blank" class="text-primary">${profile.website}</a>
+                    </div>
+                ` : ''}
+            </div>
+        ` : ''}
         
         <div class="profile-actions mt-6">
             ${currentUser && currentUser.username !== profile.username ? `
@@ -3717,15 +3760,51 @@ function renderProfilePage(profile) {
             ` : ''}
             ${currentUser && currentUser.username === profile.username ? `
                 <button class="btn btn-primary" onclick="showEditProfileModal()">
-                    Edit Profile
+                    <i class="fas fa-edit"></i> Edit Profile
                 </button>
-                <a href="settings.html" class="btn btn-outline">Settings</a>
+                <button class="btn btn-outline" onclick="showSettingsModal()">
+                    <i class="fas fa-cog"></i> Settings
+                </button>
             ` : ''}
         </div>
     `;
 
+    // Setup profile tabs
     setupProfileTabs();
+    
+    // Load initial tab content (posts)
+    switchProfileTab('posts');
 }
+function setupProfileTabs() {
+    const profileTabContent = document.getElementById('profileTabContent');
+    if (!profileTabContent) {
+        profileTabContent = document.createElement('div');
+        profileTabContent.id = 'profileTabContent';
+        document.querySelector('.profile-main').appendChild(profileTabContent);
+    }
+    
+    const profileTabs = document.getElementById('profileTabs');
+    if (!profileTabs) {
+        // Create profile tabs container
+        const tabsContainer = document.createElement('div');
+        tabsContainer.id = 'profileTabs';
+        tabsContainer.className = 'profile-tabs';
+        tabsContainer.innerHTML = `
+            <div class="profile-tab active" onclick="switchProfileTab('posts')">Posts</div>
+            <div class="profile-tab" onclick="switchProfileTab('about')">About</div>
+        `;
+        
+        // Insert after profileMainContent
+        const profileMainContent = document.getElementById('profileMainContent');
+        profileMainContent.parentNode.insertBefore(tabsContainer, profileMainContent.nextSibling);
+    } else {
+        profileTabs.innerHTML = `
+            <div class="profile-tab active" onclick="switchProfileTab('posts')">Posts</div>
+            <div class="profile-tab" onclick="switchProfileTab('about')">About</div>
+        `;
+    }
+}
+
 function getTimeDifference(dateString) {
     const joinDate = new Date(dateString);
     const now = new Date();
@@ -3789,10 +3868,127 @@ function setupProfileTabs() {
         <div class="profile-tab" onclick="switchProfileTab('about')">About</div>
     `;
 }
+function renderAboutTab() {
+    if (!currentProfile) return;
+    
+    const profileTabContent = document.getElementById('profileTabContent');
+    
+    // Format join date
+    const joinDate = new Date(currentProfile.createdAt).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    
+    // Calculate time difference
+    const memberFor = getTimeDifference(currentProfile.createdAt);
+    
+    profileTabContent.innerHTML = `
+        <div class="card">
+            <div class="card-body">
+                <div class="about-section">
+                    <h3 class="text-lg font-semibold mb-4">Account Details</h3>
+                    
+                    <div class="about-item">
+                        <div class="about-item-title">
+                            <i class="fas fa-calendar-plus text-primary mr-2"></i>
+                            Account Created
+                        </div>
+                        <div class="about-item-content">
+                            ${joinDate} (${memberFor})
+                        </div>
+                    </div>
+                    
+                    ${currentProfile.field ? `
+                        <div class="about-item">
+                            <div class="about-item-title">
+                                <i class="fas fa-flask text-primary mr-2"></i>
+                                Research Field
+                            </div>
+                            <div class="about-item-content">
+                                ${currentProfile.field}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${currentProfile.institution ? `
+                        <div class="about-item">
+                            <div class="about-item-title">
+                                <i class="fas fa-university text-primary mr-2"></i>
+                                Institution
+                            </div>
+                            <div class="about-item-content">
+                                ${currentProfile.institution}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${currentProfile.location ? `
+                        <div class="about-item">
+                            <div class="about-item-title">
+                                <i class="fas fa-map-marker-alt text-primary mr-2"></i>
+                                Location
+                            </div>
+                            <div class="about-item-content">
+                                ${currentProfile.location}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${currentProfile.website ? `
+                        <div class="about-item">
+                            <div class="about-item-title">
+                                <i class="fas fa-globe text-primary mr-2"></i>
+                                Website
+                            </div>
+                            <div class="about-item-content">
+                                <a href="${currentProfile.website}" target="_blank" class="text-primary hover:underline">${currentProfile.website}</a>
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${currentProfile.socialLinks && (currentProfile.socialLinks.twitter || currentProfile.socialLinks.linkedin || currentProfile.socialLinks.github || currentProfile.socialLinks.orcid) ? `
+                        <div class="about-item">
+                            <div class="about-item-title">
+                                <i class="fas fa-share-alt text-primary mr-2"></i>
+                                Social Links
+                            </div>
+                            <div class="about-item-content">
+                                <div class="flex space-x-3 mt-2">
+                                    ${currentProfile.socialLinks.twitter ? `
+                                        <a href="${currentProfile.socialLinks.twitter}" target="_blank" class="social-link twitter">
+                                            <i class="fab fa-twitter"></i>
+                                        </a>
+                                    ` : ''}
+                                    ${currentProfile.socialLinks.linkedin ? `
+                                        <a href="${currentProfile.socialLinks.linkedin}" target="_blank" class="social-link linkedin">
+                                            <i class="fab fa-linkedin"></i>
+                                        </a>
+                                    ` : ''}
+                                    ${currentProfile.socialLinks.github ? `
+                                        <a href="${currentProfile.socialLinks.github}" target="_blank" class="social-link github">
+                                            <i class="fab fa-github"></i>
+                                        </a>
+                                    ` : ''}
+                                    ${currentProfile.socialLinks.orcid ? `
+                                        <a href="${currentProfile.socialLinks.orcid}" target="_blank" class="social-link orcid">
+                                            <i class="fab fa-orcid"></i>
+                                        </a>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        </div>
+    `;
+}
 
 function switchProfileTab(tabName) {
     // Update active tab
-    document.querySelectorAll('.profile-tab').forEach(tab => {
+    const tabs = document.querySelectorAll('.profile-tab');
+    tabs.forEach(tab => {
         tab.classList.remove('active');
         if (tab.textContent.toLowerCase().includes(tabName)) {
             tab.classList.add('active');
@@ -3803,12 +3999,13 @@ function switchProfileTab(tabName) {
     const profileTabContent = document.getElementById('profileTabContent');
     
     if (tabName === 'posts') {
-        loadUserPosts(currentProfileUsername);
+        if (currentProfileUsername) {
+            loadUserPosts(currentProfileUsername);
+        }
     } else if (tabName === 'about') {
         renderAboutTab();
     }
 }
-
 async function loadUserPosts(username) {
     try {
         const data = await api.get(`/profile/${username}/posts`);
