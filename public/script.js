@@ -1075,7 +1075,6 @@ async function initApp() {
         await checkAuth();
         updatePostsContainer();
         await loadPosts();
-        await loadTrending();
         
         if (currentUser) {
             await loadNotifications();
