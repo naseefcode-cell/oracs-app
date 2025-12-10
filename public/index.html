@@ -35,720 +35,218 @@
             padding: 1rem 0;
         }
 
-        /* Add these styles to the existing <style> block in index.html */
-
-/* Twitter-like Post Detail Page */
-.post-detail-container {
-    display: flex;
-    gap: 20px;
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 0 16px;
-}
-
-.post-detail-main {
-    flex: 1;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.post-detail-sidebar {
-    width: 350px;
-    position: sticky;
-    top: 80px;
-    height: fit-content;
-}
-
-/* Post Header - Twitter style */
-.post-header-detail {
-    display: flex;
-    gap: 12px;
-    padding: 16px 0;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.post-user-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 600;
-    font-size: 16px;
-}
-
-.post-user-info-detail {
-    flex: 1;
-}
-
-.post-user-name-row {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    margin-bottom: 4px;
-}
-
-.post-user-name-detail {
-    font-weight: 700;
-    font-size: 15px;
-    color: var(--dark-color);
-}
-
-.post-user-username-detail {
-    font-size: 15px;
-    color: var(--secondary-color);
-}
-
-.post-time-detail {
-    font-size: 15px;
-    color: var(--secondary-color);
-    margin-left: auto;
-}
-
-.post-verified-badge {
-    color: var(--primary-color);
-    font-size: 14px;
-}
-
-/* Post Content - Twitter style */
-.post-content-detail {
-    padding: 16px 0;
-}
-
-.post-title-detail {
-    font-size: 23px;
-    font-weight: 700;
-    line-height: 1.3;
-    margin-bottom: 16px;
-    color: var(--dark-color);
-}
-
-.post-text-detail {
-    font-size: 15px;
-    line-height: 1.6;
-    color: var(--text-color);
-    white-space: pre-line;
-    word-wrap: break-word;
-}
-
-.post-category-detail {
-    display: inline-block;
-    padding: 4px 12px;
-    background: var(--primary-color);
-    color: white;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 500;
-    margin: 16px 0;
-}
-
-.post-tags-detail {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 16px 0;
-}
-
-.tag-detail {
-    background: var(--light-color);
-    color: var(--primary-color);
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 500;
-}
-
-/* Post Stats - Twitter style */
-.post-stats-detail {
-    display: flex;
-    gap: 24px;
-    padding: 16px 0;
-    border-top: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
-    margin: 16px 0;
-}
-
-.stat-item-detail {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--secondary-color);
-    font-size: 14px;
-}
-
-.stat-number-detail {
-    font-weight: 700;
-    color: var(--dark-color);
-}
-
-/* Post Actions - Twitter style */
-.post-actions-detail {
-    display: flex;
-    justify-content: space-around;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 16px;
-}
-
-.post-action-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: none;
-    border: none;
-    color: var(--secondary-color);
-    font-size: 13px;
-    padding: 8px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    min-width: 36px;
-    min-height: 36px;
-    justify-content: center;
-}
-
-.post-action-btn:hover {
-    background: rgba(37, 99, 235, 0.1);
-    color: var(--primary-color);
-}
-
-.post-action-btn.liked {
-    color: #e0245e;
-}
-
-.post-action-btn.liked:hover {
-    background: rgba(224, 36, 94, 0.1);
-}
-
-.post-action-btn i {
-    font-size: 16px;
-}
-
-/* Share Modal - Twitter style */
-.share-modal-options {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-}
-
-.share-modal-option {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 16px;
-    border: none;
-    background: none;
-    color: var(--text-color);
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    width: 100%;
-    text-align: left;
-    border-radius: 0;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.share-modal-option:hover {
-    background: var(--hover-color);
-}
-
-.share-modal-option:last-child {
-    border-bottom: none;
-}
-
-.share-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--light-color);
-    color: var(--text-color);
-}
-
-.share-icon.twitter {
-    background: #1DA1F2;
-    color: white;
-}
-
-.share-icon.linkedin {
-    background: #0077B5;
-    color: white;
-}
-
-.share-icon.facebook {
-    background: #4267B2;
-    color: white;
-}
-
-.share-text {
-    flex: 1;
-}
-
-.share-title {
-    font-weight: 600;
-    margin-bottom: 2px;
-    font-size: 15px;
-}
-
-.share-description {
-    font-size: 13px;
-    color: var(--secondary-color);
-}
-
-/* Comments Section - Twitter style */
-.comments-section-detail {
-    margin-top: 16px;
-}
-
-.comment-form-detail {
-    padding: 16px;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    margin-bottom: 16px;
-    background: var(--light-color);
-}
-
-.comment-input-wrapper {
-    display: flex;
-    gap: 12px;
-}
-
-.comment-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 600;
-    font-size: 14px;
-}
-
-.comment-form-detail textarea {
-    flex: 1;
-    border: none;
-    background: none;
-    resize: none;
-    min-height: 80px;
-    font-size: 15px;
-    font-family: inherit;
-    padding: 0;
-}
-
-.comment-form-detail textarea:focus {
-    outline: none;
-}
-
-.comment-form-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid var(--border-color);
-}
-
-.char-counter {
-    font-size: 13px;
-    color: var(--secondary-color);
-}
-
-/* Comment Item - Twitter style */
-.comment-item {
-    padding: 16px;
-    border-bottom: 1px solid var(--border-color);
-    transition: background-color 0.2s ease;
-}
-
-.comment-item:hover {
-    background: var(--hover-color);
-}
-
-.comment-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 8px;
-}
-
-.comment-user-info {
-    flex: 1;
-}
-
-.comment-user-name {
-    font-weight: 700;
-    font-size: 15px;
-    color: var(--dark-color);
-}
-
-.comment-user-username {
-    font-size: 14px;
-    color: var(--secondary-color);
-}
-
-.comment-time {
-    font-size: 13px;
-    color: var(--secondary-color);
-    margin-left: auto;
-}
-
-.comment-content {
-    font-size: 15px;
-    line-height: 1.5;
-    color: var(--text-color);
-    margin-bottom: 12px;
-    padding-left: 52px; /* Avatar width + gap */
-}
-
-.comment-actions-detail {
-    display: flex;
-    gap: 24px;
-    padding-left: 52px;
-}
-
-.comment-action-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: none;
-    border: none;
-    color: var(--secondary-color);
-    font-size: 13px;
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-}
-
-.comment-action-btn:hover {
-    background: var(--light-color);
-}
-
-.comment-action-btn.liked {
-    color: #e0245e;
-}
-
-.comment-action-btn i {
-    font-size: 14px;
-}
-
-/* Replies - Twitter style */
-.replies-section {
-    margin-top: 12px;
-    padding-left: 52px;
-}
-
-.reply-item {
-    padding: 12px 0;
-    border-top: 1px solid var(--border-color);
-}
-
-.reply-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 4px;
-}
-
-.reply-avatar {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 600;
-    font-size: 10px;
-}
-
-.reply-user-name {
-    font-weight: 600;
-    font-size: 14px;
-    color: var(--dark-color);
-}
-
-.reply-user-username {
-    font-size: 13px;
-    color: var(--secondary-color);
-}
-
-.reply-time {
-    font-size: 12px;
-    color: var(--secondary-color);
-    margin-left: auto;
-}
-
-.reply-content {
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--text-color);
-    margin: 4px 0 8px 32px; /* 24px avatar + 8px gap */
-}
-
-.reply-actions {
-    display: flex;
-    gap: 16px;
-    margin-left: 32px;
-}
-
-.reply-action-btn {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    background: none;
-    border: none;
-    color: var(--secondary-color);
-    font-size: 12px;
-    cursor: pointer;
-    padding: 2px 6px;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-}
-
-.reply-action-btn:hover {
-    background: var(--light-color);
-}
-
-.reply-action-btn.liked {
-    color: #e0245e;
-}
-
-/* Sidebar - Twitter style */
-.trending-section {
-    background: var(--light-color);
-    border-radius: 16px;
-    overflow: hidden;
-    margin-bottom: 16px;
-}
-
-.trending-header {
-    padding: 16px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.trending-title {
-    font-weight: 800;
-    font-size: 20px;
-    color: var(--dark-color);
-    margin: 0;
-}
-
-.trending-list {
-    padding: 8px 0;
-}
-
-.trending-item {
-    padding: 12px 16px;
-    transition: background-color 0.2s ease;
-    cursor: pointer;
-}
-
-.trending-item:hover {
-    background: rgba(0, 0, 0, 0.03);
-}
-
-.trending-topic {
-    font-size: 13px;
-    color: var(--secondary-color);
-    margin-bottom: 2px;
-}
-
-.trending-title-small {
-    font-weight: 700;
-    font-size: 15px;
-    color: var(--dark-color);
-    margin-bottom: 4px;
-}
-
-.trending-stats {
-    font-size: 13px;
-    color: var(--secondary-color);
-}
-
-/* Responsive Design */
-@media (max-width: 1024px) {
-    .post-detail-container {
-        gap: 16px;
-    }
-    
-    .post-detail-sidebar {
-        width: 300px;
-    }
-}
-
-@media (max-width: 768px) {
-    .post-detail-container {
-        flex-direction: column;
-        gap: 0;
-        padding: 0;
-    }
-    
-    .post-detail-main {
-        width: 100%;
-        padding: 0;
-    }
-    
-    .post-detail-sidebar {
-        width: 100%;
-        position: static;
-        padding: 16px;
-        order: 3;
-    }
-    
-    .post-header-detail {
-        padding: 12px 16px;
-    }
-    
-    .post-content-detail {
-        padding: 12px 16px;
-    }
-    
-    .post-stats-detail {
-        padding: 12px 16px;
-    }
-    
-    .post-actions-detail {
-        padding: 12px 16px;
-    }
-    
-    .comment-form-detail {
-        margin: 0 16px 16px;
-        border-radius: 0;
-        border-left: none;
-        border-right: none;
-    }
-    
-    .comments-section-detail {
-        padding: 0 16px;
-    }
-    
-    .comment-item {
-        padding: 12px 0;
-    }
-    
-    .replies-section {
-        padding-left: 40px;
-    }
-    
-    .comment-content,
-    .comment-actions-detail {
-        padding-left: 40px;
-    }
-}
-
-@media (max-width: 640px) {
-    .post-title-detail {
-        font-size: 20px;
-    }
-    
-    .post-stats-detail {
-        flex-wrap: wrap;
-        gap: 16px;
-    }
-    
-    .post-actions-detail {
-        justify-content: space-between;
-        overflow-x: auto;
-        padding: 8px 16px;
-    }
-    
-    .post-action-btn {
-        min-width: 44px;
-        min-height: 44px;
-    }
-    
-    .comment-form-actions {
-        flex-direction: column;
-        gap: 12px;
-        align-items: stretch;
-    }
-    
-    .comment-form-actions .btn {
-        width: 100%;
-    }
-    
-    .replies-section {
-        padding-left: 32px;
-    }
-    
-    .comment-content,
-    .comment-actions-detail {
-        padding-left: 32px;
-    }
-}
-
-/* Loading States */
-.loading-skeleton {
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.5;
-    }
-}
-
-/* Interactive Elements */
-.interactive-hover {
-    transition: all 0.2s ease;
-}
-
-.interactive-hover:hover {
-    transform: translateY(-1px);
-}
-
-/* Accessibility */
-@media (prefers-reduced-motion: reduce) {
-    * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-    .post-detail-main,
-    .post-detail-sidebar,
-    .comment-item,
-    .comment-form-detail {
-        background: #000;
-        color: #fff;
-    }
-    
-    .post-user-name-detail,
-    .post-title-detail,
-    .comment-user-name {
-        color: #fff;
-    }
-    
-    .post-user-username-detail,
-    .post-text-detail,
-    .comment-user-username {
-        color: #71767b;
-    }
-    
-    .comment-form-detail {
-        background: #16181c;
-    }
-    
-    .post-action-btn:hover,
-    .comment-action-btn:hover {
-        background: rgba(255, 255, 255, 0.1);
-    }
-}
-
+        .post-detail-container {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .post-detail-main {
+            min-width: 0; /* Prevent overflow */
+        }
+
+        .post-detail-sidebar {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+
+        .post-detail-title {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+
+        .post-detail-text {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+            white-space: pre-line;
+        }
+
+        .post-stats {
+            display: flex;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+            padding: 1rem 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+        .post-detail-actions {
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Share Options */
+        .share-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .share-option-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .share-option-btn:hover {
+            background: var(--hover-color);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .share-option-btn i {
+            font-size: 1.25rem;
+        }
+
+        /* Share Modal */
+        .share-modal-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .share-modal-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            text-align: left;
+        }
+
+        .share-modal-option:hover {
+            background: var(--hover-color);
+            border-color: var(--primary-color);
+        }
+
+        .share-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light-bg);
+            color: var(--text-color);
+        }
+
+        .share-icon.twitter {
+            background: #1DA1F2;
+            color: white;
+        }
+
+        .share-icon.linkedin {
+            background: #0077B5;
+            color: white;
+        }
+
+        .share-icon.facebook {
+            background: #4267B2;
+            color: white;
+        }
+
+        .share-text {
+            flex: 1;
+        }
+
+        .share-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .share-description {
+            font-size: 0.875rem;
+            color: var(--secondary-color);
+        }
+
+        /* Trending Posts in Sidebar */
+        .trending-post-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .trending-post-item:hover {
+            color: var(--primary-color);
+        }
+
+        .trending-post-item:last-child {
+            border-bottom: none;
+        }
+
+        .trending-post-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: 0.25rem;
+        }
+
+        .trending-post-meta {
+            font-size: 0.75rem;
+            color: var(--secondary-color);
+        }
+
+        /* Make post titles clickable in feed */
+        .post-title {
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .post-title:hover {
+            color: var(--primary-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .post-detail-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .post-detail-sidebar {
+                position: static;
+            }
+            
+            .post-detail-title {
+                font-size: 1.5rem;
+            }
+            
+            .share-options {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Additional CSS for enhanced features */
         .feed-filters {
             display: flex;
             justify-content: between;
@@ -1111,52 +609,98 @@
     </div>
 
     <!-- Post Detail Page -->
-<div id="postPage" class="post-page" style="display: none;">
-    <div class="post-detail-x">
-        <!-- Header -->
-        <div class="post-detail-x-header">
-            <button class="btn btn-ghost" onclick="showHomePage()">
-                <i class="fas fa-arrow-left"></i>
-            </button>
-            <div class="flex-1 text-center">
-                <div class="font-semibold">Post</div>
-            </div>
-            <div id="postPageActions"></div>
-        </div>
-        
-        <!-- Main Post Content -->
-        <div id="postDetailContent">
-            <!-- Content will be loaded here -->
-        </div>
-        
-        <!-- Comments Section -->
-        <div class="post-x-comments" id="postXCommentsSection">
-            <div id="postXCommentsList">
-                <!-- Comments will be loaded here -->
-            </div>
-        </div>
-        
-        <!-- Comment Form -->
-        <div class="comment-form-x">
-            <div class="comment-form-x-inner">
-                <div class="avatar small" style="background: linear-gradient(135deg, var(--primary-color), #7c3aed); color: white;">
-                    ${currentUser ? getInitials(currentUser.name) : '?'}
-                </div>
-                <textarea 
-                    class="comment-input-x" 
-                    id="postXCommentInput" 
-                    placeholder="Post your reply..." 
-                    rows="1"
-                    maxlength="280"
-                    oninput="handlePostXCommentInput()"
-                ></textarea>
-                <button class="btn btn-primary" style="border-radius: 9999px; padding: 8px 16px;" onclick="addCommentFromPostPage()">
-                    <i class="fas fa-paper-plane"></i>
+    <div id="postPage" class="post-page">
+        <div class="container">
+            <div class="page-header">
+                <button class="btn btn-outline" onclick="showHomePage()">
+                    <i class="fas fa-arrow-left"></i> Back to Posts
                 </button>
+                <div class="header-actions" id="postPageActions">
+                    <!-- Share button and other actions will be added here -->
+                </div>
+            </div>
+            <div class="post-detail-container">
+                <div class="post-detail-main">
+                    <div id="postDetailContent">
+                        <!-- Post content will be loaded here -->
+                    </div>
+                </div>
+                    <!-- Comments Section -->
+                    <div class="card mt-6" id="postDetailCommentsSection" style="display: none;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-comments"></i>
+                                Comments (<span id="postDetailCommentsCount">0</span>)
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <!-- Comment Form -->
+                            <div class="comment-form mb-6">
+                                <textarea 
+                                class="form-input form-textarea" 
+                                id="postDetailCommentInput" 
+                                placeholder="Add your comment..." 
+                                rows="3"
+                                maxlength="1000"
+                                oninput="handlePostDetailCommentTyping()"
+                            ></textarea>
+                             <div class="comments-list" id="postDetailCommentsList">
+                            <div class="text-center text-secondary py-8">
+                                <i class="fas fa-comments text-4xl mb-4"></i>
+                                <p>No comments yet. Be the first to comment!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                
+                <div class="post-detail-sidebar">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-share-alt"></i>
+                                Share This Post
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="share-options">
+                                <button class="share-option-btn" onclick="copyPostLink()">
+                                    <i class="fas fa-link"></i>
+                                    Copy Link
+                                </button>
+                                <button class="share-option-btn" onclick="shareOnTwitter()">
+                                    <i class="fab fa-twitter"></i>
+                                    Twitter
+                                </button>
+                                <button class="share-option-btn" onclick="shareOnLinkedIn()">
+                                    <i class="fab fa-linkedin"></i>
+                                    LinkedIn
+                                </button>
+                                <button class="share-option-btn" onclick="shareOnFacebook()">
+                                    <i class="fab fa-facebook"></i>
+                                    Facebook
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-fire"></i>
+                                Trending Posts
+                            </h3>
+                        </div>
+                        <div id="postDetailTrending">
+                            <div class="loading">
+                                <i class="fas fa-spinner loading-spinner"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
     <!-- Modals -->
     <!-- Create Post Modal -->
