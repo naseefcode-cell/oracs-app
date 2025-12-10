@@ -1853,6 +1853,33 @@ input:checked + .slider:before {
         margin-bottom: 8px;
         align-self: flex-start;
     }
+    .header-content .search-bar {
+        display: none !important;
+    }
+    
+    /* Hide user actions (notification, profile, logout) in header on mobile */
+    .header-content .user-actions {
+        display: none !important;
+    }
+    
+    /* Adjust header layout for mobile */
+    .header-content {
+        justify-content: space-between;
+        padding: 12px 0;
+    }
+    
+    /* Make logo centered on mobile */
+    .header-content .logo {
+        flex: 1;
+        text-align: center;
+        justify-content: center;
+        font-size: 18px;
+    }
+    
+    /* Show only mobile menu toggle on left */
+    .mobile-menu-toggle {
+        display: block;
+    }
     /* Add these styles to the existing CSS in the <style> section */
 
 /* Post Detail Comments */
