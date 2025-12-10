@@ -2471,3 +2471,61 @@ input:checked + .slider:before {
     color: var(--secondary-color);
     margin-top: 4px;
 }
+/* Hide header on mobile, show on desktop */
+@media (max-width: 768px) {
+    header {
+        display: none !important;
+    }
+    
+    /* Adjust main content when header is hidden */
+    .app-container {
+        min-height: 100vh;
+    }
+    
+    .main-content-wrapper {
+        padding-top: 20px;
+        padding-bottom: 80px; /* Space for bottom nav */
+    }
+    
+    /* Adjust desktop sidebar position when header is hidden */
+    .sidebar-nav {
+        top: 0;
+        height: 100vh;
+    }
+    
+    /* Adjust notification dropdown position on mobile */
+    .notification-dropdown {
+        position: fixed;
+        top: 20px !important;
+        right: 50% !important;
+        transform: translateX(50%);
+        width: 90vw !important;
+        max-width: 400px;
+    }
+    
+    /* Adjust search bar in mobile menu if needed */
+    .mobile-sidebar .search-bar {
+        display: block;
+        padding: 16px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .mobile-sidebar .search-bar input {
+        width: 100%;
+    }
+}
+
+@media (min-width: 769px) {
+    header {
+        display: block !important;
+    }
+    
+    /* Adjust desktop layout when header is visible */
+    .app-container {
+        min-height: calc(100vh - 80px); /* Subtract header height */
+    }
+    
+    .sidebar-nav {
+        top: 80px; /* Below header */
+    }
+}
