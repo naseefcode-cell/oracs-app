@@ -1204,7 +1204,6 @@ async function checkAuth() {
     }
 }
 
-
 function updateUI() {
     if (currentUser) {
         userActions.innerHTML = `
@@ -1239,20 +1238,6 @@ function updateUI() {
             <button class="btn btn-ghost" onclick="logout()">Log Out</button>
         `;
         
-        // Update sidebar navigation
-        document.getElementById('navProfile').style.display = 'flex';
-        document.getElementById('navProfile').onclick = () => { showProfilePage(currentUser.username); return false; };
-        document.getElementById('navMyPosts').style.display = 'flex';
-        document.getElementById('navFollowing').style.display = 'flex';
-        document.getElementById('navCreatePostBtn').style.display = 'block';
-        document.getElementById('navCreatePostBtn').onclick = () => { showModal('createPostModal'); };
-        
-        // Update mobile navigation
-        document.getElementById('mobileNavProfile').style.display = 'flex';
-        document.getElementById('mobileNavProfile').onclick = () => { showProfilePage(currentUser.username); return false; };
-        document.getElementById('mobileFab').style.display = 'flex';
-        document.getElementById('mobileFab').onclick = () => { showModal('createPostModal'); };
-        
         renderNotificationDropdown(notifications);
         createPostContainer.classList.remove('hidden');
         updatePostsContainer();
@@ -1262,21 +1247,9 @@ function updateUI() {
             <a class="btn btn-outline" href="login.html">Log In</a>
             <a class="btn btn-primary" href="signup.html">Sign Up</a>
         `;
-        
-        // Hide authenticated navigation items
-        document.getElementById('navProfile').style.display = 'none';
-        document.getElementById('navMyPosts').style.display = 'none';
-        document.getElementById('navFollowing').style.display = 'none';
-        document.getElementById('navCreatePostBtn').style.display = 'none';
-        document.getElementById('mobileNavProfile').style.display = 'none';
-        document.getElementById('mobileFab').style.display = 'none';
-        
         createPostContainer.classList.add('hidden');
         updatePostsContainer();
     }
-    
-    // Update active nav states
-    updateNavActiveStates();
 }
 // Post Page Functions
 async function showPostPage(postId) {
