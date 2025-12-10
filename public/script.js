@@ -1303,127 +1303,126 @@ function renderPostDetail(post) {
             : false
     );
     
+    function renderPostDetail(post) {
+    const postDetailContent = document.getElementById('postDetailContent');
+    const postPageActions = document.getElementById('postPageActions');
+    
+    const avatar = JSON.parse(post.author.avatar);
+    const isLikedByCurrentUser = post.likes && Array.isArray(post.likes) && 
+        post.likes.some(like => like._id === currentUser?._id);
+    
+    // Format content with line breaks and links
+    const formattedContent = post.content.replace(/\n/g, '<br>');
+    
+    // Format date and time
+    const postDate = new Date(post.createdAt);
+    const formattedDate = postDate.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric' 
+    });
+    const formattedTime = postDate.toLocaleTimeString('en-US', { 
+        hour: 'numeric', 
+        minute: '2-digit',
+        hour12: true 
+    });
+
     postDetailContent.innerHTML = `
-        <div class="card" data-post-id="${post._id}">
-            <div class="post-header">
-                <div class="post-user-info">
-                    <div class="avatar" style="background: ${JSON.parse(post.author.avatar).color}; cursor: pointer;" onclick="showProfilePage('${post.author.username}')">
-                        ${JSON.parse(post.author.avatar).initials}
-                    </div>
-                    <div class="post-meta">
-                        <div class="post-author" onclick="showProfilePage('${post.author.username}')" style="cursor: pointer;">
-                            ${post.author.name}
-                        </div>
-                        <div class="post-username">@${post.author.username}</div>
-                        <div class="post-time">${getTimeAgo(post.createdAt)}</div>
-                    </div>
-                </div>
-                <div class="post-category">${post.category}</div>
+        <!-- Post Header -->
+        <div class="post-detail-header">
+            <div class="post-detail-avatar" style="background: ${avatar.color}; cursor: pointer;" 
+                 onclick="showProfilePage('${post.author.username}')">
+                ${avatar.initials}
             </div>
-            
-            <div class="post-content">
-                <h1 class="post-detail-title">${post.title}</h1>
-                <div class="post-detail-text">${formattedContent}</div>
-                
-                ${post.tags && post.tags.length > 0 ? `
-                    <div class="post-tags">
-                        ${post.tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
-                    </div>
-                ` : ''}
-                
-                <div class="post-stats">
-                    <div class="stat">
-                        <i class="fas fa-eye"></i>
-                        <span>${post.views || 0} views</span>
-                    </div>
-                    <div class="stat">
-                        <i class="fas fa-heart"></i>
-                        <span>${post.likes.length} likes</span>
-                    </div>
-                    <div class="stat">
-                        <i class="fas fa-comment"></i>
-                        <span>${post.comments.length} comments</span>
-                    </div>
-                    ${post.repostCount > 0 ? `
-                        <div class="stat">
-                            <i class="fas fa-retweet"></i>
-                            <span>${post.repostCount} reposts</span>
-                        </div>
-                    ` : ''}
+            <div class="post-detail-author-info">
+                <div class="post-detail-author-name" onclick="showProfilePage('${post.author.username}')" style="cursor: pointer;">
+                    ${post.author.name}
                 </div>
-            </div>
-            
-            <div class="post-actions post-detail-actions">
-                <button class="action-btn ${isLikedByCurrentUser ? 'liked' : ''}" 
-                        onclick="likePost('${post._id}')">
-                    <i class="fas fa-heart"></i>
-                    <span>${post.likes.length}</span>
-                </button>
-                <button class="action-btn" onclick="focusCommentInput()">
-                    <i class="fas fa-comment"></i>
-                    <span>${post.comments.length}</span>
-                </button>
-                <button class="action-btn" onclick="showSharePostModal('${post._id}')">
-                    <i class="fas fa-share"></i>
-                    <span>Share</span>
-                </button>
-                ${currentUser && currentUser._id === post.author._id ? `
-                    <button class="action-btn" onclick="editPost('${post._id}')">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="action-btn text-error" onclick="deletePost('${post._id}')">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                ` : ''}
+                <div class="post-detail-author-username">@${post.author.username}</div>
             </div>
         </div>
-        
-        <!-- Comments Section -->
-        <div class="card mt-6" id="postDetailCommentsSection">
-            <div class="card-header">
-                <h3 class="card-title">
-                    <i class="fas fa-comments"></i>
-                    Comments (<span id="postDetailCommentsCount">${post.comments.length}</span>)
-                </h3>
-            </div>
-            <div class="card-body">
-                <!-- Comment Form -->
-                ${currentUser ? `
-                    <div class="comment-form mb-6">
-                        <textarea 
-                            class="form-input form-textarea" 
-                            id="postDetailCommentInput" 
-                            placeholder="Add your comment..." 
-                            rows="3"
-                            maxlength="1000"
-                            oninput="handlePostDetailCommentTyping()"
-                        ></textarea>
-                        <div class="flex justify-between items-center mt-2">
-                            <div class="text-xs text-secondary" id="postDetailCommentCharCount">0/1000</div>
-                            <button class="btn btn-primary" onclick="addCommentFromPostPage()">
-                                Post Comment
-                            </button>
-                        </div>
-                    </div>
-                ` : `
-                    <div class="alert alert-info mb-6">
-                        <i class="fas fa-info-circle"></i>
-                        <a href="#" onclick="showLoginModal()" class="text-primary">Log in</a> to add a comment
-                    </div>
-                `}
-                
-                <!-- Comments List -->
-                <div class="comments-list" id="postDetailCommentsList">
-                    ${post.comments && post.comments.length > 0 ? 
-                        renderPostDetailCommentsList(post.comments) : 
-                        `
-                        <div class="text-center text-secondary py-8">
-                            <i class="fas fa-comments text-4xl mb-4"></i>
-                            <p>No comments yet. Be the first to comment!</p>
-                        </div>
-                        `
-                    }
+
+        <!-- Post Content -->
+        <div class="post-detail-content">
+            <h1 class="post-detail-title">${post.title}</h1>
+            <div class="post-detail-text">${formattedContent}</div>
+            
+            ${post.tags && post.tags.length > 0 ? `
+                <div class="post-tags" style="margin-top: 16px;">
+                    ${post.tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
                 </div>
+            ` : ''}
+        </div>
+
+        <!-- Post Meta -->
+        <div class="post-detail-meta">
+            <div class="post-detail-time">
+                <i class="far fa-clock"></i>
+                ${formattedTime} · ${formattedDate}
+            </div>
+            <div class="post-detail-stats">
+                <i class="far fa-eye"></i>
+                ${post.views || 0} Views
+            </div>
+            <div class="post-detail-category">${post.category}</div>
+        </div>
+
+        <!-- Post Actions -->
+        <div class="post-detail-actions">
+            <button class="post-detail-action-btn ${isLikedByCurrentUser ? 'liked' : ''}" 
+                    onclick="likePost('${post._id}')">
+                <i class="${isLikedByCurrentUser ? 'fas' : 'far'} fa-heart"></i>
+                <span>${post.likes.length}</span>
+            </button>
+            <button class="post-detail-action-btn" onclick="focusCommentInput()">
+                <i class="far fa-comment"></i>
+                <span>${post.comments.length}</span>
+            </button>
+            <button class="post-detail-action-btn" onclick="showSharePostModal('${post._id}')">
+                <i class="far fa-share-square"></i>
+                <span>Share</span>
+            </button>
+            ${currentUser && currentUser._id === post.author._id ? `
+                <button class="post-detail-action-btn" onclick="editPost('${post._id}')">
+                    <i class="far fa-edit"></i>
+                    <span>Edit</span>
+                </button>
+            ` : ''}
+        </div>
+
+        <!-- Comments Section -->
+        <div class="post-detail-comments" id="postDetailCommentsSection">
+            <h3 class="comments-header">Comments (${post.comments.length})</h3>
+            
+            <!-- Comment Form -->
+            ${currentUser ? `
+                <div class="comment-form-x">
+                    <textarea id="postDetailCommentInput" placeholder="Add your comment..." maxlength="1000"></textarea>
+                    <div class="comment-form-x-actions">
+                        <div class="text-sm text-secondary" id="postDetailCommentCharCount">0/1000</div>
+                        <button class="btn btn-primary" onclick="addCommentFromPostPage()">
+                            Post Comment
+                        </button>
+                    </div>
+                </div>
+            ` : `
+                <div class="alert alert-info mb-6">
+                    <i class="fas fa-info-circle"></i>
+                    <a href="#" onclick="showLoginModal()" class="text-primary">Log in</a> to add a comment
+                </div>
+            `}
+            
+            <!-- Comments List -->
+            <div class="comments-list" id="postDetailCommentsList">
+                ${post.comments && post.comments.length > 0 ? 
+                    renderPostDetailCommentsList(post.comments) : 
+                    `
+                    <div class="text-center text-secondary py-8">
+                        <i class="fas fa-comments text-4xl mb-4"></i>
+                        <p>No comments yet. Be the first to comment!</p>
+                    </div>
+                    `
+                }
             </div>
         </div>
     `;
@@ -1442,134 +1441,163 @@ function renderPostDetail(post) {
     
     // Setup comment functionality
     setupPostDetailCommentFunctionality();
+    
+    // Add floating action buttons
+    addFloatingActions();
+}
+
+// Add this function to create floating action buttons
+function addFloatingActions() {
+    // Remove existing floating actions if any
+    const existingFloating = document.querySelector('.floating-actions');
+    if (existingFloating) {
+        existingFloating.remove();
+    }
+    
+    const floatingHTML = `
+        <div class="floating-actions">
+            <button class="floating-btn comment-btn" onclick="focusCommentInput()">
+                <i class="fas fa-comment"></i>
+            </button>
+            <button class="floating-btn share-btn" onclick="showSharePostModal('${currentPostId}')">
+                <i class="fas fa-share"></i>
+            </button>
+            ${currentUser ? `
+                <button class="floating-btn like-btn" onclick="likePost('${currentPostId}')">
+                    <i class="fas fa-heart"></i>
+                </button>
+            ` : ''}
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', floatingHTML);
+}
+    // Update page actions
+    postPageActions.innerHTML = `
+        <button class="btn btn-outline" onclick="showSharePostModal('${post._id}')">
+            <i class="fas fa-share"></i> Share
+        </button>
+        ${currentUser && currentUser._id === post.author._id ? `
+            <button class="btn btn-outline" onclick="editPost('${post._id}')">
+                <i class="fas fa-edit"></i> Edit
+            </button>
+        ` : ''}
+    `;
+    
+    // Setup comment functionality
+    setupPostDetailCommentFunctionality();
 }
 function renderPostDetailCommentsList(comments) {
     return comments.map(comment => {
-        // FIXED: Use consistent like state detection
-        const isCommentLiked = comment.likes && (
-            Array.isArray(comment.likes) 
-                ? comment.likes.some(like => 
-                    (like._id && like._id === currentUser?._id) || 
-                    (like === currentUser?._id) ||
-                    (typeof like === 'string' && like === currentUser?._id)
-                )
-                : false
-        );
+        const commentAvatar = JSON.parse(comment.author.avatar);
+        const isCommentLiked = comment.likes && Array.isArray(comment.likes) && 
+            comment.likes.some(like => like._id === currentUser?._id);
+        
+        const commentDate = new Date(comment.createdAt);
+        const commentTimeAgo = getTimeAgo(comment.createdAt);
         
         return `
-        <div class="comment mb-6 pb-6 border-b border-gray-200" data-comment-id="${comment._id}">
-            <div class="flex items-start gap-3">
-                <div class="avatar small" style="background: ${JSON.parse(comment.author.avatar).color}; cursor: pointer;" onclick="showProfilePage('${comment.author.username}')">
-                    ${JSON.parse(comment.author.avatar).initials}
+        <div class="comment-thread" data-comment-id="${comment._id}">
+            <div class="comment-avatar" style="background: ${commentAvatar.color}; cursor: pointer;" 
+                 onclick="showProfilePage('${comment.author.username}')">
+                ${commentAvatar.initials}
+            </div>
+            <div class="comment-content">
+                <div class="comment-header-x">
+                    <div class="comment-author-x" onclick="showProfilePage('${comment.author.username}')" style="cursor: pointer;">
+                        ${comment.author.name}
+                    </div>
+                    <div class="comment-username-x">@${comment.author.username}</div>
+                    <div class="comment-time-x">· ${commentTimeAgo}</div>
                 </div>
-                <div class="flex-1">
-                    <div class="flex items-center gap-2">
-                        <div class="font-semibold" style="cursor: pointer;" onclick="showProfilePage('${comment.author.username}')">${comment.author.name}</div>
-                        <div class="text-xs text-secondary">${getTimeAgo(comment.createdAt)}</div>
-                    </div>
-                    <div class="text-sm mt-1">${comment.content}</div>
-                    
-                    <div class="comment-actions mt-2 flex items-center gap-4">
-                        <button class="comment-action-btn ${isCommentLiked ? 'liked' : ''}" onclick="likeComment('${currentPostId}', '${comment._id}')">
-                            <i class="fas fa-heart"></i>
-                            <span>${comment.likes ? comment.likes.length : 0}</span>
-                        </button>
-                        <button class="comment-action-btn" onclick="togglePostDetailReplyForm('${comment._id}')">
-                            <i class="fas fa-reply"></i>
-                            <span>Reply</span>
-                        </button>
-                        ${currentUser && (currentUser._id === comment.author._id || currentUser._id === comment.author) ? `
-                        <button class="comment-action-btn text-error" onclick="deleteComment('${currentPostId}', '${comment._id}')">
-                            <i class="fas fa-trash"></i>
-                            <span>Delete</span>
-                        </button>
-                        ` : ''}
-                    </div>
-
-                    <div class="reply-form mt-3 hidden" id="post-detail-reply-form-${comment._id}">
-                        <textarea 
-                            class="form-input form-textarea" 
-                            id="post-detail-reply-input-${comment._id}" 
-                            placeholder="Write a reply..."
-                            rows="2"
-                            maxlength="500"
-                            oninput="handlePostDetailReplyTyping('${comment._id}')"
-                        ></textarea>
-                        <div class="flex justify-between items-center mt-2">
-                            <div class="text-xs text-secondary" id="post-detail-reply-char-count-${comment._id}">0/500</div>
-                            <div class="flex gap-2">
-                                <button class="btn btn-outline btn-sm" onclick="togglePostDetailReplyForm('${comment._id}')">Cancel</button>
-                                <button class="btn btn-primary btn-sm" onclick="addPostDetailReply('${comment._id}')">Post Reply</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    ${comment.replies && comment.replies.length > 0 ? `
-                        <div class="replies mt-4 ml-6 border-l-2 pl-4" style="border-color: var(--border-color);">
-                            ${comment.replies.map(reply => createPostDetailReplyHTML(reply, comment._id)).join('')}
-                        </div>
+                <div class="comment-text-x">${comment.content}</div>
+                
+                <div class="comment-actions-x">
+                    <button class="comment-action-x ${isCommentLiked ? 'liked' : ''}" 
+                            onclick="likeComment('${currentPostId}', '${comment._id}')">
+                        <i class="${isCommentLiked ? 'fas' : 'far'} fa-heart"></i>
+                        <span>${comment.likes ? comment.likes.length : 0}</span>
+                    </button>
+                    <button class="comment-action-x" onclick="togglePostDetailReplyForm('${comment._id}')">
+                        <i class="far fa-comment"></i>
+                        <span>Reply</span>
+                    </button>
+                    ${currentUser && (currentUser._id === comment.author._id || currentUser._id === comment.author) ? `
+                    <button class="comment-action-x" onclick="deleteComment('${currentPostId}', '${comment._id}')">
+                        <i class="far fa-trash-alt"></i>
+                        <span>Delete</span>
+                    </button>
                     ` : ''}
                 </div>
+                
+                <!-- Reply Form -->
+                <div class="reply-form-x hidden" id="post-detail-reply-form-${comment._id}">
+                    <textarea id="post-detail-reply-input-${comment._id}" 
+                              placeholder="Write a reply..."
+                              maxlength="500"></textarea>
+                    <div class="reply-form-x-actions">
+                        <button class="btn btn-outline btn-sm" onclick="togglePostDetailReplyForm('${comment._id}')">
+                            Cancel
+                        </button>
+                        <button class="btn btn-primary btn-sm" onclick="addPostDetailReply('${comment._id}')">
+                            Post Reply
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Replies -->
+                ${comment.replies && comment.replies.length > 0 ? `
+                    <div class="reply-thread">
+                        ${comment.replies.map(reply => createPostDetailReplyHTML(reply, comment._id)).join('')}
+                    </div>
+                ` : ''}
             </div>
         </div>
         `;
     }).join('');
 }
 
+// Update the reply HTML function
 function createPostDetailReplyHTML(reply, commentId) {
-    const isReplyLiked = reply.likes && reply.likes.some(like => like._id === currentUser?._id);
-    const canDeleteReply = currentUser && (currentUser._id === reply.author._id || currentUser._id === reply.author);
+    const replyAvatar = JSON.parse(reply.author.avatar);
+    const isReplyLiked = reply.likes && Array.isArray(reply.likes) && 
+        reply.likes.some(like => like._id === currentUser?._id);
+    
+    const replyDate = new Date(reply.createdAt);
+    const replyTimeAgo = getTimeAgo(reply.createdAt);
     
     return `
-    <div class="reply mb-3" data-reply-id="${reply._id}">
-        <div class="flex items-start gap-3">
-            <div class="avatar small" style="background: ${JSON.parse(reply.author.avatar).color}; cursor: pointer;" onclick="showProfilePage('${reply.author.username}')">
-                ${JSON.parse(reply.author.avatar).initials}
+    <div class="comment-thread" data-reply-id="${reply._id}">
+        <div class="comment-avatar small" style="background: ${replyAvatar.color}; cursor: pointer;" 
+             onclick="showProfilePage('${reply.author.username}')">
+            ${replyAvatar.initials}
+        </div>
+        <div class="comment-content">
+            <div class="comment-header-x">
+                <div class="comment-author-x" onclick="showProfilePage('${reply.author.username}')" style="cursor: pointer;">
+                    ${reply.author.name}
+                </div>
+                <div class="comment-username-x">@${reply.author.username}</div>
+                <div class="comment-time-x">· ${replyTimeAgo}</div>
             </div>
-            <div class="flex-1">
-                <div class="flex items-center gap-2">
-                    <div class="font-semibold text-sm" style="cursor: pointer;" onclick="showProfilePage('${reply.author.username}')">${reply.author.name}</div>
-                    <div class="text-xs text-secondary">${getTimeAgo(reply.createdAt)}</div>
-                </div>
-                <div class="text-sm mt-1">${reply.content}</div>
-                <div class="reply-actions mt-1 flex items-center gap-4">
-                    <button class="comment-action-btn ${isReplyLiked ? 'liked' : ''}" onclick="likeReply('${currentPostId}', '${commentId}', '${reply._id}')">
-                        <i class="fas fa-heart"></i>
-                        <span>${reply.likes ? reply.likes.length : 0}</span>
-                    </button>
-                    ${canDeleteReply ? `
-                    <button class="comment-action-btn text-error text-xs" onclick="deleteReply('${currentPostId}', '${commentId}', '${reply._id}')">
-                        <i class="fas fa-trash"></i>
-                        <span>Delete</span>
-                    </button>
-                    ` : ''}
-                </div>
+            <div class="comment-text-x">${reply.content}</div>
+            
+            <div class="comment-actions-x">
+                <button class="comment-action-x ${isReplyLiked ? 'liked' : ''}" 
+                        onclick="likeReply('${currentPostId}', '${commentId}', '${reply._id}')">
+                    <i class="${isReplyLiked ? 'fas' : 'far'} fa-heart"></i>
+                    <span>${reply.likes ? reply.likes.length : 0}</span>
+                </button>
+                ${currentUser && (currentUser._id === reply.author._id || currentUser._id === reply.author) ? `
+                <button class="comment-action-x" onclick="deleteReply('${currentPostId}', '${commentId}', '${reply._id}')">
+                    <i class="far fa-trash-alt"></i>
+                    <span>Delete</span>
+                </button>
+                ` : ''}
             </div>
         </div>
     </div>
     `;
-}
-
-function setupPostDetailCommentFunctionality() {
-    // Setup character counter for main comment input
-    const commentInput = document.getElementById('postDetailCommentInput');
-    const charCount = document.getElementById('postDetailCommentCharCount');
-    
-    if (commentInput && charCount) {
-        commentInput.addEventListener('input', function() {
-            const length = this.value.length;
-            charCount.textContent = `${length}/1000`;
-            
-            if (length > 1000) {
-                charCount.classList.add('text-error');
-            } else {
-                charCount.classList.remove('text-error');
-            }
-        });
-    }
-    
-    // Setup reply functionality for existing comments
-    setupPostDetailReplyFunctionality();
 }
 
 function setupPostDetailReplyFunctionality() {
