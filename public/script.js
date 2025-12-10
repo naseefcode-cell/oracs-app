@@ -4333,13 +4333,40 @@ function getTimeAgo(dateString) {
 }
 
 function showHomePage() {
-    homePage.style.display = 'block';
-    profilePage.style.display = 'none';
-    notificationsPage.style.display = 'none';
-    postPage.style.display = 'none';
-    currentProfile = null;
-    currentProfileUsername = null;
+    document.getElementById('homePage').style.display = 'block';
+    document.getElementById('profilePage').style.display = 'none';
+    document.getElementById('notificationsPage').style.display = 'none';
+    document.getElementById('postPage').style.display = 'none';
+    updateNavigationActive('homePage');
+    loadPosts();
 }
+function showProfilePage() {
+    document.getElementById('homePage').style.display = 'none';
+    document.getElementById('profilePage').style.display = 'block';
+    document.getElementById('notificationsPage').style.display = 'none';
+    document.getElementById('postPage').style.display = 'none';
+    updateNavigationActive('profilePage');
+    // Load profile data
+}
+
+function showNotificationsPage() {
+    document.getElementById('homePage').style.display = 'none';
+    document.getElementById('profilePage').style.display = 'none';
+    document.getElementById('notificationsPage').style.display = 'block';
+    document.getElementById('postPage').style.display = 'none';
+    updateNavigationActive('notificationsPage');
+    loadNotifications();
+}
+
+function showPostDetail(postId) {
+    document.getElementById('homePage').style.display = 'none';
+    document.getElementById('profilePage').style.display = 'none';
+    document.getElementById('notificationsPage').style.display = 'none';
+    document.getElementById('postPage').style.display = 'block';
+    // Load post detail
+}
+
+
 
 function showAlert(message, type) {
     const alert = document.createElement('div');
@@ -4876,6 +4903,25 @@ function handleCommentTyping(postId, commentId) {
         }, 2000);
     }
 }
+function updateSidebarUserInfo() {
+    const user = getCurrentUser();
+    if (!user) return;
+    
+    const userInfoHTML = `
+        <div class="user-profile-sidebar" onclick="showProfilePage()">
+            <div class="user-avatar-sidebar">
+                ${getUserInitials(user)}
+            </div>
+            <div class="user-details-sidebar">
+                <div class="user-name-sidebar">${user.name || 'Anonymous'}</div>
+                <div class="user-handle-sidebar">@${user.username || 'user'}</div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('sidebarUserInfo').innerHTML = userInfoHTML;
+    document.getElementById('mobileSidebarUserInfo').innerHTML = userInfoHTML;
+}
 
 function logout() {
     if (realTimeClient) {
@@ -4963,6 +5009,31 @@ function setupGlobalEventListeners() {
         
         if (notificationContainer && !notificationContainer.contains(event.target) && dropdown) {
             dropdown.classList.remove('show');
+        }
+    });
+}
+document.addEventListener('DOMContentLoaded', function() {
+    // Mobile menu toggle
+    document.getElementById('mobileMenuToggle').addEventListener('click', toggleMobileMenu);
+    
+    // Close mobile menu when clicking links
+    document.querySelectorAll('.mobile-sidebar .sidebar-item').forEach(item => {
+        item.addEventListener('click', toggleMobileMenu);
+    });
+    
+    // Update sidebar on user login/logout
+    // Add this to your login/logout functions
+    const originalLoginFunction = window.login; // Store reference if needed
+    // ... rest of initialization
+});
+function updateNotificationBadge(count) {
+    const badges = document.querySelectorAll('.notification-badge');
+    badges.forEach(badge => {
+        if (count > 0) {
+            badge.textContent = count > 99 ? '99+' : count;
+            badge.style.display = 'flex';
+        } else {
+            badge.style.display = 'none';
         }
     });
 }
