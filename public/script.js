@@ -7,12 +7,12 @@ let currentProfileUsername = null;
 let notifications = [];
 let unreadNotificationCount = 0;
 let currentProfile = null;
-let currentFeed = 'all'; // 'all', 'following', 'trending', 'my-posts'
-let currentSort = 'hot'; // 'hot', 'new', 'old', 'top', 'trending'
+let currentFeed = 'all'; 
+let currentSort = 'hot';
 let currentPostId = null;
-let userLikes = JSON.parse(localStorage.getItem('userLikes')) || {}; // Track user likes
+let userLikes = JSON.parse(localStorage.getItem('userLikes')) || {}; 
 let searchSuggestionsTimeout;
-// DOM Elements
+
 const userActions = document.getElementById('userActions');
 const createPostContainer = document.getElementById('createPostContainer');
 const postsList = document.getElementById('postsList');
@@ -23,7 +23,7 @@ const profilePage = document.getElementById('profilePage');
 const notificationsPage = document.getElementById('notificationsPage');
 const postPage = document.getElementById('postPage');
 
-// API utility
+
 const api = {
     async request(endpoint, options = {}) {
         const token = localStorage.getItem('token');
@@ -40,10 +40,10 @@ const api = {
             const response = await fetch(`${API_BASE}${endpoint}`, {
                 ...options,
                 headers,
-                credentials: 'include' // Include cookies for production
+                credentials: 'include' 
             });
 
-            // Handle non-JSON responses
+
             const contentType = response.headers.get('content-type');
             let data;
             
@@ -96,7 +96,7 @@ const api = {
         });
     }
 };
-// RealTimeClient for instant updates
+
 class RealTimeClient {
     constructor() {
         this.ws = null;
@@ -208,7 +208,7 @@ class RealTimeClient {
         }
     }
 
-    // Handle comment deletion in real-time
+
     handleCommentDeleted(postId, commentId) {
         const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
         if (commentElement) {
@@ -218,8 +218,7 @@ class RealTimeClient {
                 this.updateCommentCount(postId, -1);
             }, 300);
         }
-        
-        // ALSO update post detail page if open
+
         if (currentPostId === postId) {
             const postDetailComment = document.querySelector(`[data-comment-id="${commentId}"]`);
             if (postDetailComment) {
@@ -240,8 +239,7 @@ handleReplyLikeUpdated(data) {
         liked: data.liked, 
         likeCount: data.likeCount 
     });
-    
-    // Update ALL reply elements with this ID (both in feed and post detail)
+
     const replyElements = document.querySelectorAll(`[data-reply-id="${data.replyId}"]`);
     
     replyElements.forEach(replyElement => {
