@@ -1284,6 +1284,7 @@ async function loadPostDetail(postId) {
         `;
     }
 }
+// Update the renderPostDetail function to ensure proper data attributes and classes
 function renderPostDetail(post) {
     const postDetailContent = document.getElementById('postDetailContent');
     const avatar = JSON.parse(post.author.avatar);
@@ -1397,22 +1398,6 @@ function renderPostDetail(post) {
             }
         </div>
     `;
-}
-    
-    // Update page actions
-    postPageActions.innerHTML = `
-        <button class="btn btn-outline" onclick="showSharePostModal('${post._id}')">
-            <i class="fas fa-share"></i> Share
-        </button>
-        ${currentUser && currentUser._id === post.author._id ? `
-            <button class="btn btn-outline" onclick="editPost('${post._id}')">
-                <i class="fas fa-edit"></i> Edit
-            </button>
-        ` : ''}
-    `;
-    
-    // Setup comment functionality
-    setupPostDetailCommentFunctionality();
 }
 function renderPostDetailCommentsList(comments) {
     return comments.map(comment => {
