@@ -1134,6 +1134,44 @@ function handleRoute() {
         }
     }
 }
+function toggleMobileMenu() {
+    const mobileSidebar = document.getElementById('mobileSidebar');
+    const overlay = document.getElementById('mobileSidebarOverlay');
+    
+    mobileSidebar.classList.toggle('active');
+    overlay.style.display = mobileSidebar.classList.contains('active') ? 'block' : 'none';
+}
+
+// Update navigation active states
+function updateNavigationActive(page) {
+    // Update desktop sidebar
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // Update bottom nav
+    document.querySelectorAll('.bottom-nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // Update pages
+    document.querySelectorAll('.page').forEach(pageElement => {
+        pageElement.classList.remove('active');
+    });
+    
+    // Set active page
+    document.getElementById(page).classList.add('active');
+    
+    // Update navigation items based on page
+    if (page === 'homePage') {
+        document.querySelector('.sidebar-item:nth-child(1)').classList.add('active');
+        document.querySelector('.bottom-nav-item:nth-child(1)').classList.add('active');
+    } else if (page === 'profilePage') {
+        document.querySelector('.sidebar-item:nth-child(2)').classList.add('active');
+        document.querySelector('.bottom-nav-item:nth-child(2)').classList.add('active');
+    }
+    // Add more conditions for other pages
+}
 
 function navigateToProfile(username) {
     const profileUrl = `/profile/${username}`;
