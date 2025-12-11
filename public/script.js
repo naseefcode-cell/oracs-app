@@ -3761,7 +3761,7 @@ function renderProfilePage(profile) {
                 <button class="btn btn-primary" onclick="showEditProfileModal()">
                     <i class="fas fa-edit"></i> Edit Profile
                 </button>
-                <button class="btn btn-outline" onclick="showSettingsModal()">
+                <button class="btn btn-outline" onclick="/settings.html">
                     <i class="fas fa-cog"></i> Settings
                 </button>
             ` : ''}
