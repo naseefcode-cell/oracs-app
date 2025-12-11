@@ -1057,7 +1057,6 @@ function checkAuthStatus() {
 
 
 // Call this on page load in your auth pages
-
 async function initApp() {
     try {
         console.log('🌐 Initializing ThereIn Application...');
@@ -1070,11 +1069,19 @@ async function initApp() {
         
         // Setup URL routing first
         setupURLRouting();
-        updateProfileLinks();
         
         await checkAuth();
+        updateUI();
         updatePostsContainer();
         await loadPosts();
+        
+        // Initialize profile page if we're on a profile URL
+        if (window.location.pathname.includes('/profile/')) {
+            const username = window.location.pathname.split('/profile/')[1];
+            if (username) {
+                await showProfilePage(username);
+            }
+        }
         
         if (currentUser) {
             await loadNotifications();
@@ -1110,25 +1117,26 @@ function handleRoute() {
     if (profileMatch) {
         const username = profileMatch[1];
         showProfilePage(username);
-    } else {
-        // Handle other routes
-        switch (path) {
-            case '/':
-            case '/index.html':
+        return; // Important: return early
+    }
+    
+    // Handle other routes
+    switch (path) {
+        case '/':
+        case '/index.html':
+            showHomePage();
+            break;
+        case '/notifications':
+            showAllNotifications();
+            break;
+        default:
+            // Check if it's a post URL
+            const postMatch = path.match(/^\/post\/([^\/]+)/);
+            if (postMatch) {
+                showPostPage(postMatch[1]);
+            } else {
                 showHomePage();
-                break;
-            case '/notifications':
-                showAllNotifications();
-                break;
-            default:
-                // Check if it's a post URL
-                const postMatch = path.match(/^\/post\/([^\/]+)/);
-                if (postMatch) {
-                    showPostPage(postMatch[1]);
-                } else {
-                    showHomePage();
-                }
-        }
+            }
     }
 }
 function toggleMobileMenu() {
@@ -1179,6 +1187,9 @@ function navigateToProfile(username) {
 // Update the existing showProfilePage function to use URL
 const originalShowProfilePage = showProfilePage;
 async function showProfilePage(username = null) {
+    console.log('showProfilePage called with:', username);
+    
+    // Hide all pages
     homePage.style.display = 'none';
     profilePage.style.display = 'block';
     notificationsPage.style.display = 'none';
@@ -1208,16 +1219,27 @@ showHomePage = function() {
 // Update all profile links to use the new navigation
 function updateProfileLinks() {
     // This will be called to update any dynamic profile links
-    document.addEventListener('click', function(e) {
-        const profileLink = e.target.closest('[data-profile-link]');
-        if (profileLink) {
-            e.preventDefault();
-            const username = profileLink.getAttribute('data-profile-username');
-            if (username) {
-                navigateToProfile(username);
-            }
+    // Update the navigation in your event listeners
+document.addEventListener('click', function(e) {
+    // Handle profile links
+    if (e.target.closest('[onclick*="showProfilePage"]') || 
+        e.target.closest('[onclick*="navigateToProfile"]')) {
+        e.preventDefault();
+        
+        // Extract username if available
+        const onclickAttr = e.target.closest('[onclick]').getAttribute('onclick');
+        const match = onclickAttr.match(/showProfilePage\('([^']+)'\)/) || 
+                     onclickAttr.match(/navigateToProfile\('([^']+)'\)/);
+        
+        if (match && match[1]) {
+            const username = match[1];
+            navigateToProfile(username);
+        } else {
+            // No username provided, show current user's profile
+            showProfilePage();
         }
-    });
+    }
+});
 }
 // Authentication functions
 async function checkAuth() {
