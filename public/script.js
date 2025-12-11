@@ -1195,17 +1195,34 @@ async function showProfilePage(username = null) {
     notificationsPage.style.display = 'none';
     postPage.style.display = 'none';
     
+    // Show loading state
+    document.getElementById('profileHeaderContent').innerHTML = `
+        <div class="profile-loading">
+            <i class="fas fa-spinner loading-spinner"></i>
+            <div class="mt-4">Loading profile...</div>
+        </div>
+    `;
+    document.getElementById('profileMainContent').innerHTML = '';
+    document.getElementById('profileTabContent').innerHTML = '';
+    
     // If no username provided, show current user's profile
     if (!username && currentUser) {
         username = currentUser.username;
     } else if (!username && !currentUser) {
         // If no user is logged in, show login modal
         showLoginModal();
+        // Show home page instead
+        showHomePage();
         return;
     }
     
     currentProfileUsername = username;
     await loadUserProfile(username);
+    
+    // Update URL if it's a profile navigation
+    if (username) {
+        window.history.pushState({}, '', `/profile/${username}`);
+    }
 }
 // Update showHomePage to handle URL
 const originalShowHomePage = showHomePage;
@@ -3704,7 +3721,7 @@ async function checkFollowStatus(username) {
 }
 
 function renderProfilePage(profile) {
-    console.log('Rendering profile:', profile); // Debug log
+    console.log('Rendering profile:', profile);
     
     // Make sure we have the avatar data
     let avatar;
@@ -3783,7 +3800,7 @@ function renderProfilePage(profile) {
                 <button class="btn btn-primary" onclick="showEditProfileModal()">
                     <i class="fas fa-edit"></i> Edit Profile
                 </button>
-                <button class="btn btn-outline" onclick="/settings.html">
+                <button class="btn btn-outline" onclick="window.location.href='/settings.html'">
                     <i class="fas fa-cog"></i> Settings
                 </button>
             ` : ''}
@@ -3797,32 +3814,42 @@ function renderProfilePage(profile) {
     switchProfileTab('posts');
 }
 function setupProfileTabs() {
-    const profileTabContent = document.getElementById('profileTabContent');
-    if (!profileTabContent) {
-        profileTabContent = document.createElement('div');
-        profileTabContent.id = 'profileTabContent';
-        document.querySelector('.profile-main').appendChild(profileTabContent);
-    }
-    
     const profileTabs = document.getElementById('profileTabs');
     if (!profileTabs) {
-        // Create profile tabs container
-        const tabsContainer = document.createElement('div');
-        tabsContainer.id = 'profileTabs';
-        tabsContainer.className = 'profile-tabs';
-        tabsContainer.innerHTML = `
-            <div class="profile-tab active" onclick="switchProfileTab('posts')">Posts</div>
-            <div class="profile-tab" onclick="switchProfileTab('about')">About</div>
-        `;
-        
-        // Insert after profileMainContent
-        const profileMainContent = document.getElementById('profileMainContent');
-        profileMainContent.parentNode.insertBefore(tabsContainer, profileMainContent.nextSibling);
-    } else {
-        profileTabs.innerHTML = `
-            <div class="profile-tab active" onclick="switchProfileTab('posts')">Posts</div>
-            <div class="profile-tab" onclick="switchProfileTab('about')">About</div>
-        `;
+        console.error('Profile tabs container not found');
+        return;
+    }
+    
+    // Set up tab click handlers
+    const tabs = profileTabs.querySelectorAll('.profile-tab');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const tabName = this.getAttribute('onclick').match(/'([^']+)'/)[1];
+            switchProfileTab(tabName);
+        });
+    });
+}
+async function switchProfileTab(tabName) {
+    console.log('Switching to tab:', tabName);
+    
+    // Update active tab
+    const tabs = document.querySelectorAll('.profile-tab');
+    tabs.forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.textContent.toLowerCase().includes(tabName)) {
+            tab.classList.add('active');
+        }
+    });
+    
+    // Update content
+    const profileTabContent = document.getElementById('profileTabContent');
+    
+    if (tabName === 'posts') {
+        if (currentProfileUsername) {
+            await loadUserPosts(currentProfileUsername);
+        }
+    } else if (tabName === 'about') {
+        renderAboutTab();
     }
 }
 
@@ -3842,46 +3869,7 @@ function getTimeDifference(dateString) {
         return `${diffDays} day${diffDays !== 1 ? 's' : ''}`;
     }
 }
-function renderAboutTab() {
-    if (!currentProfile) return;
-    
-    const profileTabContent = document.getElementById('profileTabContent');
-    
-    // Format dates
-    const joinDate = new Date(currentProfile.createdAt).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
-    
-    const memberFor = getTimeDifference(currentProfile.createdAt);
-    
-    profileTabContent.innerHTML = `
-        <div class="card">
-            <div class="card-body">
-                <div class="about-section">
-                    <h3 class="text-lg font-semibold mb-4">Account Details</h3>
-                        
-                        <div class="about-item">
-                            <div class="about-item-title">
-                                <i class="fas fa-calendar-plus text-primary mr-2"></i>
-                                Account Created
-                            </div>
-                            <div class="about-item-content">
-                                ${joinDate} (${memberFor})
-                            </div>
-                        </div>
-                    </div>
-                        
-                        
 
-                        
-                       
-                        
-
-                   
-    `;
-}
 
 function setupProfileTabs() {
     document.getElementById('profileTabs').innerHTML = `
