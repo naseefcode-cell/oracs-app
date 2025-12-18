@@ -1057,6 +1057,7 @@ function checkAuthStatus() {
 
 
 // Call this on page load in your auth pages
+
 async function initApp() {
     try {
         console.log('🌐 Initializing ThereIn Application...');
@@ -1069,19 +1070,11 @@ async function initApp() {
         
         // Setup URL routing first
         setupURLRouting();
+        updateProfileLinks();
         
         await checkAuth();
-        updateUI();
         updatePostsContainer();
         await loadPosts();
-        
-        // Initialize profile page if we're on a profile URL
-        if (window.location.pathname.includes('/profile/')) {
-            const username = window.location.pathname.split('/profile/')[1];
-            if (username) {
-                await showProfilePage(username);
-            }
-        }
         
         if (currentUser) {
             await loadNotifications();
@@ -1117,26 +1110,25 @@ function handleRoute() {
     if (profileMatch) {
         const username = profileMatch[1];
         showProfilePage(username);
-        return; // Important: return early
-    }
-    
-    // Handle other routes
-    switch (path) {
-        case '/':
-        case '/index.html':
-            showHomePage();
-            break;
-        case '/notifications':
-            showAllNotifications();
-            break;
-        default:
-            // Check if it's a post URL
-            const postMatch = path.match(/^\/post\/([^\/]+)/);
-            if (postMatch) {
-                showPostPage(postMatch[1]);
-            } else {
+    } else {
+        // Handle other routes
+        switch (path) {
+            case '/':
+            case '/index.html':
                 showHomePage();
-            }
+                break;
+            case '/notifications':
+                showAllNotifications();
+                break;
+            default:
+                // Check if it's a post URL
+                const postMatch = path.match(/^\/post\/([^\/]+)/);
+                if (postMatch) {
+                    showPostPage(postMatch[1]);
+                } else {
+                    showHomePage();
+                }
+        }
     }
 }
 function toggleMobileMenu() {
@@ -1187,23 +1179,10 @@ function navigateToProfile(username) {
 // Update the existing showProfilePage function to use URL
 const originalShowProfilePage = showProfilePage;
 async function showProfilePage(username = null) {
-    console.log('showProfilePage called with:', username);
-    
-    // Hide all pages
     homePage.style.display = 'none';
     profilePage.style.display = 'block';
     notificationsPage.style.display = 'none';
     postPage.style.display = 'none';
-    
-    // Show loading state
-    document.getElementById('profileHeaderContent').innerHTML = `
-        <div class="profile-loading">
-            <i class="fas fa-spinner loading-spinner"></i>
-            <div class="mt-4">Loading profile...</div>
-        </div>
-    `;
-    document.getElementById('profileMainContent').innerHTML = '';
-    document.getElementById('profileTabContent').innerHTML = '';
     
     // If no username provided, show current user's profile
     if (!username && currentUser) {
@@ -1211,18 +1190,11 @@ async function showProfilePage(username = null) {
     } else if (!username && !currentUser) {
         // If no user is logged in, show login modal
         showLoginModal();
-        // Show home page instead
-        showHomePage();
         return;
     }
     
     currentProfileUsername = username;
     await loadUserProfile(username);
-    
-    // Update URL if it's a profile navigation
-    if (username) {
-        window.history.pushState({}, '', `/profile/${username}`);
-    }
 }
 // Update showHomePage to handle URL
 const originalShowHomePage = showHomePage;
@@ -1236,27 +1208,16 @@ showHomePage = function() {
 // Update all profile links to use the new navigation
 function updateProfileLinks() {
     // This will be called to update any dynamic profile links
-    // Update the navigation in your event listeners
-document.addEventListener('click', function(e) {
-    // Handle profile links
-    if (e.target.closest('[onclick*="showProfilePage"]') || 
-        e.target.closest('[onclick*="navigateToProfile"]')) {
-        e.preventDefault();
-        
-        // Extract username if available
-        const onclickAttr = e.target.closest('[onclick]').getAttribute('onclick');
-        const match = onclickAttr.match(/showProfilePage\('([^']+)'\)/) || 
-                     onclickAttr.match(/navigateToProfile\('([^']+)'\)/);
-        
-        if (match && match[1]) {
-            const username = match[1];
-            navigateToProfile(username);
-        } else {
-            // No username provided, show current user's profile
-            showProfilePage();
+    document.addEventListener('click', function(e) {
+        const profileLink = e.target.closest('[data-profile-link]');
+        if (profileLink) {
+            e.preventDefault();
+            const username = profileLink.getAttribute('data-profile-username');
+            if (username) {
+                navigateToProfile(username);
+            }
         }
-    }
-});
+    });
 }
 // Authentication functions
 async function checkAuth() {
@@ -3721,7 +3682,7 @@ async function checkFollowStatus(username) {
 }
 
 function renderProfilePage(profile) {
-    console.log('Rendering profile:', profile);
+    console.log('Rendering profile:', profile); // Debug log
     
     // Make sure we have the avatar data
     let avatar;
@@ -3800,7 +3761,7 @@ function renderProfilePage(profile) {
                 <button class="btn btn-primary" onclick="showEditProfileModal()">
                     <i class="fas fa-edit"></i> Edit Profile
                 </button>
-                <button class="btn btn-outline" onclick="window.location.href='/settings.html'">
+                <button class="btn btn-outline" onclick="showSettingsModal()">
                     <i class="fas fa-cog"></i> Settings
                 </button>
             ` : ''}
@@ -3814,42 +3775,32 @@ function renderProfilePage(profile) {
     switchProfileTab('posts');
 }
 function setupProfileTabs() {
-    const profileTabs = document.getElementById('profileTabs');
-    if (!profileTabs) {
-        console.error('Profile tabs container not found');
-        return;
+    const profileTabContent = document.getElementById('profileTabContent');
+    if (!profileTabContent) {
+        profileTabContent = document.createElement('div');
+        profileTabContent.id = 'profileTabContent';
+        document.querySelector('.profile-main').appendChild(profileTabContent);
     }
     
-    // Set up tab click handlers
-    const tabs = profileTabs.querySelectorAll('.profile-tab');
-    tabs.forEach(tab => {
-        tab.addEventListener('click', function() {
-            const tabName = this.getAttribute('onclick').match(/'([^']+)'/)[1];
-            switchProfileTab(tabName);
-        });
-    });
-}
-async function switchProfileTab(tabName) {
-    console.log('Switching to tab:', tabName);
-    
-    // Update active tab
-    const tabs = document.querySelectorAll('.profile-tab');
-    tabs.forEach(tab => {
-        tab.classList.remove('active');
-        if (tab.textContent.toLowerCase().includes(tabName)) {
-            tab.classList.add('active');
-        }
-    });
-    
-    // Update content
-    const profileTabContent = document.getElementById('profileTabContent');
-    
-    if (tabName === 'posts') {
-        if (currentProfileUsername) {
-            await loadUserPosts(currentProfileUsername);
-        }
-    } else if (tabName === 'about') {
-        renderAboutTab();
+    const profileTabs = document.getElementById('profileTabs');
+    if (!profileTabs) {
+        // Create profile tabs container
+        const tabsContainer = document.createElement('div');
+        tabsContainer.id = 'profileTabs';
+        tabsContainer.className = 'profile-tabs';
+        tabsContainer.innerHTML = `
+            <div class="profile-tab active" onclick="switchProfileTab('posts')">Posts</div>
+            <div class="profile-tab" onclick="switchProfileTab('about')">About</div>
+        `;
+        
+        // Insert after profileMainContent
+        const profileMainContent = document.getElementById('profileMainContent');
+        profileMainContent.parentNode.insertBefore(tabsContainer, profileMainContent.nextSibling);
+    } else {
+        profileTabs.innerHTML = `
+            <div class="profile-tab active" onclick="switchProfileTab('posts')">Posts</div>
+            <div class="profile-tab" onclick="switchProfileTab('about')">About</div>
+        `;
     }
 }
 
@@ -3869,7 +3820,46 @@ function getTimeDifference(dateString) {
         return `${diffDays} day${diffDays !== 1 ? 's' : ''}`;
     }
 }
+function renderAboutTab() {
+    if (!currentProfile) return;
+    
+    const profileTabContent = document.getElementById('profileTabContent');
+    
+    // Format dates
+    const joinDate = new Date(currentProfile.createdAt).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    
+    const memberFor = getTimeDifference(currentProfile.createdAt);
+    
+    profileTabContent.innerHTML = `
+        <div class="card">
+            <div class="card-body">
+                <div class="about-section">
+                    <h3 class="text-lg font-semibold mb-4">Account Details</h3>
+                        
+                        <div class="about-item">
+                            <div class="about-item-title">
+                                <i class="fas fa-calendar-plus text-primary mr-2"></i>
+                                Account Created
+                            </div>
+                            <div class="about-item-content">
+                                ${joinDate} (${memberFor})
+                            </div>
+                        </div>
+                    </div>
+                        
+                        
 
+                        
+                       
+                        
+
+                   
+    `;
+}
 
 function setupProfileTabs() {
     document.getElementById('profileTabs').innerHTML = `
